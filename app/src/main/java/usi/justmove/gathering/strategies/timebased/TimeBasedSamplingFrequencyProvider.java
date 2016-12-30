@@ -13,14 +13,13 @@ import usi.justmove.gathering.base.StateMachine;
  * Created by usi on 28/12/16.
  */
 
-public class TimeBasedSamplingFrequencyProvider implements FrequencyProvider {
-    private boolean running = true;
-    private StateMachine<TimeBasedSMState, TimeBasedSMSymbol> sm;
+public class TimeBasedSamplingFrequencyProvider extends FrequencyProvider {
     private LocalTime dayStartTime;
     private LocalTime nightStartTime;
-    private TimeBasedSMState currentState;
     private double dayFrequency;
     private double nightFrequency;
+    private StateMachine<TimeBasedSMState, TimeBasedSMSymbol> sm;
+    private TimeBasedSMState currentState;
 
     public TimeBasedSamplingFrequencyProvider(String dayStartTime, String nightStartTime) {
         sm = new TimeBasedGatheringStateMachine();
@@ -40,10 +39,6 @@ public class TimeBasedSamplingFrequencyProvider implements FrequencyProvider {
                 .withHourOfDay(Integer.parseInt(splitted[0]))
                 .withMinuteOfHour(Integer.parseInt(splitted[1]))
                 .withSecondOfMinute(Integer.parseInt(splitted[2]));
-    }
-
-    public void terminate() {
-        running = false;
     }
 
     private DateTime getDayStartDateTime() {

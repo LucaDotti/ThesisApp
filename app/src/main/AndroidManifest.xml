@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="usi.justmove">
 
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,7 +21,11 @@
         </activity>
 
         <service
-            android:name=".gathering.SamplingFrequencyTunerService"
+            android:name=".gathering.services.SamplingFrequencyTunerService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".gathering.services.WifiGatheringService"
             android:enabled="true"
             android:exported="true" />
     </application>

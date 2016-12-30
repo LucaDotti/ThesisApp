@@ -1,4 +1,4 @@
-package usi.justmove.gathering;
+package usi.justmove.gathering.services;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -18,7 +18,7 @@ public class SamplingFrequencyTunerService extends IntentService {
 
     public SamplingFrequencyTunerService() {
         super("SamplingFrequencyService");
-        provider = new TimeBasedSamplingFrequencyProvider("07:00:00", "11:52:00");
+        provider = new TimeBasedSamplingFrequencyProvider("07:00:00", "23:00:00");
         currentFrequency = 0.0;
     }
 
