@@ -1,14 +1,8 @@
-package usi.justmove.database;
-
-import static usi.justmove.database.PhoneLockTable.KEY_PHONELOCK_ID;
-import static usi.justmove.database.PhoneLockTable.KEY_PHONELOCK_STATUS;
-import static usi.justmove.database.PhoneLockTable.KEY_PHONELOCK_TIMESTAMP;
-import static usi.justmove.database.PhoneLockTable.TABLE_PHONELOCK;
+package usi.justmove.database.tables;
 
 /**
- * Created by usi on 29/12/16.
+ * Created by Luca Dotti on 29/12/16.
  */
-
 public class UsedAppTable {
     public static final String TABLE_USED_APP = "used_app";
     public static final String KEY_USED_APP_ID = "id_used_app";
@@ -23,7 +17,7 @@ public class UsedAppTable {
                 KEY_USED_APP_TIMESTAMP + " INTEGER DEFAULT CURRENT_TIMESTAMP, " +
                 KEY_USED_APP_TYPE + " INTEGER NOT NULL, " +
                 KEY_USED_APP_NAME + " TEXT, " +
-                "FOREIGN KEY (" + KEY_USED_APP_TYPE + ") REFERENCES " + UsedAppTypeTable.TABLE_USED_APP_TYPE + "(" + UsedAppTypeTable.KEY_USED_APP_TYPE_TYPE + ")" +
+                "FOREIGN KEY (" + KEY_USED_APP_TYPE + ") REFERENCES " + UsedAppTypeTable.TABLE_USED_APP_TYPE + "(" + UsedAppTypeTable.KEY_USED_APP_TYPE_ID + ")" +
                 ")";
     }
 }

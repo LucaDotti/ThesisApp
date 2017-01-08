@@ -1,7 +1,7 @@
-package usi.justmove.database;
+package usi.justmove.database.tables;
 
 /**
- * Created by usi on 29/12/16.
+ * Created by Luca Dotti on 29/12/16.
  */
 public class BlueToothTable {
     public static final String TABLE_BLUETOOTH = "bluetooth";

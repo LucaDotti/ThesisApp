@@ -5,6 +5,14 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+
 
     <application
         android:allowBackup="true"
@@ -21,11 +29,31 @@
         </activity>
 
         <service
-            android:name=".gathering.services.SamplingFrequencyTunerService"
+            android:name=".gathering.gatheringServices.WifiGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.services.WifiGatheringService"
+            android:name=".gathering.gatheringServices.LocationGatheringService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".gathering.gatheringServices.BluethootGatheringService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".gathering.gatheringServices.LockGatheringService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".gathering.gatheringServices.AccelerometerGatheringService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".gathering.gatheringServices.PhoneCallGatheringService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".gathering.gatheringServices.SMSGatheringService"
             android:enabled="true"
             android:exported="true" />
     </application>

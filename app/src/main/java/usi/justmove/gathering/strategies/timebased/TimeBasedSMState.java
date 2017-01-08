@@ -9,5 +9,9 @@ public enum TimeBasedSMState {
     //currently is night
     NIGHT,
     //start state: don't know if it is day or night, need to wait for an input
-    START
+    START;
+
+    TimeBasedSMState getStartState() {
+        return START;
+    }
 }

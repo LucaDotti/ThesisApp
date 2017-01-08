@@ -1,16 +1,8 @@
-package usi.justmove.database;
-
-import static usi.justmove.database.GPSLocationTable.KEY_GPS_ID;
-import static usi.justmove.database.GPSLocationTable.KEY_GPS_LATITUDE;
-import static usi.justmove.database.GPSLocationTable.KEY_GPS_LONGITUDE;
-import static usi.justmove.database.GPSLocationTable.KEY_GPS_PROVIDER;
-import static usi.justmove.database.GPSLocationTable.KEY_GPS_TIMESTAMP;
-import static usi.justmove.database.GPSLocationTable.TABLE_GPS;
+package usi.justmove.database.tables;
 
 /**
- * Created by usi on 29/12/16.
+ * Created by Luca Dotti on 29/12/16.
  */
-
 public class AccelerometerTable {
     public static final String TABLE_ACCELEROMETER = "accelerometer";
     public static final String KEY_ACCELEROMETER_ID = "id_accelerometer";

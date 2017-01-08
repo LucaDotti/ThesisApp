@@ -1,4 +1,4 @@
-package usi.justmove.database;
+package usi.justmove.database.tables;
 
 /**
  * Created by Luca Dotti on 29/12/16.
