@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -16,20 +15,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import usi.justmove.database.base.DbController;
-import usi.justmove.database.controllers.LocalDbController;
-import usi.justmove.database.tables.AccelerometerTable;
-import usi.justmove.database.tables.BlueToothTable;
-import usi.justmove.utils.FrequencyHelper;
-
-import static android.R.attr.filter;
-import static android.R.attr.x;
-import static android.R.attr.y;
-import static android.bluetooth.BluetoothAdapter.getDefaultAdapter;
+import usi.justmove.R;
+import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.local.database.controllers.SQLiteController;
+import usi.justmove.local.database.tables.BlueToothTable;
 
 /**
  * Created by usi on 03/01/17.
@@ -38,6 +30,7 @@ import static android.bluetooth.BluetoothAdapter.getDefaultAdapter;
 public class BluethootGatheringService extends Service {
     private BroadcastReceiver receiver;
     private Timer timer;
+    private long samplingFreq;
 
     @Nullable
     @Override
@@ -49,21 +42,22 @@ public class BluethootGatheringService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        long freq = Long.parseLong(getApplicationContext().getString(R.string.bluetoothSamplingFreq));
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
 
-        receiver = new BluetoothEventReceiver(getApplicationContext());
+        receiver = new BluetoothEventReceiver(new SQLiteController(getApplicationContext()));
         getApplicationContext().registerReceiver(receiver, filter);
         timer = new Timer();
-        timer.schedule(new BluetoothScanTask(), 0, 60*1000);
+        timer.schedule(new BluetoothScanTask(), 0, freq);
     }
 }
 
 class BluetoothEventReceiver extends BroadcastReceiver {
-    private DbController dbController;
+    private LocalStorageController localStorageController;
 
-    public BluetoothEventReceiver(Context context) {
-        dbController = new LocalDbController(context, "justMove");
+    public BluetoothEventReceiver(LocalStorageController localStorageController) {
+        this.localStorageController = localStorageController;
     }
 
     @Override
@@ -81,7 +75,7 @@ class BluetoothEventReceiver extends BroadcastReceiver {
             record.put(BlueToothTable.KEY_BLUETOOTH_MAC, device.getAddress());
             record.put(BlueToothTable.KEY_BLUETOOTH_LEVEL, null);
             records.add(record);
-            dbController.insertRecords(BlueToothTable.TABLE_BLUETOOTH, records);
+            localStorageController.insertRecords(BlueToothTable.TABLE_BLUETOOTH, records);
             Log.d("BLUETOOTH SERVICE", "Added record: ts" + record.get(BlueToothTable.KEY_BLUETOOTH_TIMESTAMP) + ", mac: " + record.get(BlueToothTable.KEY_BLUETOOTH_MAC) + ", level: " + record.get(BlueToothTable.KEY_BLUETOOTH_LEVEL));
         }
     }

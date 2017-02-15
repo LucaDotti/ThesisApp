@@ -20,10 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import usi.justmove.database.base.DbController;
-import usi.justmove.database.controllers.LocalDbController;
-import usi.justmove.database.tables.PhoneCallLogTable;
-import usi.justmove.database.tables.CommunicationDirectionTable;
+import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.local.database.controllers.SQLiteController;
+import usi.justmove.local.database.tables.PhoneCallLogTable;
 
 /**
  * Created by Luca Dotti on 03/01/17.
@@ -55,7 +54,7 @@ public class PhoneCallGatheringService extends Service  {
  * https://gist.github.com/ftvs/e61ccb039f511eb288ee
  */
 class PhoneCallEventsReceiver extends BroadcastReceiver {
-    private DbController dbController;
+    private LocalStorageController localStorageController;
     private int prevState;
     private String currentCallerNumber;
     private boolean currentCallIncoming;
@@ -63,7 +62,7 @@ class PhoneCallEventsReceiver extends BroadcastReceiver {
     private String phoneNumber;
 
     public PhoneCallEventsReceiver(Context context) {
-        dbController = new LocalDbController(context, "JustMove");
+        localStorageController = new SQLiteController(context);
         currentCallIncoming = false;
         TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         phoneNumber = tMgr.getLine1Number();
@@ -91,15 +90,15 @@ class PhoneCallEventsReceiver extends BroadcastReceiver {
                     if(prevState == TelephonyManager.CALL_STATE_RINGING) {
                         //miss
                         DateTime now = new DateTime();
-                        insertRecord(CommunicationDirectionTable.TYPE_COMMUNICATION_DIRECTION_MISSED, new Interval(currentCallStartTs, now).toDurationMillis(), phoneNumber, currentCallerNumber);
+                        insertRecord("missed", new Interval(currentCallStartTs, now).toDurationMillis(), phoneNumber, currentCallerNumber);
                     } else if(currentCallIncoming) {
                         //incoming ended
                         DateTime now = new DateTime();
-                        insertRecord(CommunicationDirectionTable.TYPE_COMMUNICATION_DIRECTION_INCOMING, new Interval(currentCallStartTs, now).toDurationMillis(), phoneNumber, currentCallerNumber);
+                        insertRecord("incoming", new Interval(currentCallStartTs, now).toDurationMillis(), phoneNumber, currentCallerNumber);
                     } else {
                         //outgoing ended
                         DateTime now = new DateTime();
-                        insertRecord(CommunicationDirectionTable.TYPE_COMMUNICATION_DIRECTION_OUTGOING, new Interval(currentCallStartTs, now).toDurationMillis(), currentCallerNumber, phoneNumber);
+                        insertRecord("outgoing", new Interval(currentCallStartTs, now).toDurationMillis(), currentCallerNumber, phoneNumber);
                     }
                     prevState = TelephonyManager.CALL_STATE_RINGING;
                     break;
@@ -125,7 +124,7 @@ class PhoneCallEventsReceiver extends BroadcastReceiver {
         record.put(PhoneCallLogTable.KEY_CALL_LOG_RECEIVER_NUMBER, receiverNumber);
         record.put(PhoneCallLogTable.KEY_CALL_LOG_SENDER_NUMBER, callerNumber);
 
-        dbController.insertRecords(PhoneCallLogTable.TABLE_CALL_LOG, records);
+        localStorageController.insertRecords(PhoneCallLogTable.TABLE_CALL_LOG, records);
         Log.d("CALLS SERVICE", "Added record: ts: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_TS) + ", direction: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_DIRECTION) + ", duration: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_DURATION) + ", receiver: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_RECEIVER_NUMBER) + ", sender: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_SENDER_NUMBER));
     }
 

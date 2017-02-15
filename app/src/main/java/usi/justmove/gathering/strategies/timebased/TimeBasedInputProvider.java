@@ -1,5 +1,7 @@
 package usi.justmove.gathering.strategies.timebased;
 
+import android.util.Log;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
@@ -39,10 +41,13 @@ public class TimeBasedInputProvider implements StateMachineInputProvider<TimeBas
 
     @Override
     public TimeBasedSMSymbol getInput() {
+
         DateTime now = new DateTime();
         if(now.isBefore(getNightStartDateTime())) {
+            Log.d("AAAAAA", "INPUT DAY");
             return TimeBasedSMSymbol.IS_DAY;
         } else {
+            Log.d("AAAAAA", "INPUT NIGHT");
             return TimeBasedSMSymbol.IS_NIGHT;
         }
     }

@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import usi.justmove.database.base.DbController;
-import usi.justmove.database.controllers.LocalDbController;
-import usi.justmove.database.tables.PhoneLockTable;
+import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.local.database.controllers.SQLiteController;
+import usi.justmove.local.database.tables.PhoneLockTable;
 
 /**
  * Created by Luca Dotti on 03/01/17.
@@ -43,11 +43,11 @@ public class LockGatheringService extends Service {
 }
 
 class ScreenEventsReceiver extends BroadcastReceiver {
-    private DbController dbController;
+    private LocalStorageController localStorageController;
     private boolean isLock;
 
     public ScreenEventsReceiver(Context context) {
-        dbController = new LocalDbController(context, "JustMove");
+        localStorageController = new SQLiteController(context);
         isLock = false;
     }
 
@@ -70,7 +70,7 @@ class ScreenEventsReceiver extends BroadcastReceiver {
         record.put(PhoneLockTable.KEY_PHONELOCK_TIMESTAMP, Long.toString(System.currentTimeMillis()));
         record.put(PhoneLockTable.KEY_PHONELOCK_STATUS, isLock ? "lock" : "unlock");
         records.add(record);
-        dbController.insertRecords(PhoneLockTable.TABLE_PHONELOCK, records);
+        localStorageController.insertRecords(PhoneLockTable.TABLE_PHONELOCK, records);
 
         Log.d("LOCK SERVICE", "Added record:  status: " + (isLock ? "lock" : "unlock"));
     }

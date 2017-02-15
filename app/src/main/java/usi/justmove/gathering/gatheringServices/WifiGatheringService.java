@@ -17,17 +17,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import usi.justmove.database.base.DbController;
-import usi.justmove.database.controllers.LocalDbController;
-import usi.justmove.database.tables.PhoneLockTable;
-import usi.justmove.database.tables.WiFiTable;
+import usi.justmove.R;
+import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.local.database.controllers.SQLiteController;
+import usi.justmove.local.database.tables.WiFiTable;
 import usi.justmove.gathering.base.StateMachine;
-import usi.justmove.gathering.base.StateMachineListener;
 import usi.justmove.gathering.strategies.timebased.TimeBasedInputProvider;
 import usi.justmove.gathering.strategies.timebased.TimeBasedSMState;
 import usi.justmove.gathering.strategies.timebased.TimeBasedSMSymbol;
@@ -45,6 +42,12 @@ public class WifiGatheringService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        long stateMachineFreq = Long.parseLong(getApplicationContext().getString(R.string.stateMachineFreq));
+        long dayFreq = Long.parseLong(getApplicationContext().getString(R.string.wifiDayFreq));
+        long nightFreq = Long.parseLong(getApplicationContext().getString(R.string.wifiNightFreq));
+        String dayStart = getApplicationContext().getString(R.string.dayStart);
+        String dayEnd = getApplicationContext().getString(R.string.dayEnd);
+
         //broadcast receiver for the scan results
         receiver = new WifiEventsReceiver(getApplicationContext());
         //register receiver
@@ -61,9 +64,9 @@ public class WifiGatheringService extends Service {
         transitions[TimeBasedSMState.NIGHT.ordinal()][TimeBasedSMSymbol.IS_NIGHT.ordinal()] =  TimeBasedSMState.NIGHT;
 
         //the state machine
-        stateMachine = new StateMachine<>(new TimeBasedInputProvider("07:00:00", "23:00:00"), transitions, TimeBasedSMState.START, 1000);
+        stateMachine = new StateMachine<>(new TimeBasedInputProvider(dayStart, dayEnd), transitions, TimeBasedSMState.START, stateMachineFreq);
         //add the observer
-        stateMachine.addObserver(new WifiTimeBasedStateMachineListener(getApplicationContext(), 1000, 10*1000));
+        stateMachine.addObserver(new WifiTimeBasedStateMachineListener(getApplicationContext(), dayFreq, nightFreq));
         stateMachineThread = new Thread(stateMachine);
         //start state machine
         stateMachineThread.start();
@@ -96,6 +99,7 @@ class WifiTimeBasedStateMachineListener extends TimeBasedStateMachineListener {
     }
 
     private void processState(long freq) {
+        Log.d("AAAAAA", "AAAA");
         if(timer != null && task != null) {
             timer.cancel();
             task.cancel();
@@ -109,10 +113,10 @@ class WifiTimeBasedStateMachineListener extends TimeBasedStateMachineListener {
 }
 
 class WifiEventsReceiver extends BroadcastReceiver {
-    private DbController dbController;
+    private LocalStorageController localStorageController;
 
     public WifiEventsReceiver(Context context) {
-        dbController = new LocalDbController(context, "JustMove");
+        localStorageController = new SQLiteController(context);
     }
 
     @Override
@@ -138,7 +142,7 @@ class WifiEventsReceiver extends BroadcastReceiver {
                     record = new HashMap<>();
                 }
 
-                dbController.insertRecords(WiFiTable.TABLE_WIFI, records);
+                localStorageController.insertRecords(WiFiTable.TABLE_WIFI, records);
             }
         }
     }

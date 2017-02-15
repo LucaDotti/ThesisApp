@@ -3,7 +3,6 @@ package usi.justmove.gathering.gatheringServices;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
@@ -16,15 +15,11 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import usi.justmove.database.base.DbController;
-import usi.justmove.database.controllers.LocalDbController;
-import usi.justmove.database.tables.LocationTable;
-import usi.justmove.database.tables.SMSTable;
-import usi.justmove.database.tables.UsedAppTable;
-import usi.justmove.database.tables.UsedAppTypeTable;
-import usi.justmove.gathering.base.StateMachine;
-import usi.justmove.gathering.strategies.timebased.TimeBasedSMState;
-import usi.justmove.gathering.strategies.timebased.TimeBasedSMSymbol;
+import usi.justmove.R;
+import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.local.database.controllers.SQLiteController;
+import usi.justmove.local.database.tables.UsedAppTable;
+
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.util.Log;
 
@@ -33,16 +28,13 @@ import android.util.Log;
  */
 
 public class UsedAppGatheringService extends Service {
-    private BroadcastReceiver receiver;
-    private Thread stateMachineThread;
-    private StateMachine<TimeBasedSMState, TimeBasedSMSymbol> stateMachine;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        long freq = Long.parseLong(getApplicationContext().getString(R.string.usedAppsFreq));
         Timer timer = new Timer();
-        timer.schedule(new UsedAppTask(getApplicationContext()), 0, 60*1000);
+        timer.schedule(new UsedAppTask(getApplicationContext()), 0, freq);
     }
 
     @Nullable
@@ -54,12 +46,12 @@ public class UsedAppGatheringService extends Service {
 
 class UsedAppTask extends TimerTask {
     private ActivityManager mgr;
-    private DbController dbController;
+    private LocalStorageController localStorageController;
 
 
     public UsedAppTask(Context context) {
         mgr = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
-        dbController = new LocalDbController(context, "JustMove");
+        localStorageController = new SQLiteController(context);
     }
 
     @Override
@@ -76,7 +68,7 @@ class UsedAppTask extends TimerTask {
             record.put(UsedAppTable.KEY_USED_APP_NAME, process.processName);
             record.put(UsedAppTable.KEY_USED_APP_TYPE, "0");
             records.add(record);
-            dbController.insertRecords(UsedAppTable.TABLE_USED_APP, records);
+            localStorageController.insertRecords(UsedAppTable.TABLE_USED_APP, records);
             Log.d("USED APPS SERVICE", "Added record: ts: " + record.get(UsedAppTable.KEY_USED_APP_TIMESTAMP) + ", name: " + record.get(UsedAppTable.KEY_USED_APP_NAME) + ", type: " + record.get(UsedAppTable.KEY_USED_APP_TYPE));
         }
     }

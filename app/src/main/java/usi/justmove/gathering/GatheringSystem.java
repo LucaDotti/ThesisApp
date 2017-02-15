@@ -15,6 +15,8 @@ import usi.justmove.gathering.gatheringServices.PhoneCallGatheringService;
 import usi.justmove.gathering.gatheringServices.SMSGatheringService;
 import usi.justmove.gathering.gatheringServices.UsedAppGatheringService;
 import usi.justmove.gathering.gatheringServices.WifiGatheringService;
+import usi.justmove.local.database.tables.LocalTables;
+
 import android.app.Service;
 import android.util.Log;
 
@@ -75,4 +77,8 @@ public class GatheringSystem {
             }
         }
     }
+
+//    public void stop() {
+//        context.stopService(new Intent(context, LocalTables.values()[i]));
+//    }
 }

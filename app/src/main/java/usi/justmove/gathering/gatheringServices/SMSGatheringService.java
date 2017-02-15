@@ -18,11 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import usi.justmove.database.base.DbController;
-import usi.justmove.database.controllers.LocalDbController;
-import usi.justmove.database.tables.CommunicationDirectionTable;
-import usi.justmove.database.tables.PhoneCallLogTable;
-import usi.justmove.database.tables.SMSTable;
+import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.local.database.controllers.SQLiteController;
+import usi.justmove.local.database.tables.SMSTable;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
@@ -62,11 +60,11 @@ public class SMSGatheringService extends Service  {
  * http://androidexample.com/Incomming_SMS_Broadcast_Receiver_-_Android_Example/index.php?view=article_discription&aid=62
  */
 class IncomingSMSEventsReceiver extends BroadcastReceiver {
-    private DbController dbController;
+    private LocalStorageController localStorageController;
     private String phoneNumber;
 
     public IncomingSMSEventsReceiver(Context context) {
-        dbController = new LocalDbController(context, "JustMove");
+        localStorageController = new SQLiteController(context);
         TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         phoneNumber = tMgr.getLine1Number();
     }
@@ -80,7 +78,7 @@ class IncomingSMSEventsReceiver extends BroadcastReceiver {
                 for (int i = 0; i < pdus.length; i++) {
                     String format = bundle.getString("format");
                     SmsMessage msg = SmsMessage.createFromPdu((byte[])pdus[i], format);
-                    insertRecord(CommunicationDirectionTable.TYPE_COMMUNICATION_DIRECTION_INCOMING, phoneNumber, msg.getOriginatingAddress());
+                    insertRecord("incoming", phoneNumber, msg.getOriginatingAddress());
                 }
             }
         }
@@ -96,7 +94,7 @@ class IncomingSMSEventsReceiver extends BroadcastReceiver {
         record.put(SMSTable.KEY_SMS_RECEIVER_NUMBER, receiverNumber);
         record.put(SMSTable.KEY_SMS_SENDER_NUMBER, senderNumber);
 
-        dbController.insertRecords(SMSTable.TABLE_SMS, records);
+        localStorageController.insertRecords(SMSTable.TABLE_SMS, records);
         Log.d("CALLS SERVICE", "Added record: ts: " + record.get(SMSTable.KEY_SMS_TS) + ", direction: " + record.get(SMSTable.KEY_SMS_DIRECTION) + ", receiver: " + record.get(SMSTable.KEY_SMS_RECEIVER_NUMBER) + ", sender: " + record.get(SMSTable.KEY_SMS_SENDER_NUMBER));
     }
 }
@@ -106,7 +104,7 @@ class IncomingSMSEventsReceiver extends BroadcastReceiver {
  * https://github.com/scrack/gbandroid/blob/master/MobileSpy/src/org/ddth/android/monitor/observer/AndroidSmsWatcher.java
  */
 class OutgoingSmsObserver extends ContentObserver {
-    private DbController dbController;
+    private LocalStorageController localStorageController;
     private Context context;
     private Uri smsUri;
     private String phoneNumber;
@@ -120,7 +118,7 @@ class OutgoingSmsObserver extends ContentObserver {
         super(handler);
         this.context = context;
         this.smsUri = smsUri;
-        dbController = new LocalDbController(context, "JustMove");
+        localStorageController = new SQLiteController(context);
         TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         phoneNumber = tMgr.getLine1Number();
     }
@@ -134,7 +132,7 @@ class OutgoingSmsObserver extends ContentObserver {
         int type = smsSent.getInt(smsSent.getColumnIndex("type"));
 
         if(protocol == null && type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT) {
-            insertRecord(CommunicationDirectionTable.TYPE_COMMUNICATION_DIRECTION_OUTGOING, smsSent.getString(smsSent.getColumnIndex("address")), phoneNumber);
+            insertRecord("outgoing", smsSent.getString(smsSent.getColumnIndex("address")), phoneNumber);
         }
 //        while(smsSent.moveToNext()) {
 //            String protocol = smsSent.getString(smsSent.getColumnIndex("protocol"));
@@ -156,7 +154,7 @@ class OutgoingSmsObserver extends ContentObserver {
         record.put(SMSTable.KEY_SMS_RECEIVER_NUMBER, receiverNumber);
         record.put(SMSTable.KEY_SMS_SENDER_NUMBER, senderNumber);
 
-        dbController.insertRecords(SMSTable.TABLE_SMS, records);
+        localStorageController.insertRecords(SMSTable.TABLE_SMS, records);
         Log.d("CALLS SERVICE", "Added record: ts: " + record.get(SMSTable.KEY_SMS_TS) + ", direction: " + record.get(SMSTable.KEY_SMS_DIRECTION) + ", receiver: " + record.get(SMSTable.KEY_SMS_RECEIVER_NUMBER) + ", sender: " + record.get(SMSTable.KEY_SMS_SENDER_NUMBER));
     }
 }

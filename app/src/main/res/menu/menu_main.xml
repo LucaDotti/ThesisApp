@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created by Luca Dotti.-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/actionBarItem_aboutThisStudy"
+        android:title="About this study"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/actionBarItem_profile"
+        android:title="Profile"
+        app:showAsAction="never"/>
+</menu>

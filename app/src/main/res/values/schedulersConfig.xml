@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--PAM-->
+    <string name="PAM_count">2</string>
+    <string name="PAM_min_interval">6</string>
+    <string name="PAM_start">12:13</string>
+    <string name="PAM_afternoon">12:15</string>
+    <string name="PAM_end">12:17</string>
+
+    <string name="PAM_frequency">daily</string>
+    <string name="PAM_min_elapse_time_between_surveys">90000</string>
+    <string name="PAM_max_elapse_time_for_completition">90000</string>
+    <string name="PAM_notifications_count">3</string>
+
+    <!--PWB-->
+    <string name="PWB_count">1</string>
+    <string name="PWB_week_period">monday</string>
+    <string name="PWB_frequency">weekly</string>
+    <string name="PWB_start">12:03</string>
+    <string name="PWB_afternoon">12:04</string>
+    <string name="PWB_end">12:05</string>
+    <string name="PWB_max_elapse_time_for_completition">1000</string>
+</resources>

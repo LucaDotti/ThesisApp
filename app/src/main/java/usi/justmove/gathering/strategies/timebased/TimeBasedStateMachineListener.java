@@ -23,8 +23,12 @@ public abstract class TimeBasedStateMachineListener implements Observer, StateMa
 
     @Override
     public void update(Observable o, Object arg) {
-        currentState = (TimeBasedSMState) arg;
-        processStateChanged();
+        TimeBasedSMState newState = (TimeBasedSMState) arg;
+
+        if(currentState != newState) {
+            currentState = newState;
+            processStateChanged();
+        }
     }
 
     @Override

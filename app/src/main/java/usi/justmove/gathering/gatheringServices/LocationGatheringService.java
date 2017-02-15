@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -21,12 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import usi.justmove.database.base.DbController;
-import usi.justmove.database.controllers.LocalDbController;
-import usi.justmove.database.tables.BlueToothTable;
-import usi.justmove.database.tables.LocationTable;
+import usi.justmove.R;
+import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.local.database.controllers.SQLiteController;
+import usi.justmove.local.database.tables.LocationTable;
 import usi.justmove.gathering.base.StateMachine;
-import usi.justmove.gathering.base.StateMachineListener;
 import usi.justmove.gathering.strategies.timebased.TimeBasedInputProvider;
 import usi.justmove.gathering.strategies.timebased.TimeBasedSMState;
 import usi.justmove.gathering.strategies.timebased.TimeBasedSMSymbol;
@@ -45,6 +43,13 @@ public class LocationGatheringService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("LOCATION SERVICE", "INITIALIZED");
+        long stateMachineFreq = Long.parseLong(getApplicationContext().getString(R.string.stateMachineFreq));
+        long dayFreq = Long.parseLong(getApplicationContext().getString(R.string.locationDayFreq));
+        long nightFreq = Long.parseLong(getApplicationContext().getString(R.string.locationNightFreq));
+        long minDistance = Long.parseLong(getApplicationContext().getString(R.string.locationMinDistance));
+        String dayStart = getApplicationContext().getString(R.string.dayStart);
+        String dayEnd = getApplicationContext().getString(R.string.dayEnd);
+
         //transitions of the state machine
         TimeBasedSMState[][] transitions = new TimeBasedSMState[4][4];
         transitions[TimeBasedSMState.START.ordinal()][TimeBasedSMSymbol.IS_DAY.ordinal()] = TimeBasedSMState.DAY;
@@ -54,10 +59,10 @@ public class LocationGatheringService extends Service {
         transitions[TimeBasedSMState.NIGHT.ordinal()][TimeBasedSMSymbol.IS_DAY.ordinal()] = TimeBasedSMState.DAY;
         transitions[TimeBasedSMState.NIGHT.ordinal()][TimeBasedSMSymbol.IS_NIGHT.ordinal()] = TimeBasedSMState.NIGHT;
 
-        stateMachine = new StateMachine<>(new TimeBasedInputProvider("07:00:00", "23:00:00"), transitions, TimeBasedSMState.START, 1000);
+        stateMachine = new StateMachine<>(new TimeBasedInputProvider(dayStart, dayEnd), transitions, TimeBasedSMState.START, stateMachineFreq);
 
         //add the observer
-        stateMachine.addObserver(new LocationTimeBasedStateMachineListener(getApplicationContext(), 1000, 10 * 1000, 0));
+        stateMachine.addObserver(new LocationTimeBasedStateMachineListener(getApplicationContext(), dayFreq, nightFreq, minDistance));
         stateMachineThread = new Thread(stateMachine);
         //start state machine
         stateMachineThread.start();
@@ -116,11 +121,11 @@ class LocationTimeBasedStateMachineListener extends TimeBasedStateMachineListene
 
 class LocationEventListener implements LocationListener {
     private Context context;
-    private DbController dbController;
+    private LocalStorageController localStorageController;
 
     public LocationEventListener(Context context) {
         this.context = context;
-        dbController = new LocalDbController(context, "JustMove");
+        localStorageController = new SQLiteController(context);
     }
 
     @Override
@@ -135,7 +140,7 @@ class LocationEventListener implements LocationListener {
         record.put(LocationTable.KEY_LOCATION_LONGITUDE, Double.toString(location.getLongitude()));
         record.put(LocationTable.KEY_LOCATION_PROVIDER, "GPS");
         records.add(record);
-        dbController.insertRecords(LocationTable.TABLE_LOCATION, records);
+        localStorageController.insertRecords(LocationTable.TABLE_LOCATION, records);
         Log.d("LOCATION SERVICE", "ADDED RECORD: ts:" + record.get(LocationTable.KEY_LOCATION_TIMESTAMP) + ", lat: " + record.get(LocationTable.KEY_LOCATION_LATITUDE) + ", long: " + record.get(LocationTable.KEY_LOCATION_LONGITUDE));
     }
 

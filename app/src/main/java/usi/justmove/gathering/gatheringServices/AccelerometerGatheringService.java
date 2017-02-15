@@ -16,9 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import usi.justmove.database.base.DbController;
-import usi.justmove.database.controllers.LocalDbController;
-import usi.justmove.database.tables.AccelerometerTable;
+import usi.justmove.R;
+import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.local.database.controllers.SQLiteController;
+import usi.justmove.local.database.tables.AccelerometerTable;
 import usi.justmove.utils.FrequencyHelper;
 
 /**
@@ -26,14 +27,19 @@ import usi.justmove.utils.FrequencyHelper;
  */
 
 public class AccelerometerGatheringService extends Service {
+    private SensorManager sensorManager;
+    private SensorEventListener listener;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        long freq = Long.parseLong(getApplicationContext().getString(R.string.accelerometerSamplingFreq));
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(new AccelerometerEventListener(getApplicationContext(), 60), sensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        listener = new AccelerometerEventListener(new SQLiteController(getApplicationContext()), freq);
+        sensorManager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Nullable
@@ -41,18 +47,23 @@ public class AccelerometerGatheringService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sensorManager.unregisterListener(listener);
+    }
 }
 
 class AccelerometerEventListener implements SensorEventListener {
     private Context context;
-    private DbController dbController;
+    private LocalStorageController localStorageController;
     private long elapseTime;
     private long lastFetchTime;
 
-    public AccelerometerEventListener(Context context, double freq) {
-        this.context = context;
-        dbController = new LocalDbController(context, "JustMove");
-        this.elapseTime = FrequencyHelper.getElapseTimeMillis(freq);
+    public AccelerometerEventListener(LocalStorageController localStorageController, long freq) {
+        this.localStorageController = localStorageController;
+        this.elapseTime = freq;
         lastFetchTime = System.currentTimeMillis();
     }
 
@@ -64,7 +75,9 @@ class AccelerometerEventListener implements SensorEventListener {
         float z;
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             long now = System.currentTimeMillis();
+
             if(now - lastFetchTime >= elapseTime) {
+                Log.d("ACCELEROMETER", Long.toString(now-lastFetchTime));
                 lastFetchTime = now;
 
                 x = event.values[0];
@@ -80,7 +93,7 @@ class AccelerometerEventListener implements SensorEventListener {
                 record.put(AccelerometerTable.KEY_ACCELEROMETER_Y, Float.toString(y));
                 record.put(AccelerometerTable.KEY_ACCELEROMETER_Z, Float.toString(z));
                 records.add(record);
-                dbController.insertRecords(AccelerometerTable.TABLE_ACCELEROMETER, records);
+                localStorageController.insertRecords(AccelerometerTable.TABLE_ACCELEROMETER, records);
                 Log.d("ACCELEROMETER SERVICE", "Added record: ts: " + record.get(AccelerometerTable.KEY_ACCELEROMETER_TIMESTAMP) + ", x: " + record.get(AccelerometerTable.KEY_ACCELEROMETER_X) + ", y: " + record.get(AccelerometerTable.KEY_ACCELEROMETER_Y)  + ", z: " + record.get(AccelerometerTable.KEY_ACCELEROMETER_Z));
             }
 

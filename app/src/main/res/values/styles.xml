@@ -1,11 +1,17 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="seekbarStyle" parent="Widget.AppCompat.SeekBar.Discrete">
+        <item name="tickMark">@drawable/seekbar_tickmark</item>
+        <item name="android:thumb">@drawable/seekbar_circle</item>
+        <item name="android:progressDrawable">@drawable/seekbar_progress_bar</item>
     </style>
 
 </resources>

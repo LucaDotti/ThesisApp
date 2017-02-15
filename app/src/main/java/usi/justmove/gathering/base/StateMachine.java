@@ -32,12 +32,9 @@ public class StateMachine<S extends Enum, T extends Enum> extends Observable imp
         while(running) {
 //            Log.d("SM", "TRANSITION");
             S newState = transition(inputProvider.getInput());
-            if(newState != currentState) {
-//                Log.d("SM", "NOTIFY");
-                currentState = newState;
-                setChanged();
-                notifyObservers(currentState);
-            }
+            currentState = newState;
+            setChanged();
+            notifyObservers(currentState);
 
             try {
                 Thread.sleep(triggerFreq);
