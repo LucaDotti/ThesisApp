@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/surveysExpandableTitle">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="3dp"
+        android:paddingRight="3dp"
+        android:paddingTop="3dp"
+        android:id="@+id/surveysTitle"
+        android:textColor="@android:color/white"
+        android:paddingLeft="10dp"
+        android:layout_centerVertical="true"
+        android:textSize="25dp"
+        android:layout_alignParentLeft="true"/>
+    <ImageView
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/surveysNotificationImage"
+        android:src="@drawable/notification_1"
+        android:layout_toRightOf="@+id/surveysTitle"/>
+</RelativeLayout>

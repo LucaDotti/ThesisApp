@@ -47,7 +47,7 @@ class ScreenEventsReceiver extends BroadcastReceiver {
     private boolean isLock;
 
     public ScreenEventsReceiver(Context context) {
-        localStorageController = new SQLiteController(context);
+        localStorageController = SQLiteController.getInstance(context);
         isLock = false;
     }
 

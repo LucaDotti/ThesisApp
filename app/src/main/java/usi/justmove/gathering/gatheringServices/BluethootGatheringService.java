@@ -46,7 +46,7 @@ public class BluethootGatheringService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
 
-        receiver = new BluetoothEventReceiver(new SQLiteController(getApplicationContext()));
+        receiver = new BluetoothEventReceiver(SQLiteController.getInstance(getApplicationContext()));
         getApplicationContext().registerReceiver(receiver, filter);
         timer = new Timer();
         timer.schedule(new BluetoothScanTask(), 0, freq);

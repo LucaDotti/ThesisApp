@@ -64,7 +64,7 @@ class IncomingSMSEventsReceiver extends BroadcastReceiver {
     private String phoneNumber;
 
     public IncomingSMSEventsReceiver(Context context) {
-        localStorageController = new SQLiteController(context);
+        localStorageController = SQLiteController.getInstance(context);
         TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         phoneNumber = tMgr.getLine1Number();
     }
@@ -118,7 +118,7 @@ class OutgoingSmsObserver extends ContentObserver {
         super(handler);
         this.context = context;
         this.smsUri = smsUri;
-        localStorageController = new SQLiteController(context);
+        localStorageController = SQLiteController.getInstance(context);
         TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         phoneNumber = tMgr.getLine1Number();
     }

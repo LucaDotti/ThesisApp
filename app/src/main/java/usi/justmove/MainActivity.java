@@ -1,49 +1,49 @@
 package usi.justmove;
 
 import android.Manifest;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.os.IBinder;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ImageView;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.joda.time.LocalDateTime;
 
-import usi.justmove.UI.SurveyEvent;
 import usi.justmove.UI.TabFragmentAdapter;
 import usi.justmove.UI.fragments.HomeFragment;
 import usi.justmove.UI.fragments.NotificationBroadcastReceiver;
+import usi.justmove.UI.fragments.SurveysFragment;
 import usi.justmove.UI.fragments.SwipeChoiceViewPager;
 import usi.justmove.UI.menu.ProfileDialogFragment;
 import usi.justmove.UI.menu.StudyDialogFragment;
-import usi.justmove.gathering.user.SurveysService;
+import usi.justmove.gathering.surveys.Surveys;
+import usi.justmove.gathering.surveys.SurveysService;
+import usi.justmove.gathering.surveys.inspection.SurveyEvent;
+import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.gathering.GatheringSystem;
 import usi.justmove.gathering.base.SensorType;
+import usi.justmove.local.database.tables.LocalDbUtility;
+import usi.justmove.local.database.tables.LocalTables;
 import usi.justmove.remote.database.upload.DataUploadService;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.OnUserRegisteredCallback {
+public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback {
     private GatheringSystem gSys;
     private TabLayout tabLayout;
     private SwipeChoiceViewPager viewPager;
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnUs
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         JodaTimeAndroid.init(this);
 
@@ -68,7 +69,14 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnUs
         viewPager.setAdapter(tabFragmentAdapter);
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
+
+
         tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
+
+
+        showSurveyNotification();
+
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -86,9 +94,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnUs
             }
         });
 
-        if(action.equals(NotificationBroadcastReceiver.OPEN_SURVEYS_ACTION)) {
+        if(action != null && action.equals(NotificationBroadcastReceiver.OPEN_SURVEYS_ACTION)) {
             viewPager.setCurrentItem(2);
+        } else {
+//            deleteDatabase("JustMove");
         }
+
+        SQLiteController.getInstance(this);
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -110,8 +122,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnUs
     }
 
     private void init() {
-        getApplicationContext().deleteDatabase("JustMove");
-        new SQLiteController(getApplication());
+//        deleteDatabase("JustMove");
         gSys = new GatheringSystem(getApplicationContext());
         gSys.addSensor(SensorType.LOCK);
         gSys.addSensor(SensorType.WIFI);
@@ -144,12 +155,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnUs
                 ContextCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED;
-    }
-
-    @Override
-    public void onUserRegisteredCallback() {
-        tabFragmentAdapter.notifyDataSetChanged();
-//        viewPager.setCurrentItem(0);
     }
 
     @Override
@@ -197,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnUs
     @Override
     protected void onStart() {
         super.onStart();
-
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -208,7 +213,83 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnUs
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SurveyEvent event) {
+        tabFragmentAdapter.notifyDataSetChanged();
+        tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
+        showSurveyNotification();
+    }
 
+
+    private int getAvailableSurveysCount() {
+        int count = 0;
+        Cursor surveys = null;
+        for(Surveys survey: Surveys.values()) {
+            switch(survey) {
+                case PAM:
+                    surveys = getTodaySurveys(LocalTables.TABLE_PAM);
+                    count += surveys.getCount();
+                    break;
+                case PWB:
+                    surveys = getTodaySurveys(LocalTables.TABLE_PWB);
+                    count += surveys.getCount();
+                    break;
+            }
+        }
+
+        if(surveys != null) {
+            surveys.close();
+        }
+
+        return count;
+    }
+
+    private Cursor getTodaySurveys(LocalTables table) {
+        LocalStorageController controller = SQLiteController.getInstance(this);
+        String tableName = LocalDbUtility.getTableName(table);
+        String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
+        String columnCompleted = LocalDbUtility.getTableColumns(table)[3];
+        String columnNotified = LocalDbUtility.getTableColumns(table)[4];
+        String columnExpired = LocalDbUtility.getTableColumns(table)[5];
+
+        LocalDateTime startDateTime = new LocalDateTime().withTime(0, 0, 0, 0);
+        LocalDateTime endDateTime = new LocalDateTime().withTime(23, 59, 59, 999);
+        long startMillis = startDateTime.toDateTime().getMillis()/1000;
+        long endMillis = endDateTime.toDateTime().getMillis()/1000;
+
+        Cursor c = controller.rawQuery("SELECT * FROM " + tableName
+                + " WHERE " + columnSchedule + " >= " + startMillis + " AND " + columnSchedule + " <= " + endMillis
+                + " AND " + columnCompleted + " = " + 0 + " AND " + columnNotified + " > " + 0 + " AND " + columnExpired + " = " + 0, null);
+        return c;
+    }
+
+    private void showSurveyNotification() {
+        int count = getAvailableSurveysCount();
+
+        View notificationView = tabLayout.getTabAt(2).getCustomView();
+
+        ImageView image = (ImageView) notificationView.findViewById(R.id.surveysPamNotificationImage);
+        if(count == 0) {
+            image.setVisibility(View.INVISIBLE);
+        } else {
+            image.setVisibility(View.VISIBLE);
+            switch(count) {
+                case 1:
+                    image.setImageResource(R.drawable.notification_1);
+                    break;
+                case 2:
+                    image.setImageResource(R.drawable.notification_2);
+                    break;
+                case 3:
+                    image.setImageResource(R.drawable.notification_3);
+                    break;
+                default:
+            }
+        }
+    }
+
+    @Override
+    public void onSurveyCompletedCallback() {
+        Log.d("Activity", "Got finish survey event");
+        showSurveyNotification();
     }
 }
 

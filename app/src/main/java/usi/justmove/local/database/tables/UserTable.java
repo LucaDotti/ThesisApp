@@ -9,6 +9,7 @@ public class UserTable {
     public static final String KEY_USER_UID = "uid_user";
     public static final String KEY_USER_AGREED = "agreed";
     public static final String KEY_USER_AGE = "age";
+    public static final String KEY_USER_GENDER = "gender";
     public static final String KEY_USER_EMAIL = "email";
     public static final String KEY_USER_FACULTY = "faculty";
     public static final String KEY_USER_ACADEMIC_STATUS = "academic_status";
@@ -22,6 +23,7 @@ public class UserTable {
                 KEY_USER_UID + " INTEGER, " +
                 KEY_USER_AGREED + " INTEGER," +
                 KEY_USER_AGE + " INTEGER," +
+                KEY_USER_GENDER + " TEXT," +
                 KEY_USER_EMAIL + " TEXT," +
                 KEY_USER_FACULTY + " TEXT," +
                 KEY_USER_ACADEMIC_STATUS + " TEXT, " +
@@ -30,7 +32,7 @@ public class UserTable {
     }
 
     public static String[] getColumns() {
-        String[] columns = {KEY_USER_ID, KEY_USER_UID, KEY_USER_AGREED, KEY_USER_AGE, KEY_USER_EMAIL, KEY_USER_FACULTY, KEY_USER_ACADEMIC_STATUS};
+        String[] columns = {KEY_USER_ID, KEY_USER_UID, KEY_USER_AGREED, KEY_USER_AGE, KEY_USER_GENDER, KEY_USER_EMAIL, KEY_USER_FACULTY, KEY_USER_ACADEMIC_STATUS};
         return columns;
     }
 }

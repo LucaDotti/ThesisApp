@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:orientation="vertical">
         <TextView
             android:layout_width="match_parent"
@@ -13,8 +13,7 @@
             android:gravity="center"
             android:textSize="30dp"
             android:text="Hello"
-            android:textColor="@android:color/white"
-            />
+            android:textColor="@android:color/white"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,19 +21,43 @@
             android:text="Your mood history"
             android:textSize="20dp"
             android:textColor="@android:color/white"/>
-        <com.github.mikephil.charting.charts.LineChart
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:id="@+id/simpleMoodChart"></com.github.mikephil.charting.charts.LineChart>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="55dp"
+                android:paddingTop="10dp"
+                >
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/ic_moodface_6"/>
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignParentBottom="true"
+                    android:src="@drawable/ic_moodface_0"/>
+            </RelativeLayout>
+            <com.github.mikephil.charting.charts.LineChart
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:id="@+id/simpleMoodChart"/>
+        </LinearLayout>
+
     </LinearLayout>
-
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical"
-        android:id="@+id/simpleMoodForm">
+        android:id="@+id/simpleMoodForm"
+        android:paddingBottom="20dp">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -144,4 +167,4 @@
             android:enabled="false"/>
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

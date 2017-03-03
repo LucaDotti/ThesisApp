@@ -7,6 +7,7 @@ import android.util.Log;
 import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.tables.LocalDbUtility;
 import usi.justmove.local.database.tables.LocalTables;
+import usi.justmove.local.database.tables.PAMTable;
 import usi.justmove.local.database.tables.UploaderUtilityTable;
 import usi.justmove.remote.database.RemoteStorageController;
 import java.util.*;
@@ -105,6 +106,9 @@ public class Uploader {
             while(i < nbTableToClean) {
                 //get current table to clean
                 currTable = LocalTables.values()[(tableToClean.ordinal()+i) % LocalTables.values().length];
+                if(currTable == LocalTables.TABLE_PAM || currTable == LocalTables.TABLE_PWB) {
+                    continue;
+                }
                 Log.d("DATA UPLOAD SERVICE", "CLEANING TABLE " + LocalDbUtility.getTableName(currTable));
                 //build name of file to upload
                 fileName = buildFileName(currTable);

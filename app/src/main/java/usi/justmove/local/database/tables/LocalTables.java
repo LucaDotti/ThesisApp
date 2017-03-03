@@ -16,7 +16,8 @@ public enum LocalTables {
     TABLE_USED_APP(UsedAppTable.class),
     TABLE_WIFI(WiFiTable.class),
     TABLE_PAM(PAMTable.class),
-    TABLE_PWB(PWBTable.class);
+    TABLE_PWB(PWBTable.class),
+    TABLE_SIMPLE_MOOD(SimpleMoodTable.class);
 
 
     LocalTables(Class a) {

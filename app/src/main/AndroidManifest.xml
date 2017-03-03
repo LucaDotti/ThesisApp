@@ -14,14 +14,14 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        >
+        android:supportsRtl="true">
 
         <activity
             android:name=".MainActivity"
@@ -35,9 +35,16 @@
 
         <receiver android:name=".UI.fragments.NotificationBroadcastReceiver">
             <intent-filter>
-                <action android:name="notification"></action>
+                <action android:name="notification_event"/>
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".gathering.surveys.schedulation.SurveysScheduleSystem$SurveyScheduleActionReceiver">
+            <intent-filter>
+                <action android:name="survey_schedule_action"/>
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".gathering.gatheringServices.WifiGatheringService"
             android:enabled="true"
@@ -71,7 +78,7 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.user.SurveysService"
+            android:name=".gathering.surveys.SurveysService"
             android:enabled="true"
             android:exported="true" />
     </application>

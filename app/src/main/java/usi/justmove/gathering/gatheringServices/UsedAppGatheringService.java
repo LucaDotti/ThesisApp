@@ -51,7 +51,7 @@ class UsedAppTask extends TimerTask {
 
     public UsedAppTask(Context context) {
         mgr = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
-        localStorageController = new SQLiteController(context);
+        localStorageController = SQLiteController.getInstance(context);
     }
 
     @Override

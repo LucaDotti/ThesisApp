@@ -2,6 +2,9 @@ package usi.justmove;
 
 import org.junit.Test;
 
+import usi.justmove.gathering.surveys.handle.PAMSurveyHandler;
+import usi.justmove.gathering.surveys.handle.PWBSurveyHandler;
+
 import static org.junit.Assert.*;
 
 /**
@@ -12,6 +15,5 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
     }
 }

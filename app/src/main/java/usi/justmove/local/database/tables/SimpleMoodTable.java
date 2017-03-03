@@ -42,14 +42,13 @@ public class SimpleMoodTable {
     public static List<ContentValues> getRecords() {
         List<ContentValues> records = new ArrayList<>();
         ContentValues record;
-        DateTime date = new DateTime();
-        date = date.minusDays(1);
+        long now = System.currentTimeMillis() + 86400000;
         Random r = new Random();
         for(int i = 0; i < 20; i++) {
-            date = date.plusDays(1);
+            now += 86400000;
             record = new ContentValues();
             record.put(KEY_SIMPLE_MOOD_ID, (String) null);
-            record.put(KEY_SIMPLE_MOOD_TIMESTAMP, date.getMillis());
+            record.put(KEY_SIMPLE_MOOD_TIMESTAMP, now);
             record.put(KEY_SIMPLE_MOOD_STATUS, r.nextInt(7));
             records.add(record);
         }

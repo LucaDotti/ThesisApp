@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import usi.justmove.R;
+import usi.justmove.gathering.surveys.inspection.PAMSurveyInspector;
 import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.LocalSQLiteDBHelper;
 
@@ -22,13 +23,27 @@ public class SQLiteController implements LocalStorageController {
     private String dbName;
     private SQLiteDatabase localDb;
     private LocalSQLiteDBHelper dbHelper;
+    private static SQLiteController object;
 
 
-    public SQLiteController(Context context) {
+    private SQLiteController(Context context) {
+        this.context = context;
+        initDatabse();
+
+        this.dbName = context.getString(R.string.dbName);
+    }
+
+    public static SQLiteController getInstance(Context context) {
+        if(object == null) {
+            object = new SQLiteController(context);
+//            object.initDatabse();
+        }
+        return object;
+    }
+
+    public void initDatabse() {
         dbHelper = new LocalSQLiteDBHelper(context);
         localDb = dbHelper.getReadableDatabase();
-        this.context = context;
-        this.dbName = context.getString(R.string.dbName);
     }
 
     @Override

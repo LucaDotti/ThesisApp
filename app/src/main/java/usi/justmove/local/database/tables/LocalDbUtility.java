@@ -35,6 +35,8 @@ public class LocalDbUtility {
                 return PAMTable.TABLE_PAM;
             case TABLE_PWB:
                 return PWBTable.TABLE_PWB;
+            case TABLE_SIMPLE_MOOD:
+                return SimpleMoodTable.TABLE_SIMPLE_MOOD;
             default:
                 return null;
         }
@@ -62,6 +64,8 @@ public class LocalDbUtility {
                 return PAMTable.getColumns();
             case TABLE_PWB:
                 return PWBTable.getColumns();
+            case TABLE_SIMPLE_MOOD:
+                return SimpleMoodTable.getColumns();
             default:
                 return null;
         }

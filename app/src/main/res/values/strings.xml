@@ -110,4 +110,8 @@
         <item>9 hours 30 min</item>
         <item>10 hours</item>
     </string-array>
+
+    <string name="staff_email"></string>
+    <string name="staff_email_pass"></string>
+    <string name="leave_study_target_email"></string>
 </resources>

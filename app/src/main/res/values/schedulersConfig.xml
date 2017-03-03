@@ -2,22 +2,25 @@
 <resources>
     <!--PAM-->
     <string name="PAM_count">2</string>
-    <string name="PAM_min_interval">6</string>
-    <string name="PAM_start">12:13</string>
-    <string name="PAM_afternoon">12:15</string>
-    <string name="PAM_end">12:17</string>
-
     <string name="PAM_frequency">daily</string>
-    <string name="PAM_min_elapse_time_between_surveys">90000</string>
-    <string name="PAM_max_elapse_time_for_completition">90000</string>
-    <string name="PAM_notifications_count">3</string>
+    <string name="PAM_schedule_time">14:30</string>
+    <string name="PAM_start">11:38</string>
+    <string name="PAM_afternoon">11:42</string>
+    <string name="PAM_end">11:46</string>
+
+    <string name="PAM_min_elapse_time_between_surveys">120000</string>
+    <string name="PAM_max_elapse_time_for_completition">120000</string>
+    <string name="PAM_notifications_count">4</string>
 
     <!--PWB-->
     <string name="PWB_count">1</string>
-    <string name="PWB_week_period">monday</string>
+    <string name="PWB_schedule_time">14:30</string>
     <string name="PWB_frequency">weekly</string>
-    <string name="PWB_start">12:03</string>
-    <string name="PWB_afternoon">12:04</string>
-    <string name="PWB_end">12:05</string>
-    <string name="PWB_max_elapse_time_for_completition">1000</string>
+    <string name="PWB_week_period">tuesday</string>
+    <string name="PWB_start">17:32</string>
+    <string name="PWB_afternoon">15:39</string>
+    <string name="PWB_end">17:36</string>
+
+    <string name="PWB_max_elapse_time_for_completition">120000</string>
+    <string name="PWB_notifications_count">4</string>
 </resources>

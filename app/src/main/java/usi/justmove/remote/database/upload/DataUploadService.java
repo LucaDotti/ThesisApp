@@ -61,7 +61,7 @@ public class DataUploadService extends Service {
         uploader = new Uploader(
                 Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID),
                 new SwitchDriveController(getApplicationContext().getString(R.string.server_address), getApplicationContext().getString(R.string.token), getApplicationContext().getString(R.string.password)),
-                new SQLiteController(getApplicationContext()),
+                SQLiteController.getInstance(getApplicationContext()),
                 uploadTreshold);
 
         //add the observer

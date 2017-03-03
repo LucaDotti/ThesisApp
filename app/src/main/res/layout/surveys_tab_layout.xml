@@ -15,7 +15,7 @@
         android:layout_width="10dp"
         android:layout_height="10dp"
         android:layout_marginTop="10dp"
+        android:visibility="invisible"
         android:id="@+id/surveysPamNotificationImage"
-        android:src="@drawable/notification_1"
         android:layout_toRightOf="@+id/surveyTabText"/>
 </RelativeLayout>

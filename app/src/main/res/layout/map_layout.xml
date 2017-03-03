@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Not available yet"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:padding="5dp"
+        android:layout_centerInParent="true"/>
 
-</LinearLayout>
+    <!--<Switch-->
+        <!--android:text="Switch"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginTop="74dp"-->
+        <!--android:thumb="@drawable/gender_male"-->
+        <!--android:id="@+id/switch2" />-->
+    <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:src="@drawable/gender_male"-->
+        <!--android:background=""/>-->
+
+</RelativeLayout>

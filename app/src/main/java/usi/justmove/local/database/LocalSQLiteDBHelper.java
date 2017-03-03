@@ -54,7 +54,7 @@ public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
 
         //insert init data to uploader_utility table
         insertRecords(db, UploaderUtilityTable.TABLE_UPLOADER_UTILITY, UploaderUtilityTable.getRecords());
-//        insertRecords(db, SimpleMoodTable.TABLE_SIMPLE_MOOD, SimpleMoodTable.getRecords());
+        insertRecords(db, SimpleMoodTable.TABLE_SIMPLE_MOOD, SimpleMoodTable.getRecords());
 
         Log.d("DATABASE HELPER", "Db created");
     }

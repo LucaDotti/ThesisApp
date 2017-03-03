@@ -25,15 +25,17 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
         Log.d("NOTI", "RECEIVED");
         NotificationManager mgr = (NotificationManager)  context.getSystemService(Context.NOTIFICATION_SERVICE);
         String action = intent.getStringExtra("action");
-        int id = intent.getIntExtra("id", -1);
-
-        if(id >= 0) {
+        int id = intent.getIntExtra("id", 0);
+        mgr.cancel(id);
+        if(id < 0) {
             Intent i = new Intent(context, MainActivity.class);
             i.setAction(OPEN_SURVEYS_ACTION);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            mgr.cancel(1);
+            Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+
+            context.sendBroadcast(it);
             context.startActivity(i);
         }
     }

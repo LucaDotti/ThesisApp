@@ -125,7 +125,7 @@ class LocationEventListener implements LocationListener {
 
     public LocationEventListener(Context context) {
         this.context = context;
-        localStorageController = new SQLiteController(context);
+        localStorageController = SQLiteController.getInstance(context);
     }
 
     @Override

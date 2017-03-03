@@ -38,7 +38,7 @@ public class AccelerometerGatheringService extends Service {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        listener = new AccelerometerEventListener(new SQLiteController(getApplicationContext()), freq);
+        listener = new AccelerometerEventListener(SQLiteController.getInstance(getApplicationContext()), freq);
         sensorManager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 

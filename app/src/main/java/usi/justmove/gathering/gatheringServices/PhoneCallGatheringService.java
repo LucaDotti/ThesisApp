@@ -62,7 +62,7 @@ class PhoneCallEventsReceiver extends BroadcastReceiver {
     private String phoneNumber;
 
     public PhoneCallEventsReceiver(Context context) {
-        localStorageController = new SQLiteController(context);
+        localStorageController = SQLiteController.getInstance(context);
         currentCallIncoming = false;
         TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         phoneNumber = tMgr.getLine1Number();

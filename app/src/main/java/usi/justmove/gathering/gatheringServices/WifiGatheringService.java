@@ -116,7 +116,7 @@ class WifiEventsReceiver extends BroadcastReceiver {
     private LocalStorageController localStorageController;
 
     public WifiEventsReceiver(Context context) {
-        localStorageController = new SQLiteController(context);
+        localStorageController = SQLiteController.getInstance(context);
     }
 
     @Override
