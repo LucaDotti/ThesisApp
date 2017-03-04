@@ -131,10 +131,10 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         gSys.addSensor(SensorType.ACCELEROMETER);
         gSys.addSensor(SensorType.PHONE_CALLS);
         gSys.addSensor(SensorType.SMS);
-        gSys.addSensor(SensorType.USED_APPS);
-//        gSys.start();
+//        gSys.addSensor(SensorType.USED_APPS);
+        gSys.start();
 
-//        startService(new Intent(this, DataUploadService.class));
+        startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
     }
 

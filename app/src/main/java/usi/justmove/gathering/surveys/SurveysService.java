@@ -54,7 +54,7 @@ public class SurveysService extends Service {
         pwbConfig.notificationsCount = Integer.parseInt(getApplicationContext().getString(R.string.PWB_notifications_count));
 
         surveysSystem.addSurvey(Surveys.PAM);
-//        surveysSystem.addSurvey(Surveys.PWB);
+        surveysSystem.addSurvey(Surveys.PWB);
         surveysSystem.start();
 
 //        EventBus.getDefault().register(this);

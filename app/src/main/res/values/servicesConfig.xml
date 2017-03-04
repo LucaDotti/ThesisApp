@@ -4,20 +4,18 @@
     <string name="accelerometerSamplingFreq">1000</string>
 
     <!--bluetooth frequency-->
-    <string name="bluetoothSamplingFreq">1000</string>
+    <string name="bluetoothSamplingFreq">300000</string>
 
     <!--location frequencies-->
-    <string name="locationDayFreq">1000</string>
-    <string name="locationNightFreq">1000</string>
-    <string name="locationMinDistance">1000</string>
+    <string name="locationDayFreq">300000</string>
+    <string name="locationNightFreq">1200000</string>
+    <string name="locationMinDistance">10</string>
 
     <!--wifi frequencies-->
-    <string name="wifiDayFreq">1000</string>
-    <string name="wifiNightFreq">1000</string>
+    <string name="wifiDayFreq">300000</string>
+    <string name="wifiNightFreq">1200000</string>
 
     <!--used apps frequency-->
     <string name="usedAppsFreq">60000</string>
 
-    <!--uploader-->
-    <string name="uploaderUploadThreshold">100000</string>
 </resources>

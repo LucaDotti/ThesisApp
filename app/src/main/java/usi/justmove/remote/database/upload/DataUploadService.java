@@ -38,9 +38,10 @@ public class DataUploadService extends Service {
 
         stateMachineFreq = Long.parseLong(getApplicationContext().getString(R.string.stateMachineFreq));
         maxDbSize = Long.parseLong(getApplicationContext().getString(R.string.uploaderMaxDbSize));
-//        uploadTreshold = Long.parseLong(getApplicationContext().getString(R.string.uploaderUploadThreshold));
-        uploadTreshold = 0;
+        uploadTreshold = Long.parseLong(getApplicationContext().getString(R.string.uploaderUploadThreshold));
+//        uploadTreshold = 0;
         minBatteryLevel = Integer.parseInt(getApplicationContext().getString(R.string.uploaderMinBatteryLevel));
+//        minBatteryLevel = 0;
 
         WifiPowerMemorySMState[][] transitions = new WifiPowerMemorySMState[3][3];
         transitions[WifiPowerMemorySMState.WAITING.ordinal()][WifiPowerMemorySMSymbol.WAIT.ordinal()] = WifiPowerMemorySMState.WAITING;
