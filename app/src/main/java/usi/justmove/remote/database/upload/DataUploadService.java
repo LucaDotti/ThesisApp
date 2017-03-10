@@ -36,7 +36,7 @@ public class DataUploadService extends Service {
         super.onCreate();
         Log.d("UPLOAD SERVICE", "STARTED SERVICE");
 
-        stateMachineFreq = Long.parseLong(getApplicationContext().getString(R.string.stateMachineFreq));
+        stateMachineFreq = Long.parseLong(getApplicationContext().getString(R.string.uploaderStateMachineFreq));
         maxDbSize = Long.parseLong(getApplicationContext().getString(R.string.uploaderMaxDbSize));
         uploadTreshold = Long.parseLong(getApplicationContext().getString(R.string.uploaderUploadThreshold));
 //        uploadTreshold = 0;
@@ -76,7 +76,7 @@ public class DataUploadService extends Service {
 
             @Override
             protected void processUploadingState() {
-                Log.d("DATA UPLOAD SERVICE", "STATE: UPLOADING");
+//                Log.d("DATA UPLOAD SERVICE", "STATE: UPLOADING");
                 uploader.upload();
             }
 
@@ -95,12 +95,17 @@ public class DataUploadService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stateMachine.terminate();
+//        stateMachine.terminate();
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
     }
 }

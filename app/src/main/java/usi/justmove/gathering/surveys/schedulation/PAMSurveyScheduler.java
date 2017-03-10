@@ -56,36 +56,68 @@ public class PAMSurveyScheduler implements SurveyScheduler {
     }
 
     private void insertSurveys() {
+        int surveysNb = 0;
         int[] startTime = parseTime(surveyConfig.startTime);
         int[] afternoonTime = parseTime(surveyConfig.midTimes[0]);
         int[] endTime = parseTime(surveyConfig.endTime);
+
+        DateTime midNight = new DateTime().withTime(23, 59, 59, 999);
+        DateTime now = new DateTime();
 
         DateTime start = new DateTime().withTime(startTime[0], startTime[1], 0, 0);
         DateTime afternoon = new DateTime().withTime(afternoonTime[0], afternoonTime[1], 0, 0);
         DateTime end = new DateTime().withTime(endTime[0], endTime[1], 0, 0).minusMillis((int) surveyConfig.maxElapseTimeForCompletion);
 
-        long morningDiff = afternoon.getMillis() - start.getMillis();
-        long afternoonDiff = end.getMillis() - afternoon.getMillis();
-
-        Random r = new Random();
-        Random r2 = new Random();
-
-        long morningScheduleOffset = r.nextInt((int) morningDiff);
-        long afternoonScheduleOffset = r2.nextInt((int) afternoonDiff);
-
-        DateTime morningSchedule = new DateTime(start.getMillis()+morningScheduleOffset).plusHours(1);
-        DateTime afternoonSchedule = new DateTime(afternoon.getMillis()+afternoonScheduleOffset).plusHours(1);
-
-        while(Math.abs(afternoonSchedule.getMillis() - morningSchedule.getMillis()) < surveyConfig.minElapseTimeBetweenSurveys) {
-            morningScheduleOffset = r.nextInt((int) morningDiff);
-            afternoonScheduleOffset = (int) r2.nextInt((int) afternoonDiff);
-            morningSchedule = new DateTime(start.getMillis()+morningScheduleOffset).plusHours(1);
-            afternoonSchedule = new DateTime(afternoon.getMillis()+afternoonScheduleOffset).plusHours(1);
+        if(midNight.getMillis() - end.getMillis() > surveyConfig.maxElapseTimeForCompletion) {
+            end = new DateTime(midNight.getMillis() - surveyConfig.maxElapseTimeForCompletion);
         }
 
-        insertSurveyRecord(morningSchedule.getMillis(), "morning");
-        insertSurveyRecord(afternoonSchedule.getMillis(), "afternoon");
 
+        long morningDiff = -1;
+        long afternoonDiff = -1;
+
+        if(now.isBefore(start)) {
+            surveysNb = 2;
+            morningDiff = afternoon.getMillis() - start.getMillis();
+            afternoonDiff = end.getMillis() - afternoon.getMillis();
+        } else if(start.isBefore(now) && now.isBefore(afternoon)) {
+            if(afternoon.getMillis() - now.getMillis() > surveyConfig.maxElapseTimeForCompletion) {
+                surveysNb = 1;
+            } else {
+                surveysNb = 2;
+                morningDiff = afternoon.getMillis() - now.getMillis();
+            }
+            afternoonDiff = end.getMillis() - afternoon.getMillis();
+        } else if(afternoon.isBefore(now) && now.isBefore(end)) {
+            surveysNb = 1;
+            afternoonDiff = end.getMillis() - afternoon.getMillis();
+        }
+
+        if(surveysNb == 2) {
+            Random r = new Random();
+            Random r2 = new Random();
+
+            long morningScheduleOffset = r.nextInt((int) morningDiff);
+            long afternoonScheduleOffset = r2.nextInt((int) afternoonDiff);
+
+            DateTime morningSchedule = new DateTime(start.getMillis()+morningScheduleOffset).plusHours(1);
+            DateTime afternoonSchedule = new DateTime(afternoon.getMillis()+afternoonScheduleOffset).plusHours(1);
+
+            while(Math.abs(afternoonSchedule.getMillis() - morningSchedule.getMillis()) < surveyConfig.minElapseTimeBetweenSurveys) {
+                morningScheduleOffset = r.nextInt((int) morningDiff);
+                afternoonScheduleOffset = (int) r2.nextInt((int) afternoonDiff);
+                morningSchedule = new DateTime(start.getMillis()+morningScheduleOffset).plusHours(1);
+                afternoonSchedule = new DateTime(afternoon.getMillis()+afternoonScheduleOffset).plusHours(1);
+            }
+
+            insertSurveyRecord(morningSchedule.getMillis(), "morning");
+            insertSurveyRecord(afternoonSchedule.getMillis(), "afternoon");
+        } else if(surveysNb == 1) {
+            Random r = new Random();
+            long afternoonScheduleOffset = r.nextInt((int) afternoonDiff);
+            DateTime afternoonSchedule = new DateTime(afternoon.getMillis()+afternoonScheduleOffset).plusHours(1);
+            insertSurveyRecord(afternoonSchedule.getMillis(), "afternoon");
+        }
     }
 
     private void insertSurveyRecord(long scheduleTime, String period) {

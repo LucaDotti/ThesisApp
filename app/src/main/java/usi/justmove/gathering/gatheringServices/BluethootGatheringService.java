@@ -78,6 +78,7 @@ class BluetoothEventReceiver extends BroadcastReceiver {
             localStorageController.insertRecords(BlueToothTable.TABLE_BLUETOOTH, records);
             Log.d("BLUETOOTH SERVICE", "Added record: ts" + record.get(BlueToothTable.KEY_BLUETOOTH_TIMESTAMP) + ", mac: " + record.get(BlueToothTable.KEY_BLUETOOTH_MAC) + ", level: " + record.get(BlueToothTable.KEY_BLUETOOTH_LEVEL));
         }
+        BluetoothAdapter.getDefaultAdapter().disable();
     }
 }
 
@@ -90,6 +91,7 @@ class BluetoothScanTask extends TimerTask {
 
     @Override
     public void run() {
+        adapter.enable();
         adapter.startDiscovery();
     }
 }

@@ -13,6 +13,8 @@ import usi.justmove.remote.database.RemoteStorageController;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
+import static android.icu.lang.UCharacter.JoiningGroup.PE;
+
 
 /**
  * Created by usi on 19/01/17.
@@ -45,9 +47,10 @@ public class Uploader {
      */
     public void upload() {
         //upload only when the uploadThreshold is reached
-        Log.d("DATA UPLOAD SERVICE", "Size " + Long.toString(localController.getDbSize()));
+        Log.d("UPLOADER SIZE", "" + localController.getDbSize());
         if(localController.getDbSize() > uploadThreshold) {
             Log.d("DATA UPLOAD SERVICE", "START CLEANING...");
+
             //if a new day starts, we need to clean the file part array, so that it restart from 0
             String today = buildDate();
             if(!checkDate(today)) {
@@ -58,94 +61,64 @@ public class Uploader {
             //number of tables
             int nbTableToClean = LocalTables.values().length;
             int i = 0;
-            Cursor c;
             //current table to clean
             LocalTables currTable;
-            //id of the starting record that was uploaded
-            int startId;
-            //id of the ending record that was uploaded
-            int endId;
-            String fileName;
-
-//            //-------------------------- TEST ------------------------------//
-//            currTable = LocalTables.TABLE_ACCELEROMETER;
-//            Log.d("DATA UPLOAD SERVICE", "CLEANING TABLE " + LocalDbUtility.getTableName(currTable));
-//            //build name of file to upload
-//            fileName = buildFileName(currTable);
-//
-//            //get all data currently in the table
-//            c = getRecords(currTable);
-//
-//            if(c.getCount() > 0) {
-//                c.moveToFirst();
-//                //get the start and end index of the extracted data
-////                    c.moveToNext();
-//                //the starting index
-//                startId = c.getInt(0);
-//                c.moveToLast();
-//                //the ending index
-//                endId = c.getInt(0);
-//                c.moveToFirst();
-//
-//                //upload the data to the server
-//                int response = remoteController.upload(fileName, toCSV(c, currTable));
-//
-//                //if the file was put, delete records and update the arrays
-//                if(response >= 200 && response <= 207) {
-//                    //delete from the db the records where id > startId and id <= endId
-//                    removeRecords(currTable, startId, endId);
-//                    incrementFilePartId(currTable);
-//                    updateRecordId(currTable, endId);
-//                } else {
-//                    Log.d("DATA UPLOAD SERVICE", "Owncould's response: " + Integer.toString(response));
-//                }
-//            }
-//            //-------------------------- TEST ------------------------------//
 
             //clean all tables
             while(i < nbTableToClean) {
-                //get current table to clean
                 currTable = LocalTables.values()[(tableToClean.ordinal()+i) % LocalTables.values().length];
-                if(currTable == LocalTables.TABLE_PAM || currTable == LocalTables.TABLE_PWB) {
-                    continue;
-                }
-                Log.d("DATA UPLOAD SERVICE", "CLEANING TABLE " + LocalDbUtility.getTableName(currTable));
-                //build name of file to upload
-                fileName = buildFileName(currTable);
-
-                //get all data currently in the table
-                c = getRecords(currTable);
-
-                if(c.getCount() > 0) {
-                    c.moveToFirst();
-                    //get the start and end index of the extracted data
-//                    c.moveToNext();
-                    //the starting index
-                    startId = c.getInt(0);
-                    c.moveToLast();
-                    //the ending index
-                    endId = c.getInt(0);
-                    c.moveToFirst();
-
-                    //upload the data to the server
-                    int response = remoteController.upload(fileName, toCSV(c, currTable));
-
-                    //if the file was put, delete records and update the arrays
-                    if(response >= 200 && response <= 207) {
-                        //delete from the db the records where id > startId and id <= endId
-                        removeRecords(currTable, startId, endId);
-                        incrementFilePartId(currTable);
-                        updateRecordId(currTable, endId);
-                    } else {
-                        Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
-                    }
-                } else {
-                    Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
-                }
-
+                processTable(currTable);
                 i++;
             }
         }
+    }
+
+    private void processTable(LocalTables table) {
+        String query = getQuery(table);
+        Cursor records = localController.rawQuery(query, null);
+        Log.d("DATA UPLOAD SERVICE", "Processing table " + LocalDbUtility.getTableName(table));
+
+        if(records.getCount() > 0) {
+
+            String fileName = buildFileName(table);
+            int startId;
+            int endId;
+            records.moveToFirst();
+            //the starting index
+            startId = records.getInt(0);
+            records.moveToLast();
+            //the ending index
+            endId = records.getInt(0);
+            records.moveToFirst();
+
+            //upload the data to the server
+            int response = remoteController.upload(fileName, toCSV(records, table));
+
+            //if the file was put, delete records and update the arrays
+            if(response >= 200 && response <= 207) {
+                //delete from the db the records where id > startId and id <= endId
+                removeRecords(table, startId, endId);
+                incrementFilePartId(table);
+                updateRecordId(table, endId);
+            } else {
+                Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
+            }
+        } else {
+            Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
+        }
+    }
+
+
+    private String getQuery(LocalTables table) {
+        String[] columns = LocalDbUtility.getTableColumns(table);
+        String query = "SELECT * FROM " + LocalDbUtility.getTableName(table) +
+                " WHERE " + columns[0] + " > " + Integer.toString(getRecordId(table));
+
+        if(table == LocalTables.TABLE_PAM || table == LocalTables.TABLE_PWB) {
+            query += " AND (" + columns[3] + " = " + 1 + " OR " + columns[5] + " = " + 1 + ")";
+        }
+
+        return query;
     }
 
     private boolean checkDate(String date) {

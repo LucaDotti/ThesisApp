@@ -44,10 +44,8 @@ public class TimeBasedInputProvider implements StateMachineInputProvider<TimeBas
 
         DateTime now = new DateTime();
         if(now.isBefore(getNightStartDateTime())) {
-            Log.d("AAAAAA", "INPUT DAY");
             return TimeBasedSMSymbol.IS_DAY;
         } else {
-            Log.d("AAAAAA", "INPUT NIGHT");
             return TimeBasedSMSymbol.IS_NIGHT;
         }
     }

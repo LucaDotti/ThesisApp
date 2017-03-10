@@ -11,11 +11,15 @@ import java.util.List;
 import usi.justmove.local.database.tables.AccelerometerTable;
 import usi.justmove.local.database.tables.BlueToothTable;
 import usi.justmove.local.database.tables.PAMTable;
+import usi.justmove.local.database.tables.PHQ8Table;
+import usi.justmove.local.database.tables.PSSTable;
 import usi.justmove.local.database.tables.PWBTable;
 import usi.justmove.local.database.tables.PhoneCallLogTable;
 import usi.justmove.local.database.tables.LocationTable;
 import usi.justmove.local.database.tables.PhoneLockTable;
+import usi.justmove.local.database.tables.SHSTable;
 import usi.justmove.local.database.tables.SMSTable;
+import usi.justmove.local.database.tables.SWLSTable;
 import usi.justmove.local.database.tables.SimpleMoodTable;
 import usi.justmove.local.database.tables.UploaderUtilityTable;
 import usi.justmove.local.database.tables.UsedAppTable;
@@ -51,10 +55,14 @@ public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
         db.execSQL(SimpleMoodTable.getCreateQuery());
         db.execSQL(PAMTable.getCreateQuery());
         db.execSQL(PWBTable.getCreateQuery());
+        db.execSQL(SHSTable.getCreateQuery());
+        db.execSQL(SWLSTable.getCreateQuery());
+        db.execSQL(PHQ8Table.getCreateQuery());
+        db.execSQL(PSSTable.getCreateQuery());
 
         //insert init data to uploader_utility table
         insertRecords(db, UploaderUtilityTable.TABLE_UPLOADER_UTILITY, UploaderUtilityTable.getRecords());
-        insertRecords(db, SimpleMoodTable.TABLE_SIMPLE_MOOD, SimpleMoodTable.getRecords());
+//        insertRecords(db, SimpleMoodTable.TABLE_SIMPLE_MOOD, SimpleMoodTable.getRecords());
 
         Log.d("DATABASE HELPER", "Db created");
     }

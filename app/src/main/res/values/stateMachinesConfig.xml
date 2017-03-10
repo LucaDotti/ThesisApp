@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--frequency of state machine-->
-    <string name="stateMachineFreq">1000</string>
+    <string name="stateMachineFreq">3600000</string>
+    <string name="uploaderStateMachineFreq">1800000</string>
 
     <!--TIME BASED-->
     <string name="dayStart">07:00:00</string>
@@ -9,6 +10,6 @@
 
     <!--WIFI-POWER-MEMORY BASED-->
     <string name="uploaderMaxDbSize">10000000</string>
-    <string name="uploaderUploadThreshold">100000</string>
+    <string name="uploaderUploadThreshold">90000</string>
     <string name="uploaderMinBatteryLevel">30</string>
 </resources>

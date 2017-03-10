@@ -8,7 +8,11 @@ import usi.justmove.gathering.surveys.schedulation.SurveyScheduler;
 
 public enum Surveys {
     PAM(0),
-    PWB(1);
+    PWB(1),
+    SWLS(2),
+    SHS(3),
+    PHQ8(4),
+    PSS(5);
 
     private int surveyIndex;
 

@@ -34,14 +34,10 @@ public class WifiPowerMemoryInputProvider implements StateMachineInputProvider<W
     }
     @Override
     public WifiPowerMemorySMSymbol getInput() {
-//        Log.d("LISTENER", "GETTING INPUT");
         if(checkWifi()) {
-//            Log.d("LISTENER", "WIFI ON");
             if(checkPower()) {
-//                Log.d("LISTENER", "POWER ON");
                 return WifiPowerMemorySMSymbol.UPLOAD;
             } else {
-//                Log.d("LISTENER", "POWER OFF");
                 if(checkSize()) {
                     return WifiPowerMemorySMSymbol.FORCE_UPLOAD;
                 } else {
@@ -49,7 +45,6 @@ public class WifiPowerMemoryInputProvider implements StateMachineInputProvider<W
                 }
             }
         } else {
-//            Log.d("LISTENER", "WIFI OFF");
             return WifiPowerMemorySMSymbol.WAIT;
         }
     }

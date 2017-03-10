@@ -37,14 +37,12 @@ public class SurveysScheduleSystem {
     private List<Surveys> surveys;
     private AlarmManager alarmMgr;
     private Context context;
-    private boolean debug;
 
 
     public SurveysScheduleSystem(Context context) {
         alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         surveys = new ArrayList<>();
         this.context = context;
-        debug = true;
     }
 
     public void start() {
@@ -60,24 +58,15 @@ public class SurveysScheduleSystem {
             SurveyConfig config = SurveyConfigFactory.getConfig(survey, context);
             int[] time = parseTime(config.scheduleTime);
 
-//            DateTime scheduleTime = new DateTime().withTime(time[0], time[1], 0, 0).plusHours(1);
-//            long m = scheduleTime.getMillis();
+            Calendar schedule = Calendar.getInstance();
+            schedule.setTimeInMillis(System.currentTimeMillis());
+            schedule.set(Calendar.HOUR_OF_DAY, time[0]);
+            schedule.set(Calendar.MINUTE, time[1]);
 
-            if(!debug) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(System.currentTimeMillis());
-                calendar.set(Calendar.HOUR_OF_DAY, time[0]);
-                calendar.set(Calendar.MINUTE, time[1]);
-                SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Frequency.getMilliseconds(config.frequency), alarmIntent);
-                Log.d("ScheduleSystem", survey + "alarm scheduled at " + format1.format(calendar.getTime()));
-            } else {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(System.currentTimeMillis());
-                SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Frequency.getMilliseconds(config.frequency), alarmIntent);
-                Log.d("ScheduleSystem", survey + "alarm scheduled at " + format1.format(calendar.getTime()));
-            }
+
+            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, schedule.getTimeInMillis(), Frequency.getMilliseconds(config.frequency), alarmIntent);
+            Log.d("ScheduleSystem", survey + "alarm scheduled at " + format1.format(schedule.getTime()));
 
         }
     }
@@ -106,7 +95,6 @@ public class SurveysScheduleSystem {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("ScheduleSystem", "Got alarm intent");
             int surveyExtra = intent.getIntExtra("survey", -1);
             if(surveyExtra >= 0) {
                 Surveys survey = Surveys.getSurvey(surveyExtra);

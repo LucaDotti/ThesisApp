@@ -19,7 +19,7 @@ public class SurveysSystem {
 
     public SurveysSystem(Context context) {
         scheduleSystem = new SurveysScheduleSystem(context);
-        inspectionSystem = new SurveysInspectionSystem(1000, context);
+        inspectionSystem = new SurveysInspectionSystem(1000*60, context);
         handleSystem = new SurveysHandleSystem(context);
         inspectionSystem.addHandler(handleSystem);
     }

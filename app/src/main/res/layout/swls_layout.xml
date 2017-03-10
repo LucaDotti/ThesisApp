@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:textColor="@android:color/white"
+        android:text="SWLS"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:text="@string/swls_explation"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:text="@string/swls_q1"/>
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/surveysSwlsQ1SeekBar"
+        app:dsb_min="0"
+        app:dsb_max="4"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:text="@string/swls_q2"/>
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/surveysSwlsQ2SeekBar"
+        app:dsb_min="0"
+        app:dsb_max="4"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:text="@string/swls_q3"/>
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/surveysSwlsQ3SeekBar"
+        app:dsb_min="0"
+        app:dsb_max="4"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:text="@string/swls_q4"/>
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/surveysSwlsQ4SeekBar"
+        app:dsb_min="0"
+        app:dsb_max="4"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:text="@string/swls_q5"/>
+    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/surveysSwlsQ5SeekBar"
+        app:dsb_min="0"
+        app:dsb_max="4"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Submit"
+        android:id="@+id/swlsSubmitButton"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"/>
+</LinearLayout>

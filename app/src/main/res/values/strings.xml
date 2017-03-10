@@ -114,4 +114,41 @@
     <string name="staff_email"></string>
     <string name="staff_email_pass"></string>
     <string name="leave_study_target_email"></string>
+
+    <string name="pss_explanation">Please answer the following questions by marking from 1 (never)</string>
+    <string name="pss_q1">In the last month, how often have you been upset because of something that happened unexpectedly?</string>
+    <string name="pss_q2">In the last month, how often have you felt that you were unable to control the important things in your life?</string>
+    <string name="pss_q3">In the last month, how often have you felt nervous and "stressed"?</string>
+    <string name="pss_q4">In the last month, how often have you felt confident about your ability to handler your personal problems?</string>
+    <string name="pss_q5">In the last month, how often have you felt that things were going your way?</string>
+    <string name="pss_q6">In the last month, how often have you found that you could not cope with all the things that you had to do?</string>
+    <string name="pss_q7">In the last month, how often have you been able to control irritations in your life?</string>
+    <string name="pss_q8">In the last month, how often have you felt that you were on top of things?</string>
+    <string name="pss_q9">In the last month, how often have you been angered because of things that were outside of your control?</string>
+    <string name="pss_q10">In the last month, how often have you felt difficulties were pilling up so high that you could not overcome them?</string>
+
+    <string name="phq8_explanation">Over the last two weeks, how often have you been bothered by any of the following problems? Mark every question with a number from </string>
+    <string name="phq8_q1">Little interest or pleasure in doing things</string>
+    <string name="phq8_q2">Feeding down, depressed, or hopeless</string>
+    <string name="phq8_q3">Troube falling or staying asleep, or sleeping too much</string>
+    <string name="phq8_q4">Feeling tired or having little energy</string>
+    <string name="phq8_q5">Poor appetite or overeating</string>
+    <string name="phq8_q6">Feeling bad about yourself, or that you are a failure, or have let yourself or your family down</string>
+    <string name="phq8_q7">Trouble concentrating on things, such as reading the newspaper or watching television</string>
+    <string name="phq8_q8">Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving aroung a lot more than usual</string>
+
+    <string name="shs_explanation">For each of the</string>
+    <string name="shs_q1">In general, I consider myself:</string>
+    <string name="shs_q2">Compared to most of my peers, I consider myself:</string>
+    <string name="shs_q3">Some people are generally very happy. They enjoy life regardless of what is going on, getting the most out of everything. To what extent does this characterization describe you?</string>
+    <string name="shs_q4">Some people are generally not very happy. Although they are not depressed, they never seem as happy as they might be. To what extent does this characterization describe you?</string>
+
+    <string name="swls_explation">Mark the following</string>
+    <string name="swls_q1">In most ways my life is close to my ideal.</string>
+    <string name="swls_q2">The conditions of my life are excellent.</string>
+    <string name="swls_q3">I am satisfied with my life.</string>
+    <string name="swls_q4">So far I have gotten the important things I want in life.</string>
+    <string name="swls_q5">If I could live my life over, I would change almost nothing</string>
+
+    <string name="registration_survey_question">Could you please answer some questions?</string>
 </resources>

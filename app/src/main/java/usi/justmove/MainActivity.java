@@ -43,7 +43,7 @@ import usi.justmove.local.database.tables.LocalDbUtility;
 import usi.justmove.local.database.tables.LocalTables;
 import usi.justmove.remote.database.upload.DataUploadService;
 
-public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback {
+public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback, HomeFragment.OnRegistrationSurveyChoice {
     private GatheringSystem gSys;
     private TabLayout tabLayout;
     private SwipeChoiceViewPager viewPager;
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         gSys.addSensor(SensorType.ACCELEROMETER);
         gSys.addSensor(SensorType.PHONE_CALLS);
         gSys.addSensor(SensorType.SMS);
-//        gSys.addSensor(SensorType.USED_APPS);
+        gSys.addSensor(SensorType.USED_APPS);
         gSys.start();
 
         startService(new Intent(this, DataUploadService.class));
@@ -232,6 +232,22 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
                     surveys = getTodaySurveys(LocalTables.TABLE_PWB);
                     count += surveys.getCount();
                     break;
+                case SWLS:
+                    surveys = getTodaySurveys(LocalTables.TABLE_SWLS);
+                    count += surveys.getCount();
+                    break;
+                case SHS:
+                    surveys = getTodaySurveys(LocalTables.TABLE_SHS);
+                    count += surveys.getCount();
+                    break;
+                case PHQ8:
+                    surveys = getTodaySurveys(LocalTables.TABLE_PHQ8);
+                    count += surveys.getCount();
+                    break;
+                case PSS:
+                    surveys = getTodaySurveys(LocalTables.TABLE_PSS);
+                    count += surveys.getCount();
+                    break;
             }
         }
 
@@ -281,6 +297,15 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
                 case 3:
                     image.setImageResource(R.drawable.notification_3);
                     break;
+                case 4:
+                    image.setImageResource(R.drawable.notification_4);
+                    break;
+                case 5:
+                    image.setImageResource(R.drawable.notification_5);
+                    break;
+                case 6:
+                    image.setImageResource(R.drawable.notification_6);
+                    break;
                 default:
             }
         }
@@ -288,7 +313,15 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
     @Override
     public void onSurveyCompletedCallback() {
-        Log.d("Activity", "Got finish survey event");
+        showSurveyNotification();
+    }
+
+    @Override
+    public void onRegistrationSurveyChoice(boolean now) {
+        if(now) {
+            tabFragmentAdapter.notifyDataSetChanged();
+            tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
+        }
         showSurveyNotification();
     }
 }

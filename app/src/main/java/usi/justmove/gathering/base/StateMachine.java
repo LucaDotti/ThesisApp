@@ -42,6 +42,8 @@ public class StateMachine<S extends Enum, T extends Enum> extends Observable imp
                 e.printStackTrace();
             }
         }
+
+        Log.d("State machine", "Terminated");
     }
 
     public void terminate() {

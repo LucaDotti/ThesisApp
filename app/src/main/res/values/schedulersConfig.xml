@@ -3,24 +3,24 @@
     <!--PAM-->
     <string name="PAM_count">2</string>
     <string name="PAM_frequency">daily</string>
-    <string name="PAM_schedule_time">14:30</string>
-    <string name="PAM_start">15:24</string>
-    <string name="PAM_afternoon">15:28</string>
-    <string name="PAM_end">15:32</string>
+    <string name="PAM_schedule_time">07:00</string>
+    <string name="PAM_start">08:00</string>
+    <string name="PAM_afternoon">13:00</string>
+    <string name="PAM_end">22:00</string>
 
-    <string name="PAM_min_elapse_time_between_surveys">120000</string>
-    <string name="PAM_max_elapse_time_for_completition">120000</string>
+    <string name="PAM_min_elapse_time_between_surveys">7200000</string>
+    <string name="PAM_max_elapse_time_for_completition">7200000</string>
     <string name="PAM_notifications_count">4</string>
 
     <!--PWB-->
     <string name="PWB_count">1</string>
-    <string name="PWB_schedule_time">14:30</string>
+    <string name="PWB_schedule_time">07:00</string>
     <string name="PWB_frequency">weekly</string>
-    <string name="PWB_week_period">tuesday</string>
-    <string name="PWB_start">15:24</string>
+    <string name="PWB_week_period">weekend</string>
+    <string name="PWB_start">08:00</string>
     <string name="PWB_afternoon">15:3</string>
-    <string name="PWB_end">15:28</string>
+    <string name="PWB_end">22:00</string>
 
-    <string name="PWB_max_elapse_time_for_completition">120000</string>
+    <string name="PWB_max_elapse_time_for_completition">7200000</string>
     <string name="PWB_notifications_count">4</string>
 </resources>

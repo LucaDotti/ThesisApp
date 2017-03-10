@@ -17,7 +17,11 @@ public enum LocalTables {
     TABLE_WIFI(WiFiTable.class),
     TABLE_PAM(PAMTable.class),
     TABLE_PWB(PWBTable.class),
-    TABLE_SIMPLE_MOOD(SimpleMoodTable.class);
+    TABLE_SIMPLE_MOOD(SimpleMoodTable.class),
+    TABLE_PSS(PSSTable.class),
+    TABLE_PHQ8(PHQ8Table.class),
+    TABLE_SHS(SHSTable.class),
+    TABLE_SWLS(SWLSTable.class);
 
 
     LocalTables(Class a) {

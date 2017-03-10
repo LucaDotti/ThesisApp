@@ -113,7 +113,12 @@ class LocationTimeBasedStateMachineListener extends TimeBasedStateMachineListene
 
         }
         Log.d("LOCATION SERVICE", "NIGHT");
-        mgr.removeUpdates(listener);
+        if(listener != null) {
+            mgr.removeUpdates(listener);
+        } else {
+            listener = new LocationEventListener(context);
+        }
+
         Looper.prepare();
         mgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FrequencyHelper.getElapseTimeMillis(nightFreq), minDistance, listener);
     }

@@ -37,6 +37,14 @@ public class LocalDbUtility {
                 return PWBTable.TABLE_PWB;
             case TABLE_SIMPLE_MOOD:
                 return SimpleMoodTable.TABLE_SIMPLE_MOOD;
+            case TABLE_PSS:
+                return PSSTable.TABLE_PSS;
+            case TABLE_PHQ8:
+                return PHQ8Table.TABLE_PHQ8;
+            case TABLE_SHS:
+                return SHSTable.TABLE_SHS;
+            case TABLE_SWLS:
+                return SWLSTable.TABLE_SWLS;
             default:
                 return null;
         }
@@ -66,6 +74,14 @@ public class LocalDbUtility {
                 return PWBTable.getColumns();
             case TABLE_SIMPLE_MOOD:
                 return SimpleMoodTable.getColumns();
+            case TABLE_PSS:
+                return PSSTable.getColumns();
+            case TABLE_PHQ8:
+                return PHQ8Table.getColumns();
+            case TABLE_SHS:
+                return SHSTable.getColumns();
+            case TABLE_SWLS:
+                return SWLSTable.getColumns();
             default:
                 return null;
         }

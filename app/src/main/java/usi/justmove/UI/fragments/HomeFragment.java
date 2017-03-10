@@ -2,6 +2,7 @@ package usi.justmove.UI.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,7 +24,7 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.app.AlertDialog;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -45,6 +46,7 @@ import java.util.Map;
 import usi.justmove.R;
 import usi.justmove.UI.views.HomeView;
 import usi.justmove.UI.views.RegistrationView;
+import usi.justmove.gathering.surveys.schedulation.PeriodSurveysScheduler;
 import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.local.database.tables.SimpleMoodTable;
@@ -63,7 +65,7 @@ import static android.R.attr.onClick;
  */
 
 public class HomeFragment extends Fragment implements RegistrationView.OnUserRegisteredCallback {
-
+    private OnRegistrationSurveyChoice callback;
     private LocalStorageController localController;
 
     private RegistrationView registrationView;
@@ -108,7 +110,41 @@ public class HomeFragment extends Fragment implements RegistrationView.OnUserReg
 
     @Override
     public void onUserRegisteredCallback() {
+        createSurveyDialog();
         registrationView.setVisibility(View.GONE);
         homeView.setVisibility(View.VISIBLE);
+    }
+
+    private void createSurveyDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.registration_survey_question)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        new PeriodSurveysScheduler(true).schedule();
+                        callback.onRegistrationSurveyChoice(true);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        new PeriodSurveysScheduler(false).schedule();
+                        callback.onRegistrationSurveyChoice(false);
+                    }
+                });
+    }
+
+    public interface OnRegistrationSurveyChoice {
+        void onRegistrationSurveyChoice(boolean now);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof SurveysFragment.OnSurveyCompletedCallback) {
+            callback = (OnRegistrationSurveyChoice) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnRegistrationSurveyChoice");
+        }
     }
 }

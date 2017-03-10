@@ -77,7 +77,6 @@ class AccelerometerEventListener implements SensorEventListener {
             long now = System.currentTimeMillis();
 
             if(now - lastFetchTime >= elapseTime) {
-                Log.d("ACCELEROMETER", Long.toString(now-lastFetchTime));
                 lastFetchTime = now;
 
                 x = event.values[0];

@@ -99,7 +99,7 @@ class WifiTimeBasedStateMachineListener extends TimeBasedStateMachineListener {
     }
 
     private void processState(long freq) {
-        Log.d("AAAAAA", "AAAA");
+        Log.d("WIFI", "SCHEDULED");
         if(timer != null && task != null) {
             timer.cancel();
             task.cancel();
@@ -158,5 +158,6 @@ class WifiScanTask extends TimerTask {
     @Override
     public void run() {
         wifiMgr.startScan();
+        Log.d("WIFI", "SCANN");
     }
 }

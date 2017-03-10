@@ -162,7 +162,7 @@ public class HomeView extends LinearLayout{
         } else {
             simpleMoodForm.setVisibility(View.INVISIBLE);
         }
-        initSimpleMoodChart();
+//        initSimpleMoodChart();
     }
 
     private boolean checkDisplaySimpleMood() {
