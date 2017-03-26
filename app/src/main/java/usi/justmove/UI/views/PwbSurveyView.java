@@ -1,36 +1,44 @@
 package usi.justmove.UI.views;
 
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
-import org.joda.time.LocalDateTime;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
-import usi.justmove.R;
-import usi.justmove.local.database.LocalStorageController;
-import usi.justmove.local.database.controllers.SQLiteController;
-import usi.justmove.local.database.tables.LocalDbUtility;
-import usi.justmove.local.database.tables.LocalTables;
-import usi.justmove.local.database.tables.PWBTable;
+import java.util.Calendar;
+import java.util.Map;
 
-import static android.R.attr.button;
+import usi.justmove.R;
+import usi.justmove.UI.ExpandableLayout;
+import usi.justmove.gathering.surveys.config.SurveyType;
+import usi.justmove.gathering.surveys.handle.SurveyEventReceiver;
+import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.TableHandler;
+import usi.justmove.local.database.tables.PWBTable;
+import usi.justmove.local.database.tables.SHSTable;
 
 /**
  * Created by usi on 20/02/17.
  */
 
 public class PWBSurveyView extends LinearLayout {
-    private OnPwbCompletedCallback callback;
-    private LocalStorageController localController;
-    private LocalTables pwbTable;
+    private OnPwbSurveyCompletedCallback callback;
+
+    private Context context;
+
+    private Survey currentSurvey;
+
+    private LinearLayout questionsLayout;
+    private ExpandableLayout expandableLayout;
+    private View titleView;
 
     private DiscreteSeekBar q1Seekbar;
     private DiscreteSeekBar q2Seekbar;
@@ -40,93 +48,126 @@ public class PWBSurveyView extends LinearLayout {
     private DiscreteSeekBar q6Seekbar;
     private DiscreteSeekBar q7Seekbar;
     private DiscreteSeekBar q8Seekbar;
-    private Button submiButton;
-
-    private int currentSurveyId;
+    private Button submitButton;
 
     public PWBSurveyView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        localController = SQLiteController.getInstance(context);
-        pwbTable = LocalTables.TABLE_PWB;
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.pwb_layout, this, true);
+        expandableLayout = (ExpandableLayout) findViewById(R.id.pwbViewExpandableLayout);
+        titleView = inflater.inflate(R.layout.expandable_layout_title, null);
+        questionsLayout = (LinearLayout) inflater.inflate(R.layout.pwb_questions_layout, null);
+
+        this.context = context;
+
         init();
     }
 
-    private void init() {
-        Cursor survey = getTodayPwb();
+    private void notifySurveyCompleted() {
+        Intent intent = new Intent(context, SurveyEventReceiver.class);
+        intent.putExtra("survey_id", currentSurvey.id);
+        intent.setAction(SurveyEventReceiver.SURVEY_COMPLETED_INTENT);
 
-        if(survey.getCount() > 0) {
-            survey.moveToFirst();
-            currentSurveyId = survey.getInt(0);
+        Calendar c = Calendar.getInstance();
 
-            q1Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPwbQ1SeekBar);
-            q2Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPwbQ2SeekBar);
-            q3Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPwbQ3SeekBar);
-            q4Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPwbQ4SeekBar);
-            q5Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPwbQ5SeekBar);
-            q6Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPwbQ6SeekBar);
-            q7Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPwbQ7SeekBar);
-            q8Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPwbQ8SeekBar);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            submiButton = (Button) findViewById(R.id.pwbSubmitButton);
-
-            submiButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    savePwbSurvey();
-                    callback.onPwbCompletedCallback();
-                    Toast.makeText(getContext(), "Pwb survey completed", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            survey.close();
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
         }
-//        invalidate();
     }
 
-    private Cursor getTodayPwb() {
-        String tableName = LocalDbUtility.getTableName(pwbTable);
-        String indexColumn = LocalDbUtility.getTableColumns(pwbTable)[0];
-        String columnSchedule = LocalDbUtility.getTableColumns(pwbTable)[2];
-        String columnCompleted = LocalDbUtility.getTableColumns(pwbTable)[3];
-        String columnNotified = LocalDbUtility.getTableColumns(pwbTable)[4];
-        String columnExpired = LocalDbUtility.getTableColumns(pwbTable)[5];
+    private void init() {
+        expandableLayout.setTitleView(titleView);
+        expandableLayout.setTitleText(R.id.surveysTitle, "PWB");
 
-        LocalDateTime startDateTime = new LocalDateTime().withTime(0, 0, 0, 0);
-        LocalDateTime endDateTime = new LocalDateTime().withTime(23, 59, 59, 999);
-        long startMillis = startDateTime.toDateTime().getMillis()/1000;
-        long endMillis = endDateTime.toDateTime().getMillis()/1000;
-        Cursor c = localController.rawQuery("SELECT * FROM " + tableName
-                + " WHERE " + columnSchedule + " >= " + startMillis + " AND " + columnSchedule + " <= " + endMillis
-                + " AND " + columnCompleted + " = " + 0 + " AND " + columnNotified + " > " + 0 + " AND " + columnExpired + " = " + 0 +
-                " ORDER BY " + indexColumn + " ASC LIMIT 1", null);
+        Survey survey = Survey.getAvailableSurvey(SurveyType.PWB);
 
-        return c;
+        if(survey == null) {
+            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+        }
+
+        if(survey != null) {
+            Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
+
+            if(children.containsKey(SurveyType.PWB)) {
+                currentSurvey = survey;
+                initQuestions();
+                submitButton = (Button) questionsLayout.findViewById(R.id.pwbSubmitButton);
+                submitButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        savePwbSurvey();
+                        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+                        expandableLayout.setNoContentMsg("No PWB survey available");
+                        expandableLayout.showNoContentMsg();
+                        expandableLayout.collapse();
+                        callback.onPwbSurveyCompletedCallback();
+
+                        if(!currentSurvey.grouped) {
+                            notifySurveyCompleted();
+                        }
+
+                        Toast.makeText(getContext(), "PWB survey completed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                expandableLayout.setBodyView(questionsLayout);
+                expandableLayout.showBody();
+
+                return;
+            }
+        }
+
+        questionsLayout.setVisibility(GONE);
+        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+        expandableLayout.setNoContentMsg("No PWB survey available");
+        expandableLayout.showNoContentMsg();
     }
+
+    private void initQuestions() {
+        q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ1SeekBar);
+        q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ2SeekBar);
+        q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ3SeekBar);
+        q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ4SeekBar);
+        q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ5SeekBar);
+        q6Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ6SeekBar);
+        q7Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ7SeekBar);
+        q8Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ8SeekBar);
+    }
+
 
     private void savePwbSurvey() {
-        long timestamp = System.currentTimeMillis();
-        int completed = 1;
-        ContentValues record = new ContentValues();
-        record.put(PWBTable.KEY_PWB_TS, timestamp);
-        record.put(PWBTable.KEY_PWB_COMPLETED, completed);
-        record.put(PWBTable.KEY_PWB_Q1, q1Seekbar.getProgress());
-        record.put(PWBTable.KEY_PWB_Q2, q2Seekbar.getProgress());
-        record.put(PWBTable.KEY_PWB_Q3, q3Seekbar.getProgress());
-        record.put(PWBTable.KEY_PWB_Q4, q4Seekbar.getProgress());
-        record.put(PWBTable.KEY_PWB_Q5, q5Seekbar.getProgress());
-        record.put(PWBTable.KEY_PWB_Q6, q6Seekbar.getProgress());
-        record.put(PWBTable.KEY_PWB_Q7, q7Seekbar.getProgress());
-        record.put(PWBTable.KEY_PWB_Q8, q8Seekbar.getProgress());
-        localController.update(PWBTable.TABLE_PWB, record, PWBTable.KEY_PWB_ID + " = " + currentSurveyId);
+        ContentValues attributes = new ContentValues();
+        attributes.put(PWBTable.KEY_PWB_PARENT_SURVEY_ID, currentSurvey.id);
+        attributes.put(PWBTable.KEY_PWB_COMPLETED, true);
+        attributes.put(PWBTable.KEY_PWB_Q1, q1Seekbar.getProgress());
+        attributes.put(PWBTable.KEY_PWB_Q2, q2Seekbar.getProgress());
+        attributes.put(PWBTable.KEY_PWB_Q3, q3Seekbar.getProgress());
+        attributes.put(PWBTable.KEY_PWB_Q4, q4Seekbar.getProgress());
+        attributes.put(PWBTable.KEY_PWB_Q5, q5Seekbar.getProgress());
+        attributes.put(PWBTable.KEY_PWB_Q6, q6Seekbar.getProgress());
+        attributes.put(PWBTable.KEY_PWB_Q7, q7Seekbar.getProgress());
+        attributes.put(PWBTable.KEY_PWB_Q8, q8Seekbar.getProgress());
+
+        currentSurvey.getSurveys().get(SurveyType.PWB).setAttributes(attributes);
+
+        if(!currentSurvey.grouped) {
+            currentSurvey.completed = true;
+            currentSurvey.ts = System.currentTimeMillis();
+        }
+
+        currentSurvey.save();
     }
 
-    public interface OnPwbCompletedCallback {
-        void onPwbCompletedCallback();
+    public interface OnPwbSurveyCompletedCallback {
+        void onPwbSurveyCompletedCallback();
     }
 
-    public void setCallback(OnPwbCompletedCallback callback) {
+    public void setCallback(OnPwbSurveyCompletedCallback callback) {
         this.callback = callback;
     }
 }

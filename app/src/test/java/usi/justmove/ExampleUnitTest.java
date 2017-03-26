@@ -1,10 +1,14 @@
 package usi.justmove;
 
+import android.util.Log;
+
 import org.junit.Test;
 
-import usi.justmove.gathering.surveys.handle.PAMSurveyHandler;
-import usi.justmove.gathering.surveys.handle.PWBSurveyHandler;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import static android.icu.text.DateTimePatternGenerator.DAY;
 import static org.junit.Assert.*;
 
 /**
@@ -15,5 +19,11 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.DAY_OF_MONTH, 31);
+        c.add(Calendar.DAY_OF_MONTH, 1);
+
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
+        System.out.println("Scheduled scheduler at " + format.format(c.getTime()));
     }
 }

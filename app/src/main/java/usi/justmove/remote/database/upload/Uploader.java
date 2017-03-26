@@ -2,18 +2,21 @@ package usi.justmove.remote.database.upload;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.support.design.widget.TabLayout;
 import android.util.Log;
 
+import usi.justmove.gathering.surveys.config.SurveyType;
 import usi.justmove.local.database.LocalStorageController;
-import usi.justmove.local.database.tables.LocalDbUtility;
-import usi.justmove.local.database.tables.LocalTables;
-import usi.justmove.local.database.tables.PAMTable;
+import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.TableHandler;
+import usi.justmove.local.database.LocalDbUtility;
+import usi.justmove.local.database.LocalTables;
+import usi.justmove.local.database.tables.SurveyTable;
 import usi.justmove.local.database.tables.UploaderUtilityTable;
 import usi.justmove.remote.database.RemoteStorageController;
 import java.util.*;
 import java.text.SimpleDateFormat;
-
-import static android.icu.lang.UCharacter.JoiningGroup.PE;
+import java.util.Map.Entry;
 
 
 /**
@@ -73,41 +76,172 @@ public class Uploader {
         }
     }
 
-    private void processTable(LocalTables table) {
-        String query = getQuery(table);
-        Cursor records = localController.rawQuery(query, null);
-        Log.d("DATA UPLOAD SERVICE", "Processing table " + LocalDbUtility.getTableName(table));
+    private String buildSurveyCSV(List<Survey> surveys) {
+        String csv = "";
+        String csvHeader = "";
 
-        if(records.getCount() > 0) {
+        for(String surveyColumn: LocalDbUtility.getTableColumns(LocalTables.TABLE_SURVEY)) {
+            csvHeader += surveyColumn + ", ";
+        }
 
-            String fileName = buildFileName(table);
-            int startId;
-            int endId;
-            records.moveToFirst();
-            //the starting index
-            startId = records.getInt(0);
-            records.moveToLast();
-            //the ending index
-            endId = records.getInt(0);
-            records.moveToFirst();
-
-            //upload the data to the server
-            int response = remoteController.upload(fileName, toCSV(records, table));
-
-            //if the file was put, delete records and update the arrays
-            if(response >= 200 && response <= 207) {
-                //delete from the db the records where id > startId and id <= endId
-                removeRecords(table, startId, endId);
-                incrementFilePartId(table);
-                updateRecordId(table, endId);
-            } else {
-                Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
+        String[] colums;
+        for(Entry<SurveyType, TableHandler> entry: surveys.get(0).getSurveys().entrySet()) {
+            colums = entry.getValue().getColumns();
+            for(int i = 3; i < colums.length; i++) {
+                csvHeader += entry.getValue().getTableName() + "_" + colums[i] + ", ";
             }
-        } else {
-            Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
+        }
+
+        csvHeader = csvHeader.substring(0, csvHeader.length()-2);
+        csv += csvHeader + "\n";
+
+        Map<SurveyType, TableHandler> childs = new HashMap<>();
+        String record = "";
+        String[] childColumns;
+        for(Survey s: surveys) {
+            childs = s.getSurveys();
+
+            for(String column: s.getColumns()) {
+                record += s.getAttributes().getAsString(column) + ", ";
+            }
+
+            for(Map.Entry<SurveyType, TableHandler> entry: childs.entrySet()) {
+                childColumns = entry.getValue().getColumns();
+                for(int i = 2; i < childColumns.length; i++) {
+                    record += entry.getValue().getAttributes().getAsString(childColumns[i]) + ", ";
+                }
+            }
+
+            record += "\n";
+        }
+
+        csv += record;
+
+        return csv.substring(0, csv.length()-1);
+    }
+
+    private void removeSurveyRecords(List<Survey> surveys) {
+        for(Survey s: surveys) {
+            s.delete();
         }
     }
 
+    private String buildSurveyFileName(SurveyType survey) {
+        String today = buildDate();
+        return userId + "_" + today + "_" + survey.getSurveyName() + "_" + "part" + Integer.toString(getFilePartId(LocalTables.TABLE_SURVEY)) + ".csv";
+    }
+
+    private void processSurveys(TableHandler[] surveys) {
+
+        SurveyType currSurvey = ((Survey) surveys[0]).surveyType;
+        String fileName = buildSurveyFileName(currSurvey);
+        String currCsv = "";
+        Survey currS;
+        List<Survey> gSurveys = new ArrayList<>();
+        for(TableHandler s: surveys) {
+            currS = (Survey) s;
+            if(currSurvey != currS.surveyType) {
+                currSurvey = currS.surveyType;
+                fileName = buildSurveyFileName(currSurvey);
+                currCsv = buildSurveyCSV(gSurveys);
+
+                Log.d("SCSV", currCsv);
+                int response = remoteController.upload(fileName, currCsv);
+
+                //if the file was put, delete records and update the arrays
+                if(response >= 200 && response <= 207) {
+                    removeSurveyRecords(gSurveys);
+                    incrementFilePartId(SurveyType.getSurveyTable(currSurvey));
+                } else {
+                    Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
+                }
+
+                currCsv = "";
+            } else {
+                gSurveys.add(currS);
+            }
+        }
+
+        fileName = buildSurveyFileName(currSurvey);
+        currCsv = buildSurveyCSV(gSurveys);
+
+        Log.d("SCSV", currCsv);
+        int response = remoteController.upload(fileName, currCsv);
+
+        //if the file was put, delete records and update the arrays
+        if(response >= 200 && response <= 207) {
+            removeSurveyRecords(gSurveys);
+            incrementFilePartId(LocalTables.TABLE_SURVEY);
+        } else {
+            Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
+        }
+    }
+
+    private void processTable(LocalTables table) {
+
+        if(table == LocalTables.TABLE_SWLS || table == LocalTables.TABLE_PWB ||
+           table == LocalTables.TABLE_PSS ||table == LocalTables.TABLE_PHQ8 ||
+           table == LocalTables.TABLE_SHS ||table == LocalTables.TABLE_PAM) {
+            return;
+        }
+
+        Log.d("DATA UPLOAD SERVICE", "Processing table " + LocalDbUtility.getTableName(table));
+
+        if(table == LocalTables.TABLE_SURVEY) {
+            TableHandler[] surveys = Survey.findAll("*", SurveyTable.KEY_SURVEY_EXPIRED + " = " + 1 + " OR " + SurveyTable.KEY_SURVEY_COMPLETED + " = " + 1 + " ORDER BY " + SurveyTable.KEY_SURVEY_TYPE + " ASC");
+            if(surveys == null) {
+                Log.d("DATA UPLOAD SERVICE", "No records to upload");
+            } else {
+                processSurveys(surveys);
+            }
+        } else {
+            String query = getQuery(table);
+            Cursor records = localController.rawQuery(query, null);
+
+            if(records.getCount() > 0) {
+                String fileName = buildFileName(table);
+                int startId;
+                int endId;
+                records.moveToFirst();
+                //the starting index
+                startId = records.getInt(0);
+                records.moveToLast();
+                //the ending index
+                endId = records.getInt(0);
+                records.moveToFirst();
+
+                //upload the data to the server
+                int response = remoteController.upload(fileName, toCSV(records, table));
+
+                //if the file was put, delete records and update the arrays
+                if(response >= 200 && response <= 207) {
+                    //delete from the db the records where id > startId and id <= endId
+                    removeRecords(table, startId, endId);
+                    incrementFilePartId(table);
+                    updateRecordId(table, endId);
+                } else {
+                    Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
+                }
+            } else {
+                Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
+            }
+        }
+
+    }
+
+//    private void uploadTable(String fileName, String fileContent) {
+//        int response = remoteController.upload(fileName, fileContent);
+//
+//        //if the file was put, delete records and update the arrays
+//        if(response >= 200 && response <= 207) {
+//            //delete from the db the records where id > startId and id <= endId
+//            removeRecords(table, startId, endId);
+//            incrementFilePartId(table);
+//            updateRecordId(table, endId);
+//        } else {
+//            Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
+//        }
+//    }
 
     private String getQuery(LocalTables table) {
         String[] columns = LocalDbUtility.getTableColumns(table);

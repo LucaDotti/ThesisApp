@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface LocalStorageController {
     Cursor rawQuery(String query, String[] args);
-    void insertRecords(String tableName, List<Map<String, String>> records);
+    long insertRecord(String tableName, ContentValues record);
     long getDbSize();
     void delete(String tableName, String clause);
     void update(String tableName, ContentValues values, String clause);

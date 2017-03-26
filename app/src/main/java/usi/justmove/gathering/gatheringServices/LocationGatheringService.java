@@ -2,6 +2,7 @@ package usi.justmove.gathering.gatheringServices;
 
 import android.Manifest;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -135,17 +136,13 @@ class LocationEventListener implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("LOCATION SERVICE", "LOCATION CHANGED");
-        List<Map<String, String>> records = new ArrayList<>();
-        Map<String, String> record = new HashMap<>();
+        ContentValues record = new ContentValues();
 
-        record.put(LocationTable.KEY_LOCATION_ID, null);
         record.put(LocationTable.KEY_LOCATION_TIMESTAMP, Long.toString(System.currentTimeMillis()));
         record.put(LocationTable.KEY_LOCATION_LATITUDE, Double.toString(location.getLatitude()));
         record.put(LocationTable.KEY_LOCATION_LONGITUDE, Double.toString(location.getLongitude()));
         record.put(LocationTable.KEY_LOCATION_PROVIDER, "GPS");
-        records.add(record);
-        localStorageController.insertRecords(LocationTable.TABLE_LOCATION, records);
+        localStorageController.insertRecord(LocationTable.TABLE_LOCATION, record);
         Log.d("LOCATION SERVICE", "ADDED RECORD: ts:" + record.get(LocationTable.KEY_LOCATION_TIMESTAMP) + ", lat: " + record.get(LocationTable.KEY_LOCATION_LATITUDE) + ", long: " + record.get(LocationTable.KEY_LOCATION_LONGITUDE));
     }
 

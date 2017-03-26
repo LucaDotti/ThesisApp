@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <usi.justmove.UI.views.SHSSurveyView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/termSurvey_SHS"/>
+    <usi.justmove.UI.views.PSSSurveyView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/termSurvey_PSS"/>
+    <usi.justmove.UI.views.PHQ8SurveyView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/termSurvey_PHQ8"/>
+    <usi.justmove.UI.views.SWLSSurveyView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/termSurvey_SWLS"/>
+</LinearLayout>

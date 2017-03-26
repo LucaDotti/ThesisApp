@@ -1,5 +1,6 @@
 package usi.justmove.UI.views;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
@@ -106,10 +107,8 @@ public class RegistrationView extends LinearLayout {
         RadioGroup group = (RadioGroup) bodyView.findViewById(R.id.genderRadioGroup);
 
         long time = System.currentTimeMillis();
-        List<Map<String, String>> records = new ArrayList<>();
-        Map<String, String> record = new HashMap<>();
+        ContentValues record = new ContentValues();
 
-        record.put(UserTable.KEY_USER_ID, null);
         record.put(UserTable.KEY_USER_UID, Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
         record.put(UserTable.KEY_USER_AGE, Integer.toString(agePicker.getValue()));
         record.put(UserTable.KEY_USER_GENDER, currentSelectedRadioButton.getId() == R.id.genderFemaleRadioButton ? "female" : "male");
@@ -119,8 +118,7 @@ public class RegistrationView extends LinearLayout {
         record.put(UserTable.KEY_USER_EMAIL, "");
         record.put(UserTable.KEY_USER_CREATION_TS, Long.toString(time));
         record.put(UserTable.KEY_USER_UPDATE_TS, Long.toString(time));
-        records.add(record);
-        localController.insertRecords(UserTable.TABLE_USER, records);
+        localController.insertRecord(UserTable.TABLE_USER, record);
     }
 
     private void initConsent(View view) {

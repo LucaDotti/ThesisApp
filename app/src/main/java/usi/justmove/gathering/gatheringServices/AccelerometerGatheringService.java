@@ -1,6 +1,7 @@
 package usi.justmove.gathering.gatheringServices;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -83,16 +84,12 @@ class AccelerometerEventListener implements SensorEventListener {
                 y = event.values[1];
                 z = event.values[2];
 
-                List<Map<String, String>> records = new ArrayList<>();
-                Map<String, String> record = new HashMap<>();
-
-                record.put(AccelerometerTable.KEY_ACCELEROMETER_ID, null);
+                ContentValues record = new ContentValues();
                 record.put(AccelerometerTable.KEY_ACCELEROMETER_TIMESTAMP, Long.toString(lastFetchTime));
                 record.put(AccelerometerTable.KEY_ACCELEROMETER_X, Float.toString(x));
                 record.put(AccelerometerTable.KEY_ACCELEROMETER_Y, Float.toString(y));
                 record.put(AccelerometerTable.KEY_ACCELEROMETER_Z, Float.toString(z));
-                records.add(record);
-                localStorageController.insertRecords(AccelerometerTable.TABLE_ACCELEROMETER, records);
+                localStorageController.insertRecord(AccelerometerTable.TABLE_ACCELEROMETER, record);
                 Log.d("ACCELEROMETER SERVICE", "Added record: ts: " + record.get(AccelerometerTable.KEY_ACCELEROMETER_TIMESTAMP) + ", x: " + record.get(AccelerometerTable.KEY_ACCELEROMETER_X) + ", y: " + record.get(AccelerometerTable.KEY_ACCELEROMETER_Y)  + ", z: " + record.get(AccelerometerTable.KEY_ACCELEROMETER_Z));
             }
 

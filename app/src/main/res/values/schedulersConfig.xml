@@ -1,26 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--PAM-->
-    <string name="PAM_count">2</string>
+    <string name="schedule_time">07:00</string>
+    <!-- ++++++++++++++++++++++++++++++++++++++++ PAM ++++++++++++++++++++++++++++++++++++++++ -->
+    <string name="PAM_daily_count">2</string>
+    <string-array name="PAM_daily_times">
+        <item>08:00,13:00</item>
+        <item>13:00,22:00</item>
+    </string-array>
     <string name="PAM_frequency">daily</string>
-    <string name="PAM_schedule_time">07:00</string>
-    <string name="PAM_start">08:00</string>
-    <string name="PAM_afternoon">13:00</string>
-    <string name="PAM_end">22:00</string>
 
     <string name="PAM_min_elapse_time_between_surveys">7200000</string>
-    <string name="PAM_max_elapse_time_for_completition">7200000</string>
+    <string name="PAM_max_elapse_time_for_completion">7200000</string>
     <string name="PAM_notifications_count">4</string>
 
-    <!--PWB-->
-    <string name="PWB_count">1</string>
-    <string name="PWB_schedule_time">07:00</string>
-    <string name="PWB_frequency">weekly</string>
+    <!-- ++++++++++++++++++++++++++++++++++++++++ PWB ++++++++++++++++++++++++++++++++++++++++ -->
+    <string name="PWB_daily_count">1</string>
+    <string-array name="PWB_daily_times">
+        <item>08:00,23:59</item>
+    </string-array>
+    <string name="PWB_frequency">daily</string>
     <string name="PWB_week_period">weekend</string>
-    <string name="PWB_start">08:00</string>
-    <string name="PWB_afternoon">15:3</string>
-    <string name="PWB_end">22:00</string>
+    <string name="PWB_count">1</string>
 
-    <string name="PWB_max_elapse_time_for_completition">7200000</string>
+    <string name="PWB_max_elapse_time_for_completion">7200000</string>
+    <string name="PWB_min_elapse_time_between_surveys">0</string>
     <string name="PWB_notifications_count">4</string>
+
+    <!-- ++++++++++++++++++++++++++++++++++++++++ Term ++++++++++++++++++++++++++++++++++++++++ -->
+    <string name="term_daily_count">1</string>
+    <string-array name="term_daily_times">
+        <item>08:00,23:59</item>
+    </string-array>
+    <string name="term_frequency">daily</string>
+    <string name="term_week_period">weekend</string>
+    <string name="term_count">1</string>
+
+    <string name="term_max_elapse_time_for_completion">7200000</string>
+    <string name="term_min_elapse_time_between_surveys">0</string>
+    <string name="term_notifications_count">4</string>
 </resources>

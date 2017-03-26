@@ -2,6 +2,8 @@ package usi.justmove.gathering.surveys.config;
 
 import org.joda.time.Period;
 
+import static android.R.attr.name;
+
 /**
  * Created by usi on 15/02/17.
  */
@@ -9,7 +11,8 @@ import org.joda.time.Period;
 public enum Frequency {
     DAILY("daily"),
     WEEKLY("weekly"),
-    MONTHLY("monthly");
+    MONTHLY("monthly"),
+    ONCE("once");
 
     public String name;
 

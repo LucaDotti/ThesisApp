@@ -1,0 +1,160 @@
+package usi.justmove.gathering.surveys.handle;
+
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
+import android.widget.RemoteViews;
+
+import org.greenrobot.eventbus.EventBus;
+
+import usi.justmove.MainActivity;
+import usi.justmove.MyApplication;
+import usi.justmove.R;
+import usi.justmove.gathering.surveys.config.SurveyConfig;
+import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
+import usi.justmove.local.database.tableHandlers.Survey;
+
+import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.NOTIFICATION_INTENT;
+import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.SURVEY_COMPLETED_INTENT;
+
+/**
+ * Created by usi on 14/03/17.
+ */
+
+public class SurveyNotifier {
+    private Context context;
+    private int notificationID;
+
+    public SurveyNotifier() {
+        this.context = MyApplication.getContext();
+        notificationID = 0;
+    }
+
+    public void notify(long surveyId, String action) {
+        if(surveyId >= 0) {
+            Survey survey = (Survey) Survey.findByPk(surveyId);
+            if(action.equals(SURVEY_COMPLETED_INTENT)) {
+                survey.completed = true;
+                survey.save();
+                NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                mNotificationManager.cancel((int) survey.id);
+                EventBus.getDefault().post(new SurveyEvent(surveyId, false));
+            } else {
+                SurveyConfig config = SurveyConfigFactory.getConfig(survey.surveyType, context);
+
+                if(survey.completed) {
+                    return;
+                }
+
+                survey.notified++;
+                if(survey.notified >= config.notificationsCount) {
+                    NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    mNotificationManager.cancel((int) survey.id);
+                    survey.expired = true;
+                    survey.save();
+                    EventBus.getDefault().post(new SurveyEvent(surveyId, false));
+                    return;
+                }
+
+                createNotification(survey, config);
+
+                survey.save();
+
+                EventBus.getDefault().post(new SurveyEvent(surveyId, false));
+            }
+        }
+    }
+
+    private void cancelNotification(long notificationID) {
+
+    }
+
+    private void createNotification(Survey survey, SurveyConfig config) {
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
+                R.layout.survey_notification_layout);
+
+        String missingTime = getMissingTime(survey, config);
+        String[] splitTime = missingTime.split(":");
+        String timeUnit;
+        if(Integer.parseInt(splitTime[0]) != 0) {
+            timeUnit = " hours";
+        } else if(Integer.parseInt(splitTime[1]) != 0) {
+            timeUnit = " minutes";
+        } else {
+            timeUnit = " seconds";
+        }
+        remoteViews.setTextViewText(R.id.notificationContent, "New daily " + config.survey.getSurveyName() + " survey available");
+        remoteViews.setTextViewText(R.id.notificationMissingTime, "Time left \t" + missingTime + timeUnit);
+
+        notificationID = (int) survey.id;
+//        if(notificationID >= 0) {
+//            notificationID = (int) System.currentTimeMillis();
+//        }
+
+        Intent notificationNowButton = new Intent(NOTIFICATION_INTENT);
+        notificationNowButton.putExtra("id", notificationID);
+        notificationNowButton.putExtra("action", "now");
+        PendingIntent pButtonNowIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), notificationNowButton,0);
+        remoteViews.setOnClickPendingIntent(R.id.notificationButtonNow, pButtonNowIntent);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(android.R.drawable.stat_sys_warning)
+                        .setCustomBigContentView(remoteViews)
+                        .setContentTitle("JustMove")
+                        .setSubText("New survey available!");
+        Intent resultIntent = new Intent();
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.notify(notificationID, mBuilder.build());
+    }
+
+    private String getMissingTime(Survey survey, SurveyConfig config) {
+        int notificationCount = survey.notified;
+        long elapseTimeBetweenPersistentNotifications = (config.maxElapseTimeForCompletion/config.notificationsCount);
+        long missingTime = (config.notificationsCount - notificationCount)*elapseTimeBetweenPersistentNotifications;
+        String split[] = formatMillis(missingTime).split("\\.");
+        return split[0];
+    }
+
+    /**
+     * http://stackoverflow.com/questions/6710094/how-to-format-an-elapsed-time-interval-in-hhmmss-sss-format-in-java
+     * @param val
+     * @return
+     */
+    static public String formatMillis(long val) {
+        StringBuilder buf = new StringBuilder(20);
+        String sgn = "";
+
+        if(val < 0) {
+            sgn = "-";
+            val = Math.abs(val);
+        }
+
+        append(buf, sgn, 0, ( val/3600000             ));
+        append(buf, ":", 2, ((val%3600000)/60000      ));
+        append(buf, ":", 2, ((val         %60000)/1000));
+        append(buf, ".", 3, ( val                %1000));
+        return buf.toString();
+    }
+
+
+    static private void append(StringBuilder tgt, String pfx, int dgt, long val) {
+        tgt.append(pfx);
+        if(dgt>1) {
+            int pad=(dgt-1);
+            for(long xa=val; xa>9 && pad>0; xa/=10) { pad--;           }
+            for(int  xa=0;   xa<pad;        xa++  ) { tgt.append('0'); }
+        }
+        tgt.append(val);
+    }
+}

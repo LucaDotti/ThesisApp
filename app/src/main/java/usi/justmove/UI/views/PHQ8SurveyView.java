@@ -1,8 +1,9 @@
 package usi.justmove.UI.views;
 
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,24 +12,32 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
-import org.joda.time.LocalDateTime;
+
+import java.util.Calendar;
+import java.util.Map;
 
 import usi.justmove.R;
-import usi.justmove.local.database.LocalStorageController;
-import usi.justmove.local.database.controllers.SQLiteController;
-import usi.justmove.local.database.tables.LocalDbUtility;
-import usi.justmove.local.database.tables.LocalTables;
+import usi.justmove.UI.ExpandableLayout;
+import usi.justmove.gathering.surveys.config.SurveyType;
+import usi.justmove.gathering.surveys.handle.SurveyEventReceiver;
+import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.TableHandler;
 import usi.justmove.local.database.tables.PHQ8Table;
+import usi.justmove.local.database.tables.PWBTable;
+import usi.justmove.local.database.tables.SHSTable;
 
 /**
  * Created by usi on 07/03/17.
  */
 
 public class PHQ8SurveyView extends LinearLayout {
-    private OnPhq8CompletedCallback callback;
-    private LocalStorageController localController;
-    private int currentSurveyId;
-    private LocalTables phq8Table;
+    private OnPhq8SurveyCompletedCallback callback;
+
+    private Context context;
+
+    private View titleView;
+    private LinearLayout questionsLayout;
+    private ExpandableLayout expandableLayout;
 
     private DiscreteSeekBar q1Seekbar;
     private DiscreteSeekBar q2Seekbar;
@@ -40,88 +49,130 @@ public class PHQ8SurveyView extends LinearLayout {
     private DiscreteSeekBar q8Seekbar;
     private Button submiButton;
 
+    private Survey currentSurvey;
+
     public PHQ8SurveyView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        localController = SQLiteController.getInstance(context);
-        phq8Table = LocalTables.TABLE_PHQ8;
+        this.context = context;
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.phq8_layout, this, true);
+
+        expandableLayout = (ExpandableLayout) findViewById(R.id.phq8ViewExpandableLayout);
+        titleView = inflater.inflate(R.layout.expandable_layout_title, null);
+        questionsLayout = (LinearLayout) inflater.inflate(R.layout.phq8_questions_layout, null);
 
         init();
     }
 
+    private void notifySurveyCompleted() {
+        Intent intent = new Intent(context, SurveyEventReceiver.class);
+        intent.putExtra("survey_id", currentSurvey.id);
+        intent.setAction(SurveyEventReceiver.SURVEY_COMPLETED_INTENT);
+
+        Calendar c = Calendar.getInstance();
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void init() {
-        Cursor survey = getPhq8();
+        expandableLayout.setTitleView(titleView);
+        expandableLayout.setTitleText(R.id.surveysTitle, "PHQ8");
 
-        if(survey.getCount() > 0) {
-            currentSurveyId = survey.getInt(0);
-            q1Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPhq8Q1SeekBar);
-            q2Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPhq8Q2SeekBar);
-            q3Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPhq8Q3SeekBar);
-            q4Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPhq8Q4SeekBar);
-            q5Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPhq8Q5SeekBar);
-            q6Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPhq8Q6SeekBar);
-            q7Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPhq8Q7SeekBar);
-            q8Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysPhq8Q8SeekBar);
+        Survey survey = Survey.getAvailableSurvey(SurveyType.PHQ8);
 
-            submiButton = (Button) findViewById(R.id.phq8SubmitButton);
-
-            submiButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    savePhq8Survey();
-                    callback.onPhq8CompletedCallback();
-                    Toast.makeText(getContext(), "Phq8 survey completed", Toast.LENGTH_SHORT).show();
-                }
-            });
+        if(survey == null) {
+            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
         }
 
-        survey.close();
+        if(survey != null) {
+            Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
+
+            if(children.containsKey(SurveyType.PHQ8)) {
+                currentSurvey = survey;
+                q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q1SeekBar);
+                q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q2SeekBar);
+                q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q3SeekBar);
+                q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q4SeekBar);
+                q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q5SeekBar);
+                q6Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q6SeekBar);
+                q7Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q7SeekBar);
+                q8Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q8SeekBar);
+
+                submiButton = (Button) questionsLayout.findViewById(R.id.phq8SubmitButton);
+
+                submiButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        savePhq8Survey();
+                        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+                        expandableLayout.setNoContentMsg("No PHQ8 survey available");
+                        expandableLayout.showNoContentMsg();
+                        expandableLayout.collapse();
+                        callback.onPhq8SurveyCompletedCallback();
+
+                        if(!currentSurvey.grouped) {
+                            notifySurveyCompleted();
+                        }
+
+                        Toast.makeText(getContext(), "PHQ8 survey completed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                expandableLayout.setBodyView(questionsLayout);
+                expandableLayout.showBody();
+
+                return;
+            }
+
+        }
+
+        questionsLayout.setVisibility(GONE);
+        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+        expandableLayout.setNoContentMsg("No PHQ8 survey available");
+        expandableLayout.showNoContentMsg();
+
     }
 
     private void savePhq8Survey() {
-        long timestamp = System.currentTimeMillis();
-        int completed = 1;
-        ContentValues record = new ContentValues();
-        record.put(PHQ8Table.KEY_PHQ8_TS, timestamp);
-        record.put(PHQ8Table.KEY_PHQ8_COMPLETED, completed);
-        record.put(PHQ8Table.KEY_PHQ8_Q1, q1Seekbar.getProgress());
-        record.put(PHQ8Table.KEY_PHQ8_Q2, q2Seekbar.getProgress());
-        record.put(PHQ8Table.KEY_PHQ8_Q3, q3Seekbar.getProgress());
-        record.put(PHQ8Table.KEY_PHQ8_Q4, q4Seekbar.getProgress());
-        record.put(PHQ8Table.KEY_PHQ8_Q5, q5Seekbar.getProgress());
-        record.put(PHQ8Table.KEY_PHQ8_Q6, q6Seekbar.getProgress());
-        record.put(PHQ8Table.KEY_PHQ8_Q7, q7Seekbar.getProgress());
-        record.put(PHQ8Table.KEY_PHQ8_Q8, q8Seekbar.getProgress());
-        localController.update(LocalDbUtility.getTableName(phq8Table), record, LocalDbUtility.getTableColumns(phq8Table)[0] + " = " + currentSurveyId);
+        ContentValues attributes = new ContentValues();
+        attributes.put(PHQ8Table.KEY_PHQ8_PARENT_SURVEY_ID, currentSurvey.id);
+        attributes.put(PHQ8Table.KEY_PHQ8_COMPLETED, true);
+        attributes.put(PHQ8Table.KEY_PHQ8_Q1, q1Seekbar.getProgress());
+        attributes.put(PHQ8Table.KEY_PHQ8_Q2, q2Seekbar.getProgress());
+        attributes.put(PHQ8Table.KEY_PHQ8_Q3, q3Seekbar.getProgress());
+        attributes.put(PHQ8Table.KEY_PHQ8_Q4, q4Seekbar.getProgress());
+        attributes.put(PHQ8Table.KEY_PHQ8_Q5, q5Seekbar.getProgress());
+        attributes.put(PHQ8Table.KEY_PHQ8_Q6, q6Seekbar.getProgress());
+        attributes.put(PHQ8Table.KEY_PHQ8_Q7, q7Seekbar.getProgress());
+        attributes.put(PHQ8Table.KEY_PHQ8_Q8, q8Seekbar.getProgress());
+
+        Survey survey = (Survey) Survey.findByPk(currentSurvey.id);
+        survey.getSurveys().get(SurveyType.PHQ8).setAttributes(attributes);
+
+
+        if(!currentSurvey.grouped) {
+            survey.completed = true;
+            survey.ts = System.currentTimeMillis();
+        }
+
+        survey.save();
     }
 
-    private Cursor getPhq8() {
-        String tableName = LocalDbUtility.getTableName(phq8Table);
-        String indexColumn = LocalDbUtility.getTableColumns(phq8Table)[0];
-        String columnSchedule = LocalDbUtility.getTableColumns(phq8Table)[2];
-        String columnCompleted = LocalDbUtility.getTableColumns(phq8Table)[3];
-        String columnNotified = LocalDbUtility.getTableColumns(phq8Table)[4];
-        String columnExpired = LocalDbUtility.getTableColumns(phq8Table)[5];
-
-        LocalDateTime startDateTime = new LocalDateTime().withTime(0, 0, 0, 0);
-        LocalDateTime endDateTime = new LocalDateTime().withTime(23, 59, 59, 999);
-        long startMillis = startDateTime.toDateTime().getMillis()/1000;
-        long endMillis = endDateTime.toDateTime().getMillis()/1000;
-        Cursor c = localController.rawQuery("SELECT * FROM " + tableName
-                + " WHERE " + columnSchedule + " >= " + startMillis + " AND " + columnSchedule + " <= " + endMillis
-                + " AND " + columnCompleted + " = " + 0 + " AND " + columnNotified + " > " + 0 + " AND " + columnExpired + " = " + 0 +
-                " ORDER BY " + indexColumn + " ASC LIMIT 1", null);
-
-        return c;
+    public interface OnPhq8SurveyCompletedCallback {
+        void onPhq8SurveyCompletedCallback();
     }
 
-    public interface OnPhq8CompletedCallback {
-        void onPhq8CompletedCallback();
-    }
-
-    public void setCallback(OnPhq8CompletedCallback callback) {
+    public void setCallback(OnPhq8SurveyCompletedCallback callback) {
         this.callback = callback;
     }
+
+
 }

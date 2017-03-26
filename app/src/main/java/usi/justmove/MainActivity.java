@@ -1,9 +1,9 @@
 package usi.justmove;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -23,7 +23,6 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.joda.time.LocalDateTime;
 
 import usi.justmove.UI.TabFragmentAdapter;
 import usi.justmove.UI.fragments.HomeFragment;
@@ -32,15 +31,14 @@ import usi.justmove.UI.fragments.SurveysFragment;
 import usi.justmove.UI.fragments.SwipeChoiceViewPager;
 import usi.justmove.UI.menu.ProfileDialogFragment;
 import usi.justmove.UI.menu.StudyDialogFragment;
-import usi.justmove.gathering.surveys.Surveys;
 import usi.justmove.gathering.surveys.SurveysService;
-import usi.justmove.gathering.surveys.inspection.SurveyEvent;
-import usi.justmove.local.database.LocalStorageController;
+import usi.justmove.gathering.surveys.handle.SurveyEvent;
+import usi.justmove.local.database.LocalSQLiteDBHelper;
 import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.gathering.GatheringSystem;
 import usi.justmove.gathering.base.SensorType;
-import usi.justmove.local.database.tables.LocalDbUtility;
-import usi.justmove.local.database.tables.LocalTables;
+import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.TableHandler;
 import usi.justmove.remote.database.upload.DataUploadService;
 
 public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback, HomeFragment.OnRegistrationSurveyChoice {
@@ -52,11 +50,11 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
     private final int PERMISSION_REQUEST_STATUS = 0;
 
+    private BroadcastReceiver surveyEventReveicer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         JodaTimeAndroid.init(this);
 
@@ -73,7 +71,9 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
 
-
+        deleteDatabase("JustMove");
+        LocalSQLiteDBHelper dbHelper = new LocalSQLiteDBHelper(this);
+        dbHelper.getWritableDatabase();
         showSurveyNotification();
 
 
@@ -132,9 +132,9 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         gSys.addSensor(SensorType.PHONE_CALLS);
         gSys.addSensor(SensorType.SMS);
         gSys.addSensor(SensorType.USED_APPS);
-        gSys.start();
+//        gSys.start();
 
-        startService(new Intent(this, DataUploadService.class));
+//        startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
     }
 
@@ -213,72 +213,14 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SurveyEvent event) {
+        Survey s = (Survey) Survey.findByPk(event.getRecordId());
         tabFragmentAdapter.notifyDataSetChanged();
         tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
         showSurveyNotification();
     }
 
-
-    private int getAvailableSurveysCount() {
-        int count = 0;
-        Cursor surveys = null;
-        for(Surveys survey: Surveys.values()) {
-            switch(survey) {
-                case PAM:
-                    surveys = getTodaySurveys(LocalTables.TABLE_PAM);
-                    count += surveys.getCount();
-                    break;
-                case PWB:
-                    surveys = getTodaySurveys(LocalTables.TABLE_PWB);
-                    count += surveys.getCount();
-                    break;
-                case SWLS:
-                    surveys = getTodaySurveys(LocalTables.TABLE_SWLS);
-                    count += surveys.getCount();
-                    break;
-                case SHS:
-                    surveys = getTodaySurveys(LocalTables.TABLE_SHS);
-                    count += surveys.getCount();
-                    break;
-                case PHQ8:
-                    surveys = getTodaySurveys(LocalTables.TABLE_PHQ8);
-                    count += surveys.getCount();
-                    break;
-                case PSS:
-                    surveys = getTodaySurveys(LocalTables.TABLE_PSS);
-                    count += surveys.getCount();
-                    break;
-            }
-        }
-
-        if(surveys != null) {
-            surveys.close();
-        }
-
-        return count;
-    }
-
-    private Cursor getTodaySurveys(LocalTables table) {
-        LocalStorageController controller = SQLiteController.getInstance(this);
-        String tableName = LocalDbUtility.getTableName(table);
-        String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
-        String columnCompleted = LocalDbUtility.getTableColumns(table)[3];
-        String columnNotified = LocalDbUtility.getTableColumns(table)[4];
-        String columnExpired = LocalDbUtility.getTableColumns(table)[5];
-
-        LocalDateTime startDateTime = new LocalDateTime().withTime(0, 0, 0, 0);
-        LocalDateTime endDateTime = new LocalDateTime().withTime(23, 59, 59, 999);
-        long startMillis = startDateTime.toDateTime().getMillis()/1000;
-        long endMillis = endDateTime.toDateTime().getMillis()/1000;
-
-        Cursor c = controller.rawQuery("SELECT * FROM " + tableName
-                + " WHERE " + columnSchedule + " >= " + startMillis + " AND " + columnSchedule + " <= " + endMillis
-                + " AND " + columnCompleted + " = " + 0 + " AND " + columnNotified + " > " + 0 + " AND " + columnExpired + " = " + 0, null);
-        return c;
-    }
-
     private void showSurveyNotification() {
-        int count = getAvailableSurveysCount();
+        int count = Survey.getAllAvailableSurveysCount();
 
         View notificationView = tabLayout.getTabAt(2).getCustomView();
 

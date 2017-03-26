@@ -1,8 +1,9 @@
 package usi.justmove.UI.views;
 
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +12,17 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
-import org.joda.time.LocalDateTime;
+
+import java.util.Calendar;
+import java.util.Map;
 
 import usi.justmove.R;
-import usi.justmove.local.database.LocalStorageController;
-import usi.justmove.local.database.controllers.SQLiteController;
-import usi.justmove.local.database.tables.LocalDbUtility;
-import usi.justmove.local.database.tables.LocalTables;
+import usi.justmove.UI.ExpandableLayout;
+import usi.justmove.gathering.surveys.config.SurveyType;
+import usi.justmove.gathering.surveys.handle.SurveyEventReceiver;
+import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.TableHandler;
+import usi.justmove.local.database.tables.PWBTable;
 import usi.justmove.local.database.tables.SHSTable;
 import usi.justmove.local.database.tables.SWLSTable;
 
@@ -26,10 +31,13 @@ import usi.justmove.local.database.tables.SWLSTable;
  */
 
 public class SWLSSurveyView extends LinearLayout{
-    private OnSwlsCompletedCallback callback;
-    private LocalStorageController localController;
-    private int currentSurveyId;
-    private LocalTables swlsTable;
+    private OnSwlsSurveyCompletedCallback callback;
+
+    private Context context;
+
+    private View titleView;
+    private LinearLayout questionsLayout;
+    private ExpandableLayout expandableLayout;
 
     private DiscreteSeekBar q1Seekbar;
     private DiscreteSeekBar q2Seekbar;
@@ -38,82 +46,119 @@ public class SWLSSurveyView extends LinearLayout{
     private DiscreteSeekBar q5Seekbar;
     private Button submiButton;
 
+    private Survey currentSurvey;
+
     public SWLSSurveyView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        localController = SQLiteController.getInstance(context);
-        swlsTable = LocalTables.TABLE_SHS;
+        this.context = context;
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.swls_layout, this, true);
+
+        expandableLayout = (ExpandableLayout) findViewById(R.id.swlsViewExpandableLayout);
+        titleView = inflater.inflate(R.layout.expandable_layout_title, null);
+        questionsLayout = (LinearLayout) inflater.inflate(R.layout.swls_questions_layout, null);
 
         init();
     }
 
+    private void notifySurveyCompleted() {
+        Intent intent = new Intent(context, SurveyEventReceiver.class);
+        intent.putExtra("survey_id", currentSurvey.id);
+        intent.setAction(SurveyEventReceiver.SURVEY_COMPLETED_INTENT);
+
+        Calendar c = Calendar.getInstance();
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void init() {
-        Cursor survey = getSwls();
+        expandableLayout.setTitleView(titleView);
+        expandableLayout.setTitleText(R.id.surveysTitle, "SWLS");
 
-        if(survey.getCount() > 0) {
-            currentSurveyId = survey.getInt(0);
-            q1Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysSwlsQ1SeekBar);
-            q2Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysSwlsQ2SeekBar);
-            q3Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysSwlsQ3SeekBar);
-            q4Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysSwlsQ4SeekBar);
-            q5Seekbar = (DiscreteSeekBar) findViewById(R.id.surveysSwlsQ5SeekBar);
+        Survey survey = Survey.getAvailableSurvey(SurveyType.SWLS);
 
-            submiButton = (Button) findViewById(R.id.swlsSubmitButton);
-
-            submiButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    savePhq8Survey();
-                    callback.onSwlsCompletedCallback();
-                    Toast.makeText(getContext(), "Swls survey completed", Toast.LENGTH_SHORT).show();
-                }
-            });
+        if(survey == null) {
+            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
         }
 
-        survey.close();
+        if(survey != null) {
+            Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
+
+            if(children.containsKey(SurveyType.SWLS)) {
+                currentSurvey = survey;
+                q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ1SeekBar);
+                q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ2SeekBar);
+                q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ3SeekBar);
+                q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ4SeekBar);
+                q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ5SeekBar);
+
+                submiButton = (Button) questionsLayout.findViewById(R.id.swlsSubmitButton);
+
+                submiButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        saveSwlsSurvey();
+                        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+                        expandableLayout.setNoContentMsg("No SWLS survey available");
+                        expandableLayout.showNoContentMsg();
+                        expandableLayout.collapse();
+                        callback.onSwlsSurveyCompletedCallback();
+
+                        if(!currentSurvey.grouped) {
+                            notifySurveyCompleted();
+                        }
+
+                        Toast.makeText(getContext(), "SWLS survey completed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                expandableLayout.setBodyView(questionsLayout);
+                expandableLayout.showBody();
+
+                return;
+            }
+        }
+
+        questionsLayout.setVisibility(GONE);
+        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+        expandableLayout.setNoContentMsg("No SWLS survey available");
+        expandableLayout.showNoContentMsg();
     }
 
-    private void savePhq8Survey() {
-        long timestamp = System.currentTimeMillis();
-        int completed = 1;
-        ContentValues record = new ContentValues();
-        record.put(SWLSTable.KEY_SWLS_TS, timestamp);
-        record.put(SWLSTable.KEY_SWLS_COMPLETED, completed);
-        record.put(SWLSTable.KEY_SWLS_Q1, q1Seekbar.getProgress());
-        record.put(SWLSTable.KEY_SWLS_Q2, q2Seekbar.getProgress());
-        record.put(SWLSTable.KEY_SWLS_Q3, q3Seekbar.getProgress());
-        record.put(SWLSTable.KEY_SWLS_Q4, q4Seekbar.getProgress());
-        record.put(SWLSTable.KEY_SWLS_Q5, q5Seekbar.getProgress());
-        localController.update(LocalDbUtility.getTableName(swlsTable), record, LocalDbUtility.getTableColumns(swlsTable)[0] + " = " + currentSurveyId);
+    private void saveSwlsSurvey() {
+        ContentValues attributes = new ContentValues();
+        attributes.put(SWLSTable.KEY_SWLS_PARENT_SURVEY_ID, currentSurvey.id);
+        attributes.put(SWLSTable.KEY_SWLS_COMPLETED, true);
+        attributes.put(SWLSTable.KEY_SWLS_Q1, q1Seekbar.getProgress());
+        attributes.put(SWLSTable.KEY_SWLS_Q2, q2Seekbar.getProgress());
+        attributes.put(SWLSTable.KEY_SWLS_Q3, q3Seekbar.getProgress());
+        attributes.put(SWLSTable.KEY_SWLS_Q4, q4Seekbar.getProgress());
+        attributes.put(SWLSTable.KEY_SWLS_Q5, q5Seekbar.getProgress());
+
+        Survey survey = (Survey) Survey.findByPk(currentSurvey.id);
+        survey.getSurveys().get(SurveyType.SWLS).setAttributes(attributes);
+
+        if(!survey.grouped) {
+            survey.completed = true;
+            survey.ts = System.currentTimeMillis();
+        }
+
+        survey.save();
     }
 
-    private Cursor getSwls() {
-        String tableName = LocalDbUtility.getTableName(swlsTable);
-        String indexColumn = LocalDbUtility.getTableColumns(swlsTable)[0];
-        String columnSchedule = LocalDbUtility.getTableColumns(swlsTable)[2];
-        String columnCompleted = LocalDbUtility.getTableColumns(swlsTable)[3];
-        String columnNotified = LocalDbUtility.getTableColumns(swlsTable)[4];
-        String columnExpired = LocalDbUtility.getTableColumns(swlsTable)[5];
-
-        LocalDateTime startDateTime = new LocalDateTime().withTime(0, 0, 0, 0);
-        LocalDateTime endDateTime = new LocalDateTime().withTime(23, 59, 59, 999);
-        long startMillis = startDateTime.toDateTime().getMillis()/1000;
-        long endMillis = endDateTime.toDateTime().getMillis()/1000;
-        Cursor c = localController.rawQuery("SELECT * FROM " + tableName
-                + " WHERE " + columnSchedule + " >= " + startMillis + " AND " + columnSchedule + " <= " + endMillis
-                + " AND " + columnCompleted + " = " + 0 + " AND " + columnNotified + " > " + 0 + " AND " + columnExpired + " = " + 0 +
-                " ORDER BY " + indexColumn + " ASC LIMIT 1", null);
-
-        return c;
+    public interface OnSwlsSurveyCompletedCallback {
+        void onSwlsSurveyCompletedCallback();
     }
 
-    public interface OnSwlsCompletedCallback {
-        void onSwlsCompletedCallback();
-    }
-
-    public void setCallback(OnSwlsCompletedCallback callback) {
+    public void setCallback(OnSwlsSurveyCompletedCallback callback) {
         this.callback = callback;
     }
 }

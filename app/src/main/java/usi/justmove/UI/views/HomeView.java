@@ -1,10 +1,10 @@
 package usi.justmove.UI.views;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -25,19 +25,15 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import usi.justmove.R;
 import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.controllers.SQLiteController;
-import usi.justmove.local.database.tables.LocalDbUtility;
-import usi.justmove.local.database.tables.LocalTables;
+import usi.justmove.local.database.LocalDbUtility;
+import usi.justmove.local.database.LocalTables;
 import usi.justmove.local.database.tables.SimpleMoodTable;
 
 /**
@@ -196,12 +192,11 @@ public class HomeView extends LinearLayout{
 
     private void saveMoodStatus(int status) {
         List<Map<String, String>> records = new ArrayList<>();
-        Map<String, String> record = new HashMap<>();
-        record.put(SimpleMoodTable.KEY_SIMPLE_MOOD_ID, null);
+        ContentValues record = new ContentValues();
         record.put(SimpleMoodTable.KEY_SIMPLE_MOOD_TIMESTAMP, Long.toString(System.currentTimeMillis()));
         record.put(SimpleMoodTable.KEY_SIMPLE_MOOD_STATUS, Integer.toString(status));
-        records.add(record);
-        localController.insertRecords(SimpleMoodTable.TABLE_SIMPLE_MOOD, records);
+
+        localController.insertRecord(SimpleMoodTable.TABLE_SIMPLE_MOOD, record);
         Toast.makeText(getContext(), "Mood saved", Toast.LENGTH_SHORT).show();
         initSimpleMoodChart();
     }

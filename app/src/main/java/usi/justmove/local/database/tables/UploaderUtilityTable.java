@@ -5,6 +5,9 @@ import android.content.ContentValues;
 import java.util.ArrayList;
 import java.util.List;
 
+import usi.justmove.local.database.LocalDbUtility;
+import usi.justmove.local.database.LocalTables;
+
 /**
  * Created by usi on 29/01/17.
  */

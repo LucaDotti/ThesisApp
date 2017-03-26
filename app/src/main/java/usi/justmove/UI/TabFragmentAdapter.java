@@ -18,7 +18,7 @@ import static android.R.attr.fragment;
 
 public class TabFragmentAdapter extends FragmentPagerAdapter {
 
-    private String[] fragments = {"Home", "Map", "Surveys"};
+    private String[] fragments = {"Home", "Map", "SurveyType"};
 
     public TabFragmentAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);

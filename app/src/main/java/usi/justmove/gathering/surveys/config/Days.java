@@ -2,7 +2,7 @@ package usi.justmove.gathering.surveys.config;
 
 import org.joda.time.DateTimeConstants;
 
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  * Created by usi on 16/02/17.
@@ -17,22 +17,22 @@ public enum Days {
     SATURDAY,
     SUNDAY;
 
-    public static int toDateTimeConstants(Days day) {
+    public static int toTimeConstants(Days day) {
         switch(day) {
             case MONDAY:
-                return DateTimeConstants.MONDAY;
+                return Calendar.MONDAY;
             case TUESDAY:
-                return DateTimeConstants.TUESDAY;
+                return Calendar.TUESDAY;
             case WEDNESDAY:
-                return DateTimeConstants.WEDNESDAY;
+                return Calendar.WEDNESDAY;
             case THURSDAY:
-                return DateTimeConstants.THURSDAY;
+                return Calendar.THURSDAY;
             case FRIDAY:
-                return DateTimeConstants.FRIDAY;
+                return Calendar.FRIDAY;
             case SATURDAY:
-                return DateTimeConstants.SATURDAY;
+                return Calendar.SATURDAY;
             case SUNDAY:
-                return DateTimeConstants.SUNDAY;
+                return Calendar.SUNDAY;
             default:
                 throw new IllegalArgumentException("Day not found");
         }

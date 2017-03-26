@@ -18,6 +18,7 @@
 
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -39,11 +40,8 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".gathering.surveys.schedulation.SurveysScheduleSystem$SurveyScheduleActionReceiver">
-            <intent-filter>
-                <action android:name="survey_schedule_action"/>
-            </intent-filter>
-        </receiver>
+        <receiver android:name=".gathering.surveys.handle.SchedulerAlarmReceiver"/>
+        <receiver android:name=".gathering.surveys.handle.SurveyEventReceiver"/>
 
         <service
             android:name=".gathering.gatheringServices.WifiGatheringService"

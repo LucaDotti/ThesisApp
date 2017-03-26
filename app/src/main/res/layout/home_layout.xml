@@ -31,8 +31,7 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingBottom="55dp"
-                android:paddingTop="10dp"
-                >
+                android:paddingTop="10dp">
                 <ImageView
                     android:layout_width="15dp"
                     android:layout_height="15dp"

@@ -46,7 +46,6 @@ import java.util.Map;
 import usi.justmove.R;
 import usi.justmove.UI.views.HomeView;
 import usi.justmove.UI.views.RegistrationView;
-import usi.justmove.gathering.surveys.schedulation.PeriodSurveysScheduler;
 import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.local.database.tables.SimpleMoodTable;
@@ -116,20 +115,20 @@ public class HomeFragment extends Fragment implements RegistrationView.OnUserReg
     }
 
     private void createSurveyDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.registration_survey_question)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        new PeriodSurveysScheduler(true).schedule();
-                        callback.onRegistrationSurveyChoice(true);
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        new PeriodSurveysScheduler(false).schedule();
-                        callback.onRegistrationSurveyChoice(false);
-                    }
-                });
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setMessage(R.string.registration_survey_question)
+//                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        new PeriodSurveysScheduler(true).schedule();
+//                        callback.onRegistrationSurveyChoice(true);
+//                    }
+//                })
+//                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        new PeriodSurveysScheduler(false).schedule();
+//                        callback.onRegistrationSurveyChoice(false);
+//                    }
+//                });
     }
 
     public interface OnRegistrationSurveyChoice {

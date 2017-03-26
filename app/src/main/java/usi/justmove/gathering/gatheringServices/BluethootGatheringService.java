@@ -4,6 +4,7 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -67,15 +68,11 @@ class BluetoothEventReceiver extends BroadcastReceiver {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
             long now = System.currentTimeMillis();
-            List<Map<String, String>> records = new ArrayList<>();
-            Map<String, String> record = new HashMap<>();
+            ContentValues record = new ContentValues();
 
-            record.put(BlueToothTable.KEY_BLUETOOTH_ID, null);
             record.put(BlueToothTable.KEY_BLUETOOTH_TIMESTAMP, Long.toString(now));
             record.put(BlueToothTable.KEY_BLUETOOTH_MAC, device.getAddress());
-            record.put(BlueToothTable.KEY_BLUETOOTH_LEVEL, null);
-            records.add(record);
-            localStorageController.insertRecords(BlueToothTable.TABLE_BLUETOOTH, records);
+            localStorageController.insertRecord(BlueToothTable.TABLE_BLUETOOTH, record);
             Log.d("BLUETOOTH SERVICE", "Added record: ts" + record.get(BlueToothTable.KEY_BLUETOOTH_TIMESTAMP) + ", mac: " + record.get(BlueToothTable.KEY_BLUETOOTH_MAC) + ", level: " + record.get(BlueToothTable.KEY_BLUETOOTH_LEVEL));
         }
         BluetoothAdapter.getDefaultAdapter().disable();

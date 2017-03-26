@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="surveys">
+        <item>pam</item>
+        <item>pwb</item>
+        <item>swls</item>
+        <item>shs</item>
+        <item>phq8</item>
+        <item>pss</item>
+    </array>
+</resources>

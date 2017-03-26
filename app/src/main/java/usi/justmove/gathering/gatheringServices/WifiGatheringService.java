@@ -2,6 +2,7 @@ package usi.justmove.gathering.gatheringServices;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -129,20 +130,17 @@ class WifiEventsReceiver extends BroadcastReceiver {
 
             if (context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 List<ScanResult> scans = mgr.getScanResults();
-                Map<String, String> record = new HashMap<>();
+                ContentValues record = new ContentValues();
 
                 for(ScanResult scan: scans) {
-                    record.put(WiFiTable.KEY_WIFI_ID, null);
                     record.put(WiFiTable.KEY_WIFI_TIMESTAMP, Long.toString(System.currentTimeMillis() - SystemClock.elapsedRealtime() + (scan.timestamp / 1000)));
                     record.put(WiFiTable.KEY_WIFI_SSID, scan.BSSID);
                     record.put(WiFiTable.KEY_WIFI_FREQ, Integer.toString(scan.frequency));
                     record.put(WiFiTable.KEY_WIFI_LEVEL, Integer.toString(scan.level));
-                    records.add(record);
                     Log.d("WIFI SERVICE", "Added record: ts: " + record.get(WiFiTable.KEY_WIFI_TIMESTAMP) + ", BSSID: " + record.get(WiFiTable.KEY_WIFI_SSID) + ", FREQ: " + record.get(WiFiTable.KEY_WIFI_FREQ) + ", LEVEL: " + record.get(WiFiTable.KEY_WIFI_LEVEL));
-                    record = new HashMap<>();
+                    localStorageController.insertRecord(WiFiTable.TABLE_WIFI, record);
+                    record = new ContentValues();
                 }
-
-                localStorageController.insertRecords(WiFiTable.TABLE_WIFI, records);
             }
         }
     }

@@ -21,6 +21,7 @@ import usi.justmove.local.database.tables.SHSTable;
 import usi.justmove.local.database.tables.SMSTable;
 import usi.justmove.local.database.tables.SWLSTable;
 import usi.justmove.local.database.tables.SimpleMoodTable;
+import usi.justmove.local.database.tables.SurveyTable;
 import usi.justmove.local.database.tables.UploaderUtilityTable;
 import usi.justmove.local.database.tables.UsedAppTable;
 import usi.justmove.local.database.tables.UserTable;
@@ -35,8 +36,11 @@ public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "JustMove";
 
+    private SQLiteDatabase db;
+
     public LocalSQLiteDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        db = getWritableDatabase();
     }
 
     @Override
@@ -59,6 +63,7 @@ public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
         db.execSQL(SWLSTable.getCreateQuery());
         db.execSQL(PHQ8Table.getCreateQuery());
         db.execSQL(PSSTable.getCreateQuery());
+        db.execSQL(SurveyTable.getCreateQuery());
 
         //insert init data to uploader_utility table
         insertRecords(db, UploaderUtilityTable.TABLE_UPLOADER_UTILITY, UploaderUtilityTable.getRecords());

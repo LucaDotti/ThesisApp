@@ -2,6 +2,7 @@ package usi.justmove.gathering.gatheringServices;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -85,16 +86,14 @@ class IncomingSMSEventsReceiver extends BroadcastReceiver {
     }
 
     private void insertRecord(String direction, String receiverNumber, String senderNumber) {
-        List<Map<String, String>> records = new ArrayList<>();
-        Map<String, String> record = new HashMap<>();
+        ContentValues record = new ContentValues();
 
-        record.put(SMSTable.KEY_SMS_ID, null);
         record.put(SMSTable.KEY_SMS_TS, Long.toString(System.currentTimeMillis()));
         record.put(SMSTable.KEY_SMS_DIRECTION, direction);
         record.put(SMSTable.KEY_SMS_RECEIVER_NUMBER, receiverNumber);
         record.put(SMSTable.KEY_SMS_SENDER_NUMBER, senderNumber);
 
-        localStorageController.insertRecords(SMSTable.TABLE_SMS, records);
+        localStorageController.insertRecord(SMSTable.TABLE_SMS, record);
         Log.d("CALLS SERVICE", "Added record: ts: " + record.get(SMSTable.KEY_SMS_TS) + ", direction: " + record.get(SMSTable.KEY_SMS_DIRECTION) + ", receiver: " + record.get(SMSTable.KEY_SMS_RECEIVER_NUMBER) + ", sender: " + record.get(SMSTable.KEY_SMS_SENDER_NUMBER));
     }
 }
@@ -145,16 +144,14 @@ class OutgoingSmsObserver extends ContentObserver {
     }
 
     private void insertRecord(String direction, String receiverNumber, String senderNumber) {
-        List<Map<String, String>> records = new ArrayList<>();
-        Map<String, String> record = new HashMap<>();
+        ContentValues record = new ContentValues();
 
-        record.put(SMSTable.KEY_SMS_ID, null);
         record.put(SMSTable.KEY_SMS_TS, Long.toString(System.currentTimeMillis()));
         record.put(SMSTable.KEY_SMS_DIRECTION, direction);
         record.put(SMSTable.KEY_SMS_RECEIVER_NUMBER, receiverNumber);
         record.put(SMSTable.KEY_SMS_SENDER_NUMBER, senderNumber);
 
-        localStorageController.insertRecords(SMSTable.TABLE_SMS, records);
+        localStorageController.insertRecord(SMSTable.TABLE_SMS, record);
         Log.d("CALLS SERVICE", "Added record: ts: " + record.get(SMSTable.KEY_SMS_TS) + ", direction: " + record.get(SMSTable.KEY_SMS_DIRECTION) + ", receiver: " + record.get(SMSTable.KEY_SMS_RECEIVER_NUMBER) + ", sender: " + record.get(SMSTable.KEY_SMS_SENDER_NUMBER));
     }
 }

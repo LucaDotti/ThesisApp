@@ -1,15 +1,7 @@
 package usi.justmove.remote.database.controllers;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.IntentSender;
-import android.graphics.Path;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import usi.justmove.MainActivity;
-import usi.justmove.local.database.tables.LocalTables;
 import usi.justmove.remote.database.RemoteStorageController;
 
 /**

@@ -2,6 +2,7 @@ package usi.justmove.gathering.gatheringServices;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -53,8 +54,7 @@ class ScreenEventsReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        List<Map<String, String>> records = new ArrayList<>();
-        Map<String, String> record = new HashMap<>();
+        ContentValues record = new ContentValues();
 
         if(intent.getAction().equals(Intent.ACTION_SCREEN_ON) && isLock) {
             return;
@@ -66,11 +66,9 @@ class ScreenEventsReceiver extends BroadcastReceiver {
             isLock = true;
         }
 
-        record.put(PhoneLockTable.KEY_PHONELOCK_ID, null);
         record.put(PhoneLockTable.KEY_PHONELOCK_TIMESTAMP, Long.toString(System.currentTimeMillis()));
         record.put(PhoneLockTable.KEY_PHONELOCK_STATUS, isLock ? "lock" : "unlock");
-        records.add(record);
-        localStorageController.insertRecords(PhoneLockTable.TABLE_PHONELOCK, records);
+        localStorageController.insertRecord(PhoneLockTable.TABLE_PHONELOCK, record);
 
         Log.d("LOCK SERVICE", "Added record:  status: " + (isLock ? "lock" : "unlock"));
     }

@@ -1,6 +1,21 @@
-package usi.justmove.local.database.tables;
+package usi.justmove.local.database;
 
-import static android.R.attr.data;
+import usi.justmove.local.database.tables.AccelerometerTable;
+import usi.justmove.local.database.tables.BlueToothTable;
+import usi.justmove.local.database.tables.LocationTable;
+import usi.justmove.local.database.tables.PAMTable;
+import usi.justmove.local.database.tables.PHQ8Table;
+import usi.justmove.local.database.tables.PSSTable;
+import usi.justmove.local.database.tables.PWBTable;
+import usi.justmove.local.database.tables.PhoneCallLogTable;
+import usi.justmove.local.database.tables.PhoneLockTable;
+import usi.justmove.local.database.tables.SHSTable;
+import usi.justmove.local.database.tables.SMSTable;
+import usi.justmove.local.database.tables.SWLSTable;
+import usi.justmove.local.database.tables.SimpleMoodTable;
+import usi.justmove.local.database.tables.SurveyTable;
+import usi.justmove.local.database.tables.UsedAppTable;
+import usi.justmove.local.database.tables.WiFiTable;
 
 /**
  * Created by usi on 18/01/17.
@@ -45,6 +60,8 @@ public class LocalDbUtility {
                 return SHSTable.TABLE_SHS;
             case TABLE_SWLS:
                 return SWLSTable.TABLE_SWLS;
+            case TABLE_SURVEY:
+                return SurveyTable.TABLE_SURVEY;
             default:
                 return null;
         }
@@ -82,6 +99,8 @@ public class LocalDbUtility {
                 return SHSTable.getColumns();
             case TABLE_SWLS:
                 return SWLSTable.getColumns();
+            case TABLE_SURVEY:
+                return SurveyTable.getColumns();
             default:
                 return null;
         }

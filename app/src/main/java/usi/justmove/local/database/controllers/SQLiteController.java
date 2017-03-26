@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import usi.justmove.R;
-import usi.justmove.gathering.surveys.inspection.PAMSurveyInspector;
 import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.LocalSQLiteDBHelper;
 
@@ -53,16 +52,8 @@ public class SQLiteController implements LocalStorageController {
     }
 
     @Override
-    public void insertRecords(String tableName, List<Map<String, String>> records) {
-        ContentValues values;
-
-        for(Map<String, String> record: records) {
-            values = new ContentValues();
-            for(Map.Entry<String, String> entry: record.entrySet()) {
-                values.put(entry.getKey(), entry.getValue());
-            }
-            localDb.insert(tableName, null, values);
-        }
+    public long insertRecord(String tableName, ContentValues record) {
+        return localDb.insert(tableName, null, record);
     }
 
     @Override

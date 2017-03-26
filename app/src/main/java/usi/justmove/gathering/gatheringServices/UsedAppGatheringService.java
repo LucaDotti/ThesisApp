@@ -3,6 +3,7 @@ package usi.justmove.gathering.gatheringServices;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
@@ -60,15 +61,12 @@ class UsedAppTask extends TimerTask {
 
         for(RunningAppProcessInfo process: processes) {
 
-            List<Map<String, String>> records = new ArrayList<>();
-            Map<String, String> record = new HashMap<>();
+            ContentValues record = new ContentValues();
 
-            record.put(UsedAppTable.KEY_USED_APP_ID, null);
             record.put(UsedAppTable.KEY_USED_APP_TIMESTAMP, Long.toString(System.currentTimeMillis()));
             record.put(UsedAppTable.KEY_USED_APP_NAME, process.processName);
             record.put(UsedAppTable.KEY_USED_APP_TYPE, "0");
-            records.add(record);
-            localStorageController.insertRecords(UsedAppTable.TABLE_USED_APP, records);
+            localStorageController.insertRecord(UsedAppTable.TABLE_USED_APP, record);
             Log.d("USED APPS SERVICE", "Added record: ts: " + record.get(UsedAppTable.KEY_USED_APP_TIMESTAMP) + ", name: " + record.get(UsedAppTable.KEY_USED_APP_NAME) + ", type: " + record.get(UsedAppTable.KEY_USED_APP_TYPE));
         }
     }
