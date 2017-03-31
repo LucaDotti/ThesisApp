@@ -16,4 +16,5 @@ public interface LocalStorageController {
     long getDbSize();
     void delete(String tableName, String clause);
     void update(String tableName, ContentValues values, String clause);
+    void truncate(String tableName);
 }

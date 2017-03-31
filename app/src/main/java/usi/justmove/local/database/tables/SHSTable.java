@@ -26,7 +26,7 @@ public class SHSTable {
                 KEY_SHS_Q2 + " INTEGER, " +
                 KEY_SHS_Q3 + " INTEGER, " +
                 KEY_SHS_Q4 + " INTEGER, " +
-                "FOREIGN KEY (" + KEY_SHS_PARENT_SURVEY_ID + ") REFERENCES " + SurveyTable.TABLE_SURVEY + "(" + SurveyTable.KEY_SURVEY_ID + "));" +
+                "FOREIGN KEY (" + KEY_SHS_PARENT_SURVEY_ID + ") REFERENCES " + SurveyTable.TABLE_SURVEY + "(" + SurveyTable.KEY_SURVEY_ID + ")" +
                 ")";
     }
 

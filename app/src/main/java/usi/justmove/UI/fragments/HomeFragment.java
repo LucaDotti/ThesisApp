@@ -46,6 +46,11 @@ import java.util.Map;
 import usi.justmove.R;
 import usi.justmove.UI.views.HomeView;
 import usi.justmove.UI.views.RegistrationView;
+import usi.justmove.gathering.surveys.config.SurveyConfig;
+import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
+import usi.justmove.gathering.surveys.config.SurveyType;
+import usi.justmove.gathering.surveys.schedulation.DailyScheduler;
+import usi.justmove.gathering.surveys.schedulation.Scheduler;
 import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.local.database.tables.SimpleMoodTable;
@@ -109,26 +114,69 @@ public class HomeFragment extends Fragment implements RegistrationView.OnUserReg
 
     @Override
     public void onUserRegisteredCallback() {
+        Log.d("REGISTRATION", "Registered");
         createSurveyDialog();
         registrationView.setVisibility(View.GONE);
         homeView.setVisibility(View.VISIBLE);
     }
 
     private void createSurveyDialog() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setMessage(R.string.registration_survey_question)
-//                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        new PeriodSurveysScheduler(true).schedule();
-//                        callback.onRegistrationSurveyChoice(true);
-//                    }
-//                })
-//                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        new PeriodSurveysScheduler(false).schedule();
-//                        callback.onRegistrationSurveyChoice(false);
-//                    }
-//                });
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.registration_survey_question)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        callback.onRegistrationSurveyChoice(true);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        callback.onRegistrationSurveyChoice(false);
+                    }
+                });
+        builder.show();
+    }
+
+    private String[] getTermSurveyDates() {
+        SurveyConfig c = SurveyConfigFactory.getConfig(SurveyType.GROUPED_SSPP, getContext());
+
+        String[] dates = new String[c.dayCount];
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+
+        Calendar start = Calendar.getInstance();
+        start.set(Calendar.HOUR_OF_DAY, 0);
+        start.set(Calendar.MINUTE, 0);
+        start.set(Calendar.SECOND, 1);
+
+        Calendar end = Calendar.getInstance();
+        String endString = getContext().getString(R.string.term_end_study_date);
+        String[] dateElems = endString.split("-");
+        end.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateElems[0]));
+        end.set(Calendar.MONTH, Integer.parseInt(dateElems[1])-1);
+        end.set(Calendar.YEAR, Integer.parseInt(dateElems[2]));
+        end.set(Calendar.HOUR_OF_DAY, 0);
+        end.set(Calendar.MINUTE, 0);
+        end.set(Calendar.SECOND, 1);
+
+        System.out.println("END " + formatter.format(end.getTime()));
+        System.out.println("START " + formatter.format(start.getTime()));
+        long diff = end.getTimeInMillis() - start.getTimeInMillis();
+
+        //check this
+        long interval = diff/(c.dayCount-1);
+        int days = (int) (interval/(24 * 60 * 60 * 1000));
+
+        dates[0] = formatter.format(start.getTime());
+
+        int i;
+        for(i = 1; i < dates.length-1; i++) {
+            start.add(Calendar.DAY_OF_MONTH, days);
+            dates[i] = formatter.format(start.getTime());
+        }
+
+        dates[i] = formatter.format(end.getTime());
+
+        return dates;
     }
 
     public interface OnRegistrationSurveyChoice {
@@ -139,7 +187,7 @@ public class HomeFragment extends Fragment implements RegistrationView.OnUserReg
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (context instanceof SurveysFragment.OnSurveyCompletedCallback) {
+        if (context instanceof OnRegistrationSurveyChoice) {
             callback = (OnRegistrationSurveyChoice) context;
         } else {
             throw new RuntimeException(context.toString()

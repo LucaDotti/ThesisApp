@@ -158,7 +158,7 @@ public class HomeView extends LinearLayout{
         } else {
             simpleMoodForm.setVisibility(View.INVISIBLE);
         }
-//        initSimpleMoodChart();
+        initSimpleMoodChart();
     }
 
     private boolean checkDisplaySimpleMood() {
@@ -219,7 +219,10 @@ public class HomeView extends LinearLayout{
         simpleMoodChart.getLegend().setEnabled(false);
         simpleMoodChart.getDescription().setEnabled(false);
         simpleMoodChart.setExtraBottomOffset(30);
-        simpleMoodChart.getData().setHighlightEnabled(false);
+        if(simpleMoodChart.getData() != null) {
+            simpleMoodChart.getData().setHighlightEnabled(false);
+        }
+
 
         // Y AXIS
         simpleMoodChart.getAxisLeft().setAxisMinimum(0);
@@ -292,7 +295,7 @@ public class HomeView extends LinearLayout{
     private List<Entry> getSimpleMoodChartData() {
         List<Entry> data = new ArrayList<>();
         Cursor c = localController.rawQuery("SELECT * FROM " + SimpleMoodTable.TABLE_SIMPLE_MOOD, null);
-
+        int a = c.getCount();
         if(c.getCount() == 0) {
             return data;
         }

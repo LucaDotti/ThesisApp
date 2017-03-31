@@ -2,6 +2,7 @@ package usi.justmove.gathering.surveys.schedulation;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import java.util.Calendar;
 import java.util.Random;
 
 import usi.justmove.MyApplication;
+import usi.justmove.gathering.surveys.config.Frequency;
 import usi.justmove.gathering.surveys.config.SurveyType;
 import usi.justmove.gathering.surveys.config.SurveyConfig;
 import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
@@ -22,6 +24,9 @@ import usi.justmove.local.database.tableHandlers.Survey;
 import usi.justmove.local.database.LocalTables;
 import usi.justmove.local.database.tables.SurveyTable;
 
+import static android.R.attr.id;
+import static usi.justmove.R.array.surveys;
+
 /**
  * Created by usi on 14/03/17.
  */
@@ -29,73 +34,181 @@ import usi.justmove.local.database.tables.SurveyTable;
 public class DailyScheduler {
     private AlarmManager alarmMgr;
     private Context context;
+    private SurveyConfig currConfig;
+    private boolean isImmediate;
+    private boolean restore;
 
     public DailyScheduler() {
         this.context = MyApplication.getContext();
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
-    public void schedule(SurveyType surveyType) {
-        SurveyConfig config = SurveyConfigFactory.getConfig(surveyType, context);
+    public void schedule(SurveyType surveyType, boolean immediate) {
+        isImmediate = immediate;
 
-        schedule(config);
-    }
+        currConfig = SurveyConfigFactory.getConfig(surveyType, context);
 
-    private void schedule(SurveyConfig config) {
-        Survey s;
+//        int count = Survey.getAvailableSurveyCount(surveyType);
+        int count = Survey.getTodaySurveyCount(surveyType);
+        Log.d("COUNT", surveyType.getSurveyName() + "" + count);
 
-        long[] times = getAlarmsTimes(config);
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
+        long[] times = getAlarmsTimes();
 
-        for (int i = 0; i < config.surveysCount; i++) {
-            s = (Survey) LocalTables.getTableHandler(LocalTables.TABLE_SURVEY);
-            insertSurveyRecord(s, config, times[i]);
+        for(long l: times) {
+            System.out.println("Time " + l);
+        }
 
-            if(times[i] >= 0) {
-                setAlarms(s, config, times[i]);
+        Survey[] surveys = new Survey[currConfig.surveysCount];
 
-            } else {
-                Log.d("Scheduler", "Too late for this survey.");
+        if(count < currConfig.surveysCount) {
+            for (int i = 0; i < currConfig.surveysCount; i++) {
+                if(times[i] >= 0) {
+                    surveys[i] = insertSurveyRecord(times[i]);
+                } else {
+                    Log.d("Daily scheduler", "Too late for that survey");
+                }
+            }
+        } else {
+            surveys = Survey.getTodaySurveys(surveyType);
+
+            int notified;
+            for(Survey s: surveys) {
+                notified = s.getAttributes().getAsInteger("notified");
+                notified--;
+                ContentValues attr = new ContentValues();
+                attr.put("notified", notified);
+                s.setAttribute("notified", attr);
+                s.save();
             }
         }
+
+        for (int i = 0; i < currConfig.surveysCount; i++) {
+            if(times[i] >= 0) {
+                setAlarms(surveys[i], isImmediate);
+            }
+            isImmediate = false;
+        }
+
+        restore = false;
     }
 
-    private void insertSurveyRecord(Survey survey, SurveyConfig config, long scheduleTime) {
+//    private void schedule(SurveyConfig config, boolean immediate, long[] times) {
+//        int count = Survey.getTodaySurveyCount(config.survey);
+//
+//        Survey s;
+//
+//        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
+//
+//        for (int i = 0; i < config.surveysCount; i++) {
+//            s = (Survey) LocalTables.getTableHandler(LocalTables.TABLE_SURVEY);
+//
+//            if(count == 0) {
+//                insertSurveyRecord(config, times[i]);
+//            }
+//
+//            if(times[i] >= 0) {
+//
+//                if(i == 0 && immediate) {
+//                    Intent intent = new Intent(context, SurveyEventReceiver.class);
+//                    intent.putExtra("survey_id", s.id);
+//                    intent.setAction(SurveyEventReceiver.SURVEY_SCHEDULED_INTENT);
+//                    Calendar c = Calendar.getInstance();
+//                    PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//                    try {
+//                        alarmIntent.send();
+//                    } catch (PendingIntent.CanceledException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                config.notificationsCount--;
+//
+//                int[] timeEnd = parseTime(config.dailyTimes[0].second);
+//                Calendar end = Calendar.getInstance();
+//                end.set(Calendar.HOUR_OF_DAY, timeEnd[0]);
+//                end.set(Calendar.MINUTE, timeEnd[1]);
+//
+//                if(times[i] > end.getTimeInMillis() - config.maxElapseTimeForCompletion) {
+//                    end.set(Calendar.HOUR_OF_DAY, 19);
+//                    end.set(Calendar.MINUTE, 0);
+//                    end.add(Calendar.DAY_OF_MONTH, 1);
+//                    times[i] = end.getTimeInMillis();
+//                }
+//            } else {
+//                Log.d("Scheduler", "Too late for this survey.");
+//            }
+//        }
+//    }
+
+    private Survey insertSurveyRecord(long scheduleTime) {
+        Survey survey = (Survey) LocalTables.getTableHandler(LocalTables.TABLE_SURVEY);
         ContentValues attributes = new ContentValues();
-        attributes.put(SurveyTable.KEY_SURVEY_SCHEDULED_AT, scheduleTime/1000);
+
+        if(scheduleTime < 0) {
+            attributes.put(SurveyTable.KEY_SURVEY_SCHEDULED_AT, scheduleTime);
+            attributes.put(SurveyTable.KEY_SURVEY_EXPIRED, true);
+        } else {
+            attributes.put(SurveyTable.KEY_SURVEY_SCHEDULED_AT, scheduleTime/1000);
+            attributes.put(SurveyTable.KEY_SURVEY_EXPIRED, false);
+        }
+
         attributes.put(SurveyTable.KEY_SURVEY_NOTIFIED, 0);
-        attributes.put(SurveyTable.KEY_SURVEY_EXPIRED, false);
         attributes.put(SurveyTable.KEY_SURVEY_COMPLETED, false);
-        attributes.put(SurveyTable.KEY_SURVEY_TYPE, config.survey.getSurveyName());
-        attributes.put(SurveyTable.KEY_SURVEY_GROUPED, config.grouped);
+        attributes.put(SurveyTable.KEY_SURVEY_TYPE, currConfig.survey.getSurveyName());
+        attributes.put(SurveyTable.KEY_SURVEY_GROUPED, currConfig.grouped);
         survey.setAttributes(attributes);
         survey.save();
+
+        return survey;
     }
 
-    private void setAlarms(Survey survey, SurveyConfig config, long scheduleTime) {
+    private void setAlarms(Survey survey, boolean immediate) {
         Intent intent = new Intent(context, SurveyEventReceiver.class);
         intent.putExtra("survey_id", survey.id);
         intent.setAction(SurveyEventReceiver.SURVEY_SCHEDULED_INTENT);
 
 
-        long notificationInterval = config.maxElapseTimeForCompletion / config.notificationsCount;
+        long notificationInterval = currConfig.maxElapseTimeForCompletion / currConfig.notificationsCount;
 
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
-        Calendar c;
-        PendingIntent alarmIntent;
-        for (int i = 0; i < config.notificationsCount; i++) {
-            c = Calendar.getInstance();
-            alarmIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            alarmMgr.setExact(AlarmManager.RTC_WAKEUP, scheduleTime + i * notificationInterval, alarmIntent);
-            Log.d("DailyScheduler", "Scheduled survey notification at " + format.format(scheduleTime + i * notificationInterval));
+        Calendar now = Calendar.getInstance();
+
+        int notificationStart = 0;
+        if(immediate) {
+            PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) now.getTimeInMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            try {
+                alarmIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("DailyScheduler", "Scheduled immediate survey " + currConfig.survey.getSurveyName() + " notification at " + format.format(now.getTime()));
+
+            notificationStart = 1;
         }
+
+        for (int i = notificationStart; i < currConfig.notificationsCount; i++) {
+            if(now.getTimeInMillis() <= (survey.scheduledAt*1000) + i * notificationInterval) {
+                setAlarm(intent, survey.scheduledAt*1000 + i * notificationInterval);
+                Log.d("DailyScheduler", "Scheduled survey " + currConfig.survey.getSurveyName() + " notification at " + format.format(survey.scheduledAt*1000 + i * notificationInterval));
+            }
+        }
+
         Log.d("DailyScheduler", "-----------------------------");
     }
 
-    private long[] getAlarmsTimes(SurveyConfig config) {
+    private void setAlarm(Intent i, long time) {
+        Calendar c = Calendar.getInstance();
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), i, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmMgr.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent);
+    }
+
+    private long[] getAlarmsTimes() {
         long[] alarmsTimes;
 
-        if(config.times == null) {
+        if(currConfig.dailyTimes == null) {
             alarmsTimes  = new long[1];
             Calendar c = Calendar.getInstance();
 //            c.add(Calendar.MINUTE, 2);
@@ -104,7 +217,16 @@ public class DailyScheduler {
             return alarmsTimes;
         }
 
-        alarmsTimes = new long[config.surveysCount];
+
+        alarmsTimes = new long[currConfig.surveysCount];
+
+        int surveyStart = 0;
+
+        if(isImmediate) {
+            Calendar now = Calendar.getInstance();
+            alarmsTimes[0] = now.getTimeInMillis();
+            surveyStart = 1;
+        }
 
         DateTime now = new DateTime();
         DateTime start;
@@ -117,21 +239,24 @@ public class DailyScheduler {
         DateTime tempSchedule;
         Random r = new Random();
 
-        for (int i = 0; i < config.surveysCount; i++) {
-            timeStart = parseTime(config.times[i].first);
-            timeEnd = parseTime(config.times[i].second);
+        for (int i = surveyStart; i < currConfig.surveysCount; i++) {
+            timeStart = parseTime(currConfig.dailyTimes[i].first);
+            timeEnd = parseTime(currConfig.dailyTimes[i].second);
 
             start = new DateTime().withTime(timeStart[0], timeStart[1], 0, 0);
-            end = new DateTime().withTime(timeEnd[0], timeEnd[1], 0, 0).minusMillis((int) config.maxElapseTimeForCompletion);
+            end = new DateTime().withTime(timeEnd[0], timeEnd[1], 0, 0).minusMillis((int) currConfig.maxElapseTimeForCompletion);
 
             if(now.isAfter(end)) {
                 alarmsTimes[i] = -1;
+                if(currConfig.survey == SurveyType.GROUPED_SSPP) {
+                    alarmsTimes[i] = now.getMillis();
+                }
             } else {
                 diff = end.getMillis() - start.getMillis();
                 scheduleOffset = r.nextInt((int) diff);
                 if (schedule != null) {
                     tempSchedule = new DateTime(start.getMillis() + scheduleOffset).plusHours(1);
-                    while (Math.abs(tempSchedule.getMillis() - schedule.getMillis()) < config.minElapseTimeBetweenSurveys) {
+                    while (Math.abs(tempSchedule.getMillis() - schedule.getMillis()) < currConfig.minElapseTimeBetweenSurveys) {
                         scheduleOffset = r.nextInt((int) scheduleOffset);
                         tempSchedule = new DateTime(start.getMillis() + scheduleOffset).plusHours(1);
                     }

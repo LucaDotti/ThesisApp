@@ -34,10 +34,8 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".UI.fragments.NotificationBroadcastReceiver">
-            <intent-filter>
-                <action android:name="notification_event"/>
-            </intent-filter>
+        <receiver android:name=".gathering.surveys.handle.NotificationBroadcastReceiver">
+
         </receiver>
 
         <receiver android:name=".gathering.surveys.handle.SchedulerAlarmReceiver"/>

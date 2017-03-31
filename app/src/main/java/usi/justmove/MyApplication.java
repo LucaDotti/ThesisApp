@@ -3,6 +3,8 @@ package usi.justmove;
 import android.app.Application;
 import android.content.Context;
 
+import usi.justmove.gathering.surveys.schedulation.Scheduler;
+
 /**
  * Created by usi on 10/03/17.
  */

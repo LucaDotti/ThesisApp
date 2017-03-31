@@ -12,7 +12,8 @@ public enum Frequency {
     DAILY("daily"),
     WEEKLY("weekly"),
     MONTHLY("monthly"),
-    ONCE("once");
+    ONCE("once"),
+    FIXED_DATES("fixed_dates");
 
     public String name;
 

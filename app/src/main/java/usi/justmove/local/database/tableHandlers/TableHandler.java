@@ -50,5 +50,4 @@ public abstract class TableHandler {
     public abstract String getTableName();
 
     public abstract void delete();
-
 }

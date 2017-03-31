@@ -34,7 +34,7 @@ import usi.justmove.local.database.tables.UserTable;
  */
 
 public class ProfileDialogFragment extends AppCompatDialogFragment {
-    private static String[] academicStatusValues = {"BSc", "MSc", "PhD", "Prof"};
+    private static String[] academicStatusValues = {"BSc", "MSc", "PhD", "Prof", "Other"};
     private LocalStorageController localcontroller;
     private NumberPicker agePicker;
     private RadioButton maleGenderRadioButton;
@@ -94,6 +94,7 @@ public class ProfileDialogFragment extends AppCompatDialogFragment {
     private void dismissDialog() {
         dismiss();
     }
+
     private void showConfirmExitStudyDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Are you sure you want to exit the study?")
@@ -220,7 +221,6 @@ class SendEmailAsynchTask extends AsyncTask<Void, Void, Boolean> {
 
         try {
             boolean status = mail.send();
-            Log.d("MAAAILLL", ""+status);
 
             return status;
         } catch (Exception e) {

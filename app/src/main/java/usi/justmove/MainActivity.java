@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -12,7 +13,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +26,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import usi.justmove.UI.TabFragmentAdapter;
 import usi.justmove.UI.fragments.HomeFragment;
-import usi.justmove.UI.fragments.NotificationBroadcastReceiver;
+import usi.justmove.gathering.surveys.config.SurveyType;
+import usi.justmove.gathering.surveys.handle.NotificationBroadcastReceiver;
 import usi.justmove.UI.fragments.SurveysFragment;
 import usi.justmove.UI.fragments.SwipeChoiceViewPager;
 import usi.justmove.UI.menu.ProfileDialogFragment;
@@ -38,7 +39,7 @@ import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.gathering.GatheringSystem;
 import usi.justmove.gathering.base.SensorType;
 import usi.justmove.local.database.tableHandlers.Survey;
-import usi.justmove.local.database.tableHandlers.TableHandler;
+import usi.justmove.local.database.tables.UserTable;
 import usi.justmove.remote.database.upload.DataUploadService;
 
 public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback, HomeFragment.OnRegistrationSurveyChoice {
@@ -71,9 +72,9 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
 
-        deleteDatabase("JustMove");
-        LocalSQLiteDBHelper dbHelper = new LocalSQLiteDBHelper(this);
-        dbHelper.getWritableDatabase();
+//        deleteDatabase("JustMove");
+//        LocalSQLiteDBHelper dbHelper = new LocalSQLiteDBHelper(this);
+//        dbHelper.getWritableDatabase();
         showSurveyNotification();
 
 
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//        startService(new Intent(this, SurveysService.class));
         if(!checkPermissions()) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CHANGE_WIFI_STATE,
@@ -117,7 +119,12 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
                             Manifest.permission.INTERNET},
                     PERMISSION_REQUEST_STATUS);
         } else {
-            init();
+
+            if(checkUserRegistered()) {
+                init();
+
+            }
+//            init();
         }
     }
 
@@ -132,9 +139,9 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         gSys.addSensor(SensorType.PHONE_CALLS);
         gSys.addSensor(SensorType.SMS);
         gSys.addSensor(SensorType.USED_APPS);
-//        gSys.start();
+        gSys.start();
 
-//        startService(new Intent(this, DataUploadService.class));
+        startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
     }
 
@@ -143,7 +150,10 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(requestCode == PERMISSION_REQUEST_STATUS) {
-            init();
+            if(checkUserRegistered()) {
+                init();
+            }
+
         }
     }
 
@@ -157,6 +167,16 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
                 ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED;
     }
 
+    private boolean checkUserRegistered() {
+        Cursor c = SQLiteController.getInstance(this).rawQuery("SELECT * FROM " + UserTable.TABLE_USER, null);
+
+        if(c.getCount() == 0) {
+            return false;
+        } else  {
+            c.moveToFirst();
+            return c.getInt(2) == 0 ? true : false;
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -260,10 +280,13 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
     @Override
     public void onRegistrationSurveyChoice(boolean now) {
+        init();
         if(now) {
             tabFragmentAdapter.notifyDataSetChanged();
             tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
+            viewPager.setCurrentItem(2);
         }
+
         showSurveyNotification();
     }
 }

@@ -13,6 +13,7 @@ import usi.justmove.local.database.tables.SHSTable;
 import usi.justmove.local.database.tables.SMSTable;
 import usi.justmove.local.database.tables.SWLSTable;
 import usi.justmove.local.database.tables.SimpleMoodTable;
+import usi.justmove.local.database.tables.SurveyAlarmsTable;
 import usi.justmove.local.database.tables.SurveyTable;
 import usi.justmove.local.database.tables.UsedAppTable;
 import usi.justmove.local.database.tables.WiFiTable;
@@ -62,6 +63,8 @@ public class LocalDbUtility {
                 return SWLSTable.TABLE_SWLS;
             case TABLE_SURVEY:
                 return SurveyTable.TABLE_SURVEY;
+            case TABLE_SURVEY_ALARMS:
+                return SurveyAlarmsTable.TABLE_SURVEY_ALARM;
             default:
                 return null;
         }
@@ -101,9 +104,10 @@ public class LocalDbUtility {
                 return SWLSTable.getColumns();
             case TABLE_SURVEY:
                 return SurveyTable.getColumns();
+            case TABLE_SURVEY_ALARMS:
+                return SurveyAlarmsTable.getColumns();
             default:
                 return null;
         }
     }
-
 }

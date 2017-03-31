@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shawnlin.numberpicker.NumberPicker;
@@ -37,6 +39,7 @@ import usi.justmove.local.database.tableHandlers.Survey;
 import usi.justmove.local.database.tableHandlers.TableHandler;
 import usi.justmove.local.database.LocalTables;
 import usi.justmove.local.database.tables.PAMTable;
+import usi.justmove.local.database.tables.UserTable;
 
 /**
  * Created by usi on 20/02/17.
@@ -117,6 +120,13 @@ public class PAMSurveyView extends LinearLayout {
             R.id.pamSurveyLocationA_other_radioButton
     };
 
+    static int[] afternoonPeopleRButtons = {
+            R.id.pamSurveyPeople_none_radioButton,
+            R.id.pamSurveyPeople_1_5_radioButton,
+            R.id.pamSurveyPeople_6_10_radioButton,
+            R.id.pamSurveyPeople_10_p_radioButton
+    };
+
     private ImageView[][] images;
     private int selectedImageId;
     private ImageView selectedImage;
@@ -139,8 +149,9 @@ public class PAMSurveyView extends LinearLayout {
     private List<RadioButton> afternoonSportRadioGroup;
     private RadioButton afternoonSportSelectedRButton;
     private List<RadioButton> afternoonWorkloadRadioGroup;
+    private RadioButton afternoonPeopleSelectedRButton;
+    private List<RadioButton> afternoonPeopleRadioGroup;
     private RadioButton afternoonWorkloadSelectedRButton;
-    private NumberPicker afternoonPeoplePicker;
     private List<RadioButton> afternoonLocationRadioGroup;
     private RadioButton afternoonLocationSelectedRButton;
 
@@ -243,6 +254,7 @@ public class PAMSurveyView extends LinearLayout {
                 });
 
                 expandableLayout.setBodyView(questionsLayout);
+                expandableLayout.expand();
                 expandableLayout.showBody();
 
                 return;
@@ -258,7 +270,7 @@ public class PAMSurveyView extends LinearLayout {
     }
 
     private void determineSurveyPeriod(Survey survey) {
-        DateTime scheduleTime = new DateTime(survey.scheduledAt);
+        DateTime scheduleTime = new DateTime(survey.scheduledAt * 1000);
         DateTime afternoon = new DateTime().withTime(13, 0, 0, 0);
         if(scheduleTime.isBefore(afternoon)) {
             currentPeriod = PAM_MORNING;
@@ -347,9 +359,26 @@ public class PAMSurveyView extends LinearLayout {
             afternoonLocationRadioGroup.add(current);
         }
 
-        afternoonPeoplePicker = (NumberPicker) questionsLayout.findViewById(R.id.pamSurveyAfternoonPeoplePicker);
-        afternoonPeoplePicker.setMinValue(0);
-        afternoonPeoplePicker.setMaxValue(20);
+        afternoonPeopleRadioGroup =  new ArrayList<>();
+        for(int i = 0; i < afternoonPeopleRButtons.length; i++) {
+            current = (RadioButton) questionsLayout.findViewById(afternoonPeopleRButtons[i]);
+            current.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(afternoonPeopleSelectedRButton != null) {
+                        afternoonPeopleSelectedRButton.setChecked(false);
+                    }
+                    afternoonPeopleSelectedRButton = (RadioButton) v;
+                    afternoonPeopleSelectedRButton.setChecked(true);
+                }
+            });
+            afternoonPeopleRadioGroup.add(current);
+        }
+
+        if(isUserStudent()) {
+            TextView uniQ = (TextView) questionsLayout.findViewById(R.id.pamSurveyAfternoonUniQ);
+            uniQ.setText(context.getString(R.string.pam_q2_afternoon_2));
+        }
 
         afternoonWorkloadRadioGroup = new ArrayList<>();
         for(int i = 0; i < afternoonWorkloadRButtons.length; i++) {
@@ -366,6 +395,23 @@ public class PAMSurveyView extends LinearLayout {
             });
             afternoonWorkloadRadioGroup.add(current);
         }
+    }
+
+    private boolean isUserStudent() {
+        Cursor c = localController.rawQuery("SELECT * FROM " + UserTable.TABLE_USER, null);
+
+        if(c.getCount() > 0) {
+            c.moveToFirst();
+
+            if(c.getString(7).equals("Other")) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        return true;
+
     }
 
     private void initPamImages() {
@@ -428,12 +474,18 @@ public class PAMSurveyView extends LinearLayout {
         pamAttributes.put(PAMTable.KEY_PAM_TRANSPORTATION, transportation);
         pamAttributes.put(PAMTable.KEY_PAM_IMAGE_ID, imageId);
 
-        currentSurvey.getSurveys().get(SurveyType.PAM).setAttributes(pamAttributes);
 
-        currentSurvey.completed = true;
-        currentSurvey.ts = System.currentTimeMillis();
+        PAMSurvey pamSurvey = new PAMSurvey(true);
+        pamSurvey.setAttributes(pamAttributes);
 
-        currentSurvey.save();
+        Survey survey = (Survey) Survey.findByPk(currentSurvey.id);
+        survey.getSurveys().get(SurveyType.PAM).setAttributes(pamAttributes);
+
+
+        if(!currentSurvey.grouped) {
+            survey.completed = true;
+            survey.ts = System.currentTimeMillis();
+        }
     }
 
     private void saveAfternoonPam() {
@@ -454,7 +506,12 @@ public class PAMSurveyView extends LinearLayout {
             workload = "no answer";
         }
 
-        int people = afternoonPeoplePicker.getValue();
+        String people;
+        if(afternoonPeopleSelectedRButton != null) {
+            people = parseStringChoice(afternoonPeopleSelectedRButton.getId());
+        } else {
+            people = "no answer";
+        }
 
         String location;
         if(afternoonLocationSelectedRButton != null) {
@@ -476,10 +533,16 @@ public class PAMSurveyView extends LinearLayout {
         PAMSurvey pamSurvey = new PAMSurvey(true);
         pamSurvey.setAttributes(pamAttributes);
 
-        currentSurvey.attachChildSurvey(SurveyType.PAM, pamSurvey);
-        currentSurvey.completed = true;
+        Survey survey = (Survey) Survey.findByPk(currentSurvey.id);
+        survey.getSurveys().get(SurveyType.PAM).setAttributes(pamAttributes);
 
-        currentSurvey.save();
+
+        if(!currentSurvey.grouped) {
+            survey.completed = true;
+            survey.ts = System.currentTimeMillis();
+        }
+
+        survey.save();
     }
 
     private String parseStringChoice(int id) {
@@ -505,6 +568,7 @@ public class PAMSurveyView extends LinearLayout {
             case R.id.pamSurveySleep_none_radioButton:
             case R.id.pamSurveySport_none_radioButton:
             case R.id.pamSurveyUni_none_radioButton:
+            case R.id.pamSurveyPeople_none_radioButton:
                 return "None";
             case R.id.pamSurveySleep_1_3_radioButton: return "1 - 3 h";
             case R.id.pamSurveySleep_4_6_radioButton: return "4 - 6 h";
@@ -518,6 +582,9 @@ public class PAMSurveyView extends LinearLayout {
             case R.id.pamSurveyUni_5_6_radioButton: return "5 - 6 h";
             case R.id.pamSurveyUni_7_8_radioButton: return "7 - 8 h";
             case R.id.pamSurveyUni_8_p_radioButton: return "8+ h";
+            case R.id.pamSurveyPeople_1_5_radioButton: return "1 - 5";
+            case R.id.pamSurveyPeople_6_10_radioButton: return "6 - 10";
+            case R.id.pamSurveyPeople_10_p_radioButton: return "10 +";
             default: return "undefined";
         }
     }

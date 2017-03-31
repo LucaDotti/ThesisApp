@@ -16,8 +16,11 @@ import usi.justmove.MyApplication;
 import usi.justmove.R;
 import usi.justmove.gathering.surveys.config.SurveyConfig;
 import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
+import usi.justmove.gathering.surveys.schedulation.Scheduler;
 import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.SurveyAlarms;
 
+import static android.R.attr.y;
 import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.NOTIFICATION_INTENT;
 import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.SURVEY_COMPLETED_INTENT;
 
@@ -28,6 +31,7 @@ import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.SURVEY_C
 public class SurveyNotifier {
     private Context context;
     private int notificationID;
+    private Survey currSurvey;
 
     public SurveyNotifier() {
         this.context = MyApplication.getContext();
@@ -36,41 +40,51 @@ public class SurveyNotifier {
 
     public void notify(long surveyId, String action) {
         if(surveyId >= 0) {
-            Survey survey = (Survey) Survey.findByPk(surveyId);
+            currSurvey = (Survey) Survey.findByPk(surveyId);
             if(action.equals(SURVEY_COMPLETED_INTENT)) {
-                survey.completed = true;
-                survey.save();
-                NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                mNotificationManager.cancel((int) survey.id);
+                currSurvey.completed = true;
+                currSurvey.save();
+
+                cancelNotification((int) currSurvey.id);
+
+                notifyCancelAlarm();
                 EventBus.getDefault().post(new SurveyEvent(surveyId, false));
             } else {
-                SurveyConfig config = SurveyConfigFactory.getConfig(survey.surveyType, context);
+                SurveyConfig config = SurveyConfigFactory.getConfig(currSurvey.surveyType, context);
 
-                if(survey.completed) {
+                if(currSurvey.completed) {
                     return;
                 }
 
-                survey.notified++;
-                if(survey.notified >= config.notificationsCount) {
-                    NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                    mNotificationManager.cancel((int) survey.id);
-                    survey.expired = true;
-                    survey.save();
+                currSurvey.notified++;
+                if(currSurvey.notified >= config.notificationsCount) {
+                    cancelNotification((int) currSurvey.id);
+
+                    currSurvey.expired = true;
+                    currSurvey.save();
+
+                    notifyCancelAlarm();
                     EventBus.getDefault().post(new SurveyEvent(surveyId, false));
                     return;
                 }
 
-                createNotification(survey, config);
+                createNotification(currSurvey, config);
 
-                survey.save();
+                currSurvey.save();
 
                 EventBus.getDefault().post(new SurveyEvent(surveyId, false));
             }
         }
     }
 
-    private void cancelNotification(long notificationID) {
+    private void notifyCancelAlarm() {
+        SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
+        Scheduler.getInstance().deleteAlarm((int) currentAlarm.id);
+    }
 
+    private void cancelNotification(int id) {
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(id);
     }
 
     private void createNotification(Survey survey, SurveyConfig config) {
@@ -82,6 +96,17 @@ public class SurveyNotifier {
         String timeUnit;
         if(Integer.parseInt(splitTime[0]) != 0) {
             timeUnit = " hours";
+            int hours = Integer.parseInt(splitTime[0]);
+            if(hours > 24) {
+                missingTime = "" + hours;
+
+                if(hours > 1) {
+                    timeUnit = " days";
+                } else {
+                    timeUnit = " day";
+                }
+
+            }
         } else if(Integer.parseInt(splitTime[1]) != 0) {
             timeUnit = " minutes";
         } else {
@@ -95,23 +120,30 @@ public class SurveyNotifier {
 //            notificationID = (int) System.currentTimeMillis();
 //        }
 
-        Intent notificationNowButton = new Intent(NOTIFICATION_INTENT);
-        notificationNowButton.putExtra("id", notificationID);
-        notificationNowButton.putExtra("action", "now");
-        PendingIntent pButtonNowIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), notificationNowButton,0);
-        remoteViews.setOnClickPendingIntent(R.id.notificationButtonNow, pButtonNowIntent);
+//        Intent notificationNowButton = new Intent(NOTIFICATION_INTENT);
+//        notificationNowButton.putExtra("id", notificationID);
+//        notificationNowButton.putExtra("action", "now");
+//        PendingIntent pButtonNowIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), notificationNowButton,0);
+//        remoteViews.setOnClickPendingIntent(R.id.notificationButtonNow, pButtonNowIntent);
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(android.R.drawable.stat_sys_warning)
-                        .setCustomBigContentView(remoteViews)
+//                        .setCustomBigContentView(remoteViews)
                         .setContentTitle("JustMove")
-                        .setSubText("New survey available!");
-        Intent resultIntent = new Intent();
+                        .setContentText("New " + config.survey.getSurveyName() + " survey available!")
+                        .setSubText("Time left \t" + missingTime + timeUnit);
+
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+
+
+        Intent intent = new Intent(context, NotificationBroadcastReceiver.class);
+//        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent resultPendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        stackBuilder.addNextIntent(intent);
+
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 

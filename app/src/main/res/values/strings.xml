@@ -24,16 +24,6 @@
         If you really want to leave the study, please, contact our staff members before confirming.
     </string>
 
-    <string name="pwb_explanation">Please answer the following questions by marking them with a number from 1 (strongly disagree) to 7 (strongly agree)</string>
-    <string name="pwb_q1">I lead a purposeful and meaningful life</string>
-    <string name="pwb_q2">My social relationships are supportive and rewarding</string>
-    <string name="pwb_q3">I am engaged and interested in my daily activities</string>
-    <string name="pwb_q4">I actively contribute to the happiness and well-being of others</string>
-    <string name="pwb_q5">I am competent and capable in activities that are important to me</string>
-    <string name="pwb_q6">I am a good person and live a good life</string>
-    <string name="pwb_q7">I am optimistic about my future</string>
-    <string name="pwb_q8">People respect me</string>
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment </string>
 
@@ -114,6 +104,27 @@
     <string name="staff_email"></string>
     <string name="staff_email_pass"></string>
     <string name="leave_study_target_email"></string>
+
+    <string name="pwb_explanation">Please answer the following questions by marking them with a number from 1 (strongly disagree) to 7 (strongly agree)</string>
+    <string name="pwb_q1">I lead a purposeful and meaningful life</string>
+    <string name="pwb_q2">My social relationships are supportive and rewarding</string>
+    <string name="pwb_q3">I am engaged and interested in my daily activities</string>
+    <string name="pwb_q4">I actively contribute to the happiness and well-being of others</string>
+    <string name="pwb_q5">I am competent and capable in activities that are important to me</string>
+    <string name="pwb_q6">I am a good person and live a good life</string>
+    <string name="pwb_q7">I am optimistic about my future</string>
+    <string name="pwb_q8">People respect me</string>
+
+    <string name="pam_image_explanation">Please choose an image</string>
+    <string name="pam_q1_morning">Which is your level of stress?</string>
+    <string name="pam_q2_morning">How long have you slept tonight?</string>
+    <string name="pam_q3_morning">Where are you?</string>
+    <string name="pam_q4_morning">How did you commute today?</string>
+    <string name="pam_q1_afternoon">How much time have you spent doing sport today?</string>
+    <string name="pam_q2_afternoon">How much time have you spent in the University?</string>
+    <string name="pam_q2_afternoon_2">How much time have you spent at your job?</string>
+    <string name="pam_q3_afternoon">How many people have you interacted with?</string>
+    <string name="pam_q4_afternoon">Where are you?</string>
 
     <string name="pss_explanation">Please answer the following questions by marking from 1 (never)</string>
     <string name="pss_q1">In the last month, how often have you been upset because of something that happened unexpectedly?</string>

@@ -71,4 +71,9 @@ public class SQLiteController implements LocalStorageController {
     public void update(String tableName, ContentValues values, String clause) {
         localDb.update(tableName, values, clause, null);
     }
+
+    @Override
+    public void truncate(String tableName) {
+        localDb.execSQL("delete from "+ tableName);
+    }
 }

@@ -7,7 +7,9 @@ import usi.justmove.local.database.tableHandlers.PWBSurvey;
 import usi.justmove.local.database.tableHandlers.SHSSurvey;
 import usi.justmove.local.database.tableHandlers.SWLSSurvey;
 import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.SurveyAlarms;
 import usi.justmove.local.database.tableHandlers.TableHandler;
+import usi.justmove.local.database.tableHandlers.User;
 import usi.justmove.local.database.tables.AccelerometerTable;
 import usi.justmove.local.database.tables.BlueToothTable;
 import usi.justmove.local.database.tables.LocationTable;
@@ -21,8 +23,10 @@ import usi.justmove.local.database.tables.SHSTable;
 import usi.justmove.local.database.tables.SMSTable;
 import usi.justmove.local.database.tables.SWLSTable;
 import usi.justmove.local.database.tables.SimpleMoodTable;
+import usi.justmove.local.database.tables.SurveyAlarmsTable;
 import usi.justmove.local.database.tables.SurveyTable;
 import usi.justmove.local.database.tables.UsedAppTable;
+import usi.justmove.local.database.tables.UserTable;
 import usi.justmove.local.database.tables.WiFiTable;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
@@ -47,7 +51,9 @@ public enum LocalTables {
     TABLE_PHQ8(PHQ8Table.class),
     TABLE_SHS(SHSTable.class),
     TABLE_SWLS(SWLSTable.class),
-    TABLE_SURVEY(SurveyTable.class);
+    TABLE_SURVEY(SurveyTable.class),
+    TABLE_SURVEY_ALARMS(SurveyAlarmsTable.class),
+    TABLE_USER(UserTable.class);
 
 
     LocalTables(Class a) {
@@ -69,6 +75,10 @@ public enum LocalTables {
                 return new SWLSSurvey(true);
             case TABLE_SURVEY:
                 return new Survey(true);
+            case TABLE_SURVEY_ALARMS:
+                return new SurveyAlarms(true);
+            case TABLE_USER:
+                return new User(true);
             default:
                 throw new IllegalArgumentException("Table not found!");
         }
@@ -90,6 +100,10 @@ public enum LocalTables {
                 return SWLSTable.TABLE_SWLS;
             case TABLE_SURVEY:
                 return SurveyTable.TABLE_SURVEY;
+            case TABLE_SURVEY_ALARMS:
+                return SurveyAlarmsTable.TABLE_SURVEY_ALARM;
+            case TABLE_USER:
+                return UserTable.TABLE_USER;
             default:
                 throw new IllegalArgumentException("Table not found!");
         }

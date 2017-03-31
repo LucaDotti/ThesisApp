@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chose image"
+            android:text="@string/pam_image_explanation"
             android:textSize="15dp"
             android:textColor="@android:color/white"/>
         <LinearLayout
@@ -157,7 +157,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Which is your level of stress?"
+                    android:text="@string/pam_q1_morning"
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
                     android:paddingBottom="15dp"/>
@@ -201,7 +201,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="How long have you slept tonight?"
+                    android:text="@string/pam_q2_morning"
                     android:textSize="15dp"
                     android:paddingBottom="15dp"
                     android:textColor="@android:color/white"/>
@@ -313,7 +313,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
-                    android:text="Where are you?"
+                    android:text="@string/pam_q3_morning"
                     android:paddingBottom="15dp"/>
                 <RadioGroup
                     android:layout_width="match_parent"
@@ -466,7 +466,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="How did you commute today?"
+                    android:text="@string/pam_q4_morning"
                     android:textSize="15dp"
                     android:paddingBottom="15dp"
                     android:textColor="@android:color/white"/>
@@ -625,7 +625,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
-                    android:text="How much time have you spent doing sport today?"
+                    android:text="@string/pam_q1_afternoon"
                     android:paddingBottom="15dp"/>
                 <RadioGroup
                     android:layout_width="match_parent"
@@ -743,7 +743,8 @@
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
                     android:paddingBottom="15dp"
-                    android:text="How much time have you spent in the University?"/>
+                    android:text="@string/pam_q2_afternoon"
+                    android:id="@+id/pamSurveyAfternoonUniQ"/>
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -894,23 +895,113 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="How many people have you interacted with?"
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
+                    android:text="@string/pam_q3_afternoon"
                     android:paddingBottom="15dp"/>
-                <com.shawnlin.numberpicker.NumberPicker
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    app:np_orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    app:np_textColor="@android:color/white"
-                    app:np_textSize="20dp"
-                    app:np_dividerColor="@android:color/white"
-                    app:np_wrapSelectorWheel="false"
-                    app:np_dividerDistance="30dp"
-                    android:id="@+id/pamSurveyAfternoonPeoplePicker"/>
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/pamSurveyAfternoonPeopleGroup"
+                    android:paddingLeft="10dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3.3">
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_weight="1">
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="40dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="None"
+                                    android:layout_alignParentLeft="true"
+                                    android:layout_centerInParent="true"
+                                    android:textSize="15dp"
+                                    android:id="@+id/pamSurveyPeople_none_text"
+                                    android:textColor="@android:color/white"/>
+                                <RadioButton
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/pamSurveyPeople_none_radioButton"
+                                    android:layout_toRightOf="@id/pamSurveyPeople_none_text"/>
+                            </RelativeLayout>
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="40dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="1 - 5"
+                                    android:layout_centerInParent="true"
+                                    android:layout_alignParentLeft="true"
+                                    android:textSize="15dp"
+                                    android:id="@+id/pamSurveyPeople_1_5_text"
+                                    android:textColor="@android:color/white"/>
+                                <RadioButton
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/pamSurveyPeople_1_5_radioButton"
+                                    android:layout_toRightOf="@id/pamSurveyPeople_1_5_text"/>
+                            </RelativeLayout>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_weight="1.3">
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="6 - 10"
+                                    android:layout_alignParentLeft="true"
+                                    android:layout_centerInParent="true"
+                                    android:textSize="15dp"
+                                    android:id="@+id/pamSurveyPeople_6_10_text"
+                                    android:textColor="@android:color/white"/>
+                                <RadioButton
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/pamSurveyPeople_6_10_radioButton"
+                                    android:layout_toRightOf="@id/pamSurveyPeople_6_10_text"/>
+                            </RelativeLayout>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_weight="1">
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="50dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="10+"
+                                    android:layout_alignParentLeft="true"
+                                    android:layout_centerInParent="true"
+                                    android:textSize="15dp"
+                                    android:id="@+id/pamSurveyPeople_10_p_text"
+                                    android:textColor="@android:color/white"/>
+                                <RadioButton
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/pamSurveyPeople_10_p_radioButton"
+                                    android:layout_toRightOf="@id/pamSurveyPeople_10_p_text"/>
+                            </RelativeLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </RadioGroup>
             </LinearLayout>
-
             <!-- ____________ALOCATION____________ -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -920,7 +1011,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Where are you?"
+                    android:text="@string/pam_q4_afternoon"
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
                     android:paddingBottom="15dp"/>

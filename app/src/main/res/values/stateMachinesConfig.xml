@@ -2,7 +2,7 @@
 <resources>
     <!--frequency of state machine-->
     <string name="stateMachineFreq">3600000</string>
-    <string name="uploaderStateMachineFreq">1000</string>
+    <string name="uploaderStateMachineFreq">3600000</string>
 
     <!--TIME BASED-->
     <string name="dayStart">07:00:00</string>

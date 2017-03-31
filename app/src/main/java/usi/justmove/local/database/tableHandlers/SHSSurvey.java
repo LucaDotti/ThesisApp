@@ -22,6 +22,7 @@ public class SHSSurvey extends TableHandler {
 
     public SHSSurvey(boolean isNewRecord) {
         super(isNewRecord);
+        id = -1;
         columns = LocalDbUtility.getTableColumns(table);
     }
 
@@ -77,7 +78,9 @@ public class SHSSurvey extends TableHandler {
     @Override
     public ContentValues getAttributes() {
         ContentValues attributes = new ContentValues();
-        attributes.put(columns[0], id);
+        if(id >= 0) {
+            attributes.put(columns[0], id);
+        }
         attributes.put(columns[1], parentId);
         attributes.put(columns[2], completed);
         attributes.put(columns[3], q1);

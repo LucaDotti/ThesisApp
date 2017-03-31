@@ -35,7 +35,7 @@ import usi.justmove.local.database.tables.UserTable;
  */
 
 public class RegistrationView extends LinearLayout {
-    public static String[] academicStatusValues = {"BSc", "MSc", "PhD", "Prof"};
+    public static String[] academicStatusValues = {"BSc", "MSc", "PhD", "Prof", "Other"};
     private ExpandableLayout consentLayout;
     private ExpandableLayout formLayout;
 
@@ -106,7 +106,7 @@ public class RegistrationView extends LinearLayout {
         NumberPicker statusPicker = (NumberPicker) bodyView.findViewById(R.id.status_picker);
         RadioGroup group = (RadioGroup) bodyView.findViewById(R.id.genderRadioGroup);
 
-        long time = System.currentTimeMillis();
+        long time = System.currentTimeMillis()/1000;
         ContentValues record = new ContentValues();
 
         record.put(UserTable.KEY_USER_UID, Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID));
@@ -114,10 +114,12 @@ public class RegistrationView extends LinearLayout {
         record.put(UserTable.KEY_USER_GENDER, currentSelectedRadioButton.getId() == R.id.genderFemaleRadioButton ? "female" : "male");
         record.put(UserTable.KEY_USER_AGREED, "1");
         record.put(UserTable.KEY_USER_FACULTY, "Informatics");
-        record.put(UserTable.KEY_USER_ACADEMIC_STATUS, academicStatusValues[statusPicker.getValue()]);
+        if(!academicStatusValues[statusPicker.getValue()].equals(academicStatusValues[4])) {
+            record.put(UserTable.KEY_USER_ACADEMIC_STATUS, academicStatusValues[statusPicker.getValue()]);
+        }
         record.put(UserTable.KEY_USER_EMAIL, "");
-        record.put(UserTable.KEY_USER_CREATION_TS, Long.toString(time));
-        record.put(UserTable.KEY_USER_UPDATE_TS, Long.toString(time));
+        record.put(UserTable.KEY_USER_CREATION_TS, time);
+        record.put(UserTable.KEY_USER_UPDATE_TS, time);
         localController.insertRecord(UserTable.TABLE_USER, record);
     }
 

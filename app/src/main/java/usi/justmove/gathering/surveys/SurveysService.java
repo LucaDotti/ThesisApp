@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -20,10 +21,12 @@ public class SurveysService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        scheduler = new Scheduler();
+        Log.d("START", "SURVEY");
+        scheduler = Scheduler.getInstance();
         scheduler.addSurvey(SurveyType.PAM);
-//        scheduler.addSurvey(SurveyType.PWB);
-//        scheduler.addSurvey(SurveyType.GROUPED_SSPP);
+        scheduler.addSurvey(SurveyType.PWB);
+        scheduler.addSurvey(SurveyType.GROUPED_SSPP);
+
         scheduler.initSchedulers();
 
     }
@@ -37,6 +40,5 @@ public class SurveysService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 }

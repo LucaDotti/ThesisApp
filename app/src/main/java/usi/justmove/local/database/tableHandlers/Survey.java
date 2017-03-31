@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import java.net.ContentHandlerFactory;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -230,7 +231,6 @@ public class Survey extends TableHandler {
         } else {
             String columnId = columns[0];
             localController.update(tableName, getAttributes(), columnId + " = " + id);
-            sId = id;
         }
 
         ContentValues attrs = new ContentValues();
@@ -276,7 +276,6 @@ public class Survey extends TableHandler {
                 surveyType = SurveyType.getSurvey(attribute.getAsString(SurveyTable.KEY_SURVEY_TYPE));
                 break;
         }
-
     }
 
     @Override
@@ -458,9 +457,73 @@ public class Survey extends TableHandler {
         return (Survey) find("*", query);
     }
 
-    public void attachChildSurvey(SurveyType surveyType, TableHandler survey) {
-        surveys.put(surveyType, survey);
+
+    public static int getTodaySurveyCount(SurveyType survey) {
+        String tableName = LocalDbUtility.getTableName(table);
+        String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
+        String columnType = LocalDbUtility.getTableColumns(table)[7];
+
+        DateTime startDateTime = new DateTime().withTime(0, 0, 0, 0);
+        DateTime endDateTime = new DateTime().withTime(23, 59, 59, 999);
+        long startMillis = startDateTime.getMillis()/1000;
+        long endMillis = endDateTime.getMillis()/1000;
+
+        String query = "SELECT COUNT(*) FROM " + tableName +
+                " WHERE " +
+                columnSchedule + " >= " + startMillis + " AND " +
+                columnSchedule + " <= " + endMillis + " AND " +
+                columnType + " = \"" + survey.getSurveyName() + "\"";
+
+        Cursor c = localController.rawQuery(query, null);
+
+        if(c.getCount() == 0) {
+            return 0;
+        }
+
+        c.moveToFirst();
+        return c.getInt(0);
     }
+
+    public static Survey[] getTodaySurveys(SurveyType survey) {
+        Survey[] surveys;
+        String tableName = LocalDbUtility.getTableName(table);
+        String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
+        String columnType = LocalDbUtility.getTableColumns(table)[7];
+
+        DateTime startDateTime = new DateTime().withTime(0, 0, 0, 0);
+        DateTime endDateTime = new DateTime().withTime(23, 59, 59, 999);
+        long startMillis = startDateTime.getMillis()/1000;
+        long endMillis = endDateTime.getMillis()/1000;
+
+        String query = "SELECT * FROM " + tableName +
+                " WHERE " +
+                columnSchedule + " >= " + startMillis + " AND " +
+                columnSchedule + " <= " + endMillis + " AND " +
+                columnType + " = \"" + survey.getSurveyName() + "\"";
+
+        Cursor c = localController.rawQuery(query, null);
+
+        if(c.getCount() == 0) {
+            surveys = new Survey[0];
+            return surveys;
+        } else {
+            surveys = new Survey[c.getCount()];
+
+            int i = 0;
+            Survey curr;
+            while(c.moveToNext()) {
+                curr = new Survey(false);
+                curr.setAttributes(curr.getAttributesFromCursor(c));
+//                curr.surveys = curr.getChildSurveys(true);
+
+                surveys[i] = curr;
+                i++;
+            }
+        }
+
+        return surveys;
+    }
+
 
     @Override
     public void delete() {
@@ -471,5 +534,64 @@ public class Survey extends TableHandler {
         }
     }
 
+    public static Survey[] getSurveysForDate(SurveyType survey, String date) {
+        String[] split = date.split("-");
 
+        Calendar dayStart = Calendar.getInstance();
+        dayStart.set(Calendar.DAY_OF_MONTH, Integer.parseInt(split[0]));
+        dayStart.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
+        dayStart.set(Calendar.YEAR, Integer.parseInt(split[2]));
+
+        dayStart.set(Calendar.HOUR_OF_DAY, 1);
+        dayStart.set(Calendar.MINUTE, 0);
+        dayStart.set(Calendar.SECOND, 0);
+
+        Calendar dayEnd = Calendar.getInstance();
+        dayEnd.set(Calendar.DAY_OF_MONTH, Integer.parseInt(split[0]));
+        dayEnd.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
+        dayEnd.set(Calendar.YEAR, Integer.parseInt(split[2]));
+
+        dayEnd.set(Calendar.HOUR_OF_DAY, 23);
+        dayEnd.set(Calendar.MINUTE, 59);
+        dayEnd.set(Calendar.SECOND, 59);
+
+        String columnId = LocalDbUtility.getTableColumns(table)[0];
+        String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
+        String columnType = LocalDbUtility.getTableColumns(table)[7];
+
+        String query = columnSchedule + " >= " + (dayStart.getTimeInMillis()/1000) + " AND " +
+                columnSchedule + " <= " + (dayEnd.getTimeInMillis()/1000) + " AND " +
+                columnType + " = \"" + survey.getSurveyName() + "\" ORDER BY " + columnId + " ASC";
+
+        return (Survey[]) Survey.findAll("*", query);
+    }
+
+    public static int getCount(SurveyType survey) {
+        String columnType = LocalDbUtility.getTableColumns(table)[7];
+        Cursor c = localController.rawQuery("SELECT COUNT(*) FROM " + LocalDbUtility.getTableName(table) +
+                " WHERE " + columnType + " = \"" + survey.getSurveyName() + "\"", null);
+
+        c.moveToFirst();
+
+        return c.getInt(0);
+    }
+
+    public static int getDoneSurveysCount(SurveyType survey) {
+        String tableName = LocalDbUtility.getTableName(table);
+        String columnCompleted = LocalDbUtility.getTableColumns(table)[3];
+        String columnNotified = LocalDbUtility.getTableColumns(table)[4];
+        String columnType = LocalDbUtility.getTableColumns(table)[7];
+
+        Cursor c = localController.rawQuery("SELECT COUNT(*) FROM " + tableName +
+                    " WHERE " + columnType + " = \"" + survey.getSurveyName() + "\" AND (" + columnCompleted + " = 1 OR " + columnNotified + " = 1)", null);
+
+        c.moveToFirst();
+
+        return c.getInt(0);
+    }
+
+    @Override
+    public String toString() {
+        return "Survey(id: " + id + ", ts: " + ts + ", scheduledAt: " + scheduledAt + ", completed: " + completed + ", notified: " + notified + ", expired: " + expired + ", grouped: " + grouped + ", ts: " + surveyType.getSurveyName() + ")";
+    }
 }

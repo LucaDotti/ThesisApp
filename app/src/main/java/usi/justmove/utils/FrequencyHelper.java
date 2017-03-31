@@ -2,7 +2,7 @@ package usi.justmove.utils;
 
 /**
  * Helper class to perform any kind of frequency transformation. It is assumed that the given
- * frequency is times/minute
+ * frequency is dailyTimes/minute
  *
  * Created by Luca Dotti on 07/01/17.
  */

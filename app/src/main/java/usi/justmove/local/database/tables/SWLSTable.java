@@ -25,8 +25,8 @@ public class SWLSTable {
                 KEY_SWLS_Q3 + " INTEGER, " +
                 KEY_SWLS_Q4 + " INTEGER, " +
                 KEY_SWLS_Q5 + " INTEGER, " +
-                "FOREIGN KEY (" + KEY_SWLS_PARENT_SURVEY_ID + ") REFERENCES " + SurveyTable.TABLE_SURVEY + "(" + SurveyTable.KEY_SURVEY_ID + "));" +
-                ")";
+                "FOREIGN KEY (" + KEY_SWLS_PARENT_SURVEY_ID + ") REFERENCES " + SurveyTable.TABLE_SURVEY + "(" + SurveyTable.KEY_SURVEY_ID + "));";
+
     }
 
     public static String[] getColumns() {
