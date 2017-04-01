@@ -42,6 +42,8 @@ import usi.justmove.local.database.tableHandlers.Survey;
 import usi.justmove.local.database.tables.UserTable;
 import usi.justmove.remote.database.upload.DataUploadService;
 
+import static android.R.attr.fragment;
+
 public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback, HomeFragment.OnRegistrationSurveyChoice {
     private GatheringSystem gSys;
     private TabLayout tabLayout;
@@ -67,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         tabFragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager(), getApplicationContext());
         viewPager.setAdapter(tabFragmentAdapter);
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager, true);
 
 
-        tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
+        tabLayout.getTabAt(1).setCustomView(R.layout.surveys_tab_layout);
 
 //        deleteDatabase("JustMove");
 //        LocalSQLiteDBHelper dbHelper = new LocalSQLiteDBHelper(this);
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         });
 
         if(action != null && action.equals(NotificationBroadcastReceiver.OPEN_SURVEYS_ACTION)) {
-            viewPager.setCurrentItem(2);
+            viewPager.setCurrentItem(1);
         } else {
 //            deleteDatabase("JustMove");
         }
@@ -234,15 +236,22 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SurveyEvent event) {
         Survey s = (Survey) Survey.findByPk(event.getRecordId());
-        tabFragmentAdapter.notifyDataSetChanged();
-        tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
+
+
+
+        String surveyFragmentTag = makeFragmentName(viewPager.getId(), 1);
+        SurveysFragment fragment = (SurveysFragment) getSupportFragmentManager().findFragmentByTag(surveyFragmentTag);
+        fragment.resetSurvey(s.surveyType);
+//        tabLayout.getTabAt(1).setCustomView(R.layout.surveys_tab_layout);
         showSurveyNotification();
+//        tabLayout.setViewPa
+//        tabFragmentAdapter.notifyDataSetChanged();
     }
 
     private void showSurveyNotification() {
         int count = Survey.getAllAvailableSurveysCount();
 
-        View notificationView = tabLayout.getTabAt(2).getCustomView();
+        View notificationView = tabLayout.getTabAt(1).getCustomView();
 
         ImageView image = (ImageView) notificationView.findViewById(R.id.surveysPamNotificationImage);
         if(count == 0) {
@@ -271,6 +280,8 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
                 default:
             }
         }
+
+//        notificationView.invalidate();
     }
 
     @Override
@@ -282,12 +293,16 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
     public void onRegistrationSurveyChoice(boolean now) {
         init();
         if(now) {
-            tabFragmentAdapter.notifyDataSetChanged();
-            tabLayout.getTabAt(2).setCustomView(R.layout.surveys_tab_layout);
-            viewPager.setCurrentItem(2);
+//            tabLayout.getTabAt(1).setCustomView(R.layout.surveys_tab_layout);
+            viewPager.setCurrentItem(1);
         }
 
         showSurveyNotification();
+//        tabFragmentAdapter.notifyDataSetChanged();
+    }
+
+    private static String makeFragmentName(int viewPagerId, int index) {
+        return "android:switcher:" + viewPagerId + ":" + index;
     }
 }
 

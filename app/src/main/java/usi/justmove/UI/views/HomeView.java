@@ -191,9 +191,8 @@ public class HomeView extends LinearLayout{
     }
 
     private void saveMoodStatus(int status) {
-        List<Map<String, String>> records = new ArrayList<>();
         ContentValues record = new ContentValues();
-        record.put(SimpleMoodTable.KEY_SIMPLE_MOOD_TIMESTAMP, Long.toString(System.currentTimeMillis()));
+        record.put(SimpleMoodTable.KEY_SIMPLE_MOOD_TIMESTAMP, Long.toString(System.currentTimeMillis()/1000));
         record.put(SimpleMoodTable.KEY_SIMPLE_MOOD_STATUS, Integer.toString(status));
 
         localController.insertRecord(SimpleMoodTable.TABLE_SIMPLE_MOOD, record);

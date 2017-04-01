@@ -9,23 +9,34 @@
         android:orientation="vertical"
         android:padding="10dp">
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:paddingBottom="10dp"
-            android:textSize="15dp"
+            android:paddingBottom="5dp"
+            android:textSize="12dp"
             android:text="@string/pwb_explanation"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/swls_rating"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:scaleType="centerInside"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:text="@string/pwb_q1"
-            android:paddingTop="10dp"
-            android:textSize="15dp"/>
+            android:paddingTop="20dp"
+            android:textSize="15dp"
+            android:paddingBottom="5dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="15dp">
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -33,7 +44,8 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
-                android:text="1"/>
+                android:text="1"
+                android:textSize="10dp"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,7 +62,8 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
-                android:text="7"/>
+                android:text="7"
+                android:textSize="10dp"/>
         </LinearLayout>
 
         <TextView
@@ -58,12 +71,13 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:text="@string/pwb_q2"
-            android:paddingTop="10dp"
-            android:textSize="15dp"/>
+            android:textSize="15dp"
+            android:paddingBottom="5dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="15dp">
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -71,6 +85,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="1"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:layout_width="match_parent"
@@ -88,6 +103,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="7"/>
         </LinearLayout>
 
@@ -96,12 +112,13 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:text="@string/pwb_q3"
-            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
             android:textSize="15dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="15dp">
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -109,6 +126,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="1"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:layout_width="match_parent"
@@ -126,6 +144,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="7"/>
         </LinearLayout>
 
@@ -134,19 +153,20 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:text="@string/pwb_q4"
-            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
             android:textSize="15dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="15dp">
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:gravity="center"
                 android:layout_gravity="center"
-
+                android:textSize="10dp"
                 android:textColor="@android:color/white"
                 android:text="1"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
@@ -165,6 +185,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="7"/>
         </LinearLayout>
 
@@ -173,12 +194,13 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:text="@string/pwb_q5"
-            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
             android:textSize="15dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="15dp">
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -186,6 +208,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="1"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:layout_width="match_parent"
@@ -203,6 +226,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="7"/>
         </LinearLayout>
 
@@ -211,12 +235,13 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:text="@string/pwb_q6"
-            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
             android:textSize="15dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="15dp">
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -224,6 +249,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="1"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:layout_width="match_parent"
@@ -241,6 +267,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="7"/>
         </LinearLayout>
 
@@ -249,12 +276,13 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:text="@string/pwb_q7"
-            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
             android:textSize="15dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="15dp">
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -262,6 +290,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="1"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:layout_width="match_parent"
@@ -279,6 +308,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
+                android:textSize="10dp"
                 android:text="7"/>
         </LinearLayout>
 
@@ -287,12 +317,13 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:text="@string/pwb_q8"
-            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
             android:textSize="15dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="15dp">
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -300,7 +331,8 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
-                android:text="1"/>
+                android:text="1"
+                android:textSize="10dp"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -317,7 +349,8 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
-                android:text="7"/>
+                android:text="7"
+                android:textSize="10dp"/>
         </LinearLayout>
         <Button
             android:layout_width="wrap_content"

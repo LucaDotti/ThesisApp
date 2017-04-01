@@ -18,7 +18,7 @@ import static android.R.attr.fragment;
 
 public class TabFragmentAdapter extends FragmentPagerAdapter {
 
-    private String[] fragments = {"Home", "Map", "SurveyType"};
+    private String[] fragments = {"Home", "Survey", "Map"};
 
     public TabFragmentAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);
@@ -30,9 +30,9 @@ public class TabFragmentAdapter extends FragmentPagerAdapter {
             case 0:
                 return new HomeFragment();
             case 1:
-                return new MapFragment();
-            case 2:
                 return new SurveysFragment();
+            case 2:
+                return new MapFragment();
             default:
                 return null;
         }

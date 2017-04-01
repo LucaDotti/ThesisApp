@@ -121,7 +121,7 @@ public class SWLSSurveyView extends LinearLayout{
                 });
 
                 expandableLayout.setBodyView(questionsLayout);
-                expandableLayout.showBody();
+//                expandableLayout.showBody();
 
                 return;
             }
@@ -160,5 +160,10 @@ public class SWLSSurveyView extends LinearLayout{
 
     public void setCallback(OnSwlsSurveyCompletedCallback callback) {
         this.callback = callback;
+    }
+
+    public void expand() {
+        expand();
+        expandableLayout.showBody();
     }
 }

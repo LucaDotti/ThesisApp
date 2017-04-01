@@ -50,6 +50,8 @@ public class PWBSurveyView extends LinearLayout {
     private DiscreteSeekBar q8Seekbar;
     private Button submitButton;
 
+    private boolean hasSurvey;
+
     public PWBSurveyView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -116,7 +118,9 @@ public class PWBSurveyView extends LinearLayout {
                 });
 
                 expandableLayout.setBodyView(questionsLayout);
-                expandableLayout.showBody();
+//                expandableLayout.showBody();
+
+                hasSurvey = true;
 
                 return;
             }
@@ -169,5 +173,20 @@ public class PWBSurveyView extends LinearLayout {
 
     public void setCallback(OnPwbSurveyCompletedCallback callback) {
         this.callback = callback;
+    }
+
+    public boolean hasSurvey() {
+        return hasSurvey;
+    }
+
+    public void expand() {
+        expandableLayout.expand();
+        expandableLayout.showBody();
+    }
+
+    public void reInit() {
+//        expandableLayout.removeAllViews();
+//        init();
+//        invalidate();
     }
 }

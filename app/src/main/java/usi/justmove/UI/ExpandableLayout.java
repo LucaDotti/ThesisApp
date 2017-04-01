@@ -32,10 +32,18 @@ public class ExpandableLayout extends LinearLayout {
     private boolean isExpanded;
     private boolean showNoContentMsg;
     private int angle;
-
+    private Context context;
+    private AttributeSet attrs;
     public ExpandableLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        this.context = context;
+        this.attrs = attrs;
+        init();
+
+    }
+
+    private void init() {
         isExpanded = false;
         showNoContentMsg = false;
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -81,7 +89,6 @@ public class ExpandableLayout extends LinearLayout {
             body.setVisibility(GONE);
             titleArrow.setImageResource(R.drawable.expand_arrow);
         }
-
     }
 
     public void setTitleView(View view) {
@@ -194,10 +201,14 @@ public class ExpandableLayout extends LinearLayout {
     }
 
     public View getTitleView() {
-        return title;
+        return titleContent;
     }
 
     public View getBodyView() {
         return bodyContent;
+    }
+
+    public void removeBody() {
+        bodyContent.removeAllViews();
     }
 }

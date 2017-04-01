@@ -10,12 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/termSurvey_SHS"/>
-    <usi.justmove.UI.views.PHQ8SurveyView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/termSurvey_PHQ8"/>
     <usi.justmove.UI.views.PSSSurveyView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/termSurvey_PSS"/>
+    <usi.justmove.UI.views.PHQ8SurveyView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/termSurvey_PHQ8"/>
+
 </LinearLayout>

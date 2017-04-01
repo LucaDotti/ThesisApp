@@ -50,6 +50,7 @@ public class PAMSurveyView extends LinearLayout {
     private final int PAM_MORNING = 0;
     private final int PAM_AFTERNOON = 1;
     private LocalTables pamTable;
+    private boolean hasSurvey;
 
     static int[][] pamImages = {
             {R.drawable.afraid_1_1, R.drawable.afraid_1_2, R.drawable.afraid_1_3},
@@ -200,6 +201,7 @@ public class PAMSurveyView extends LinearLayout {
     }
 
     private void init() {
+        selectedImageId = -1;
         expandableLayout.setTitleView(titleView);
         expandableLayout.setTitleText(R.id.surveysTitle, "PAM");
 
@@ -254,8 +256,9 @@ public class PAMSurveyView extends LinearLayout {
                 });
 
                 expandableLayout.setBodyView(questionsLayout);
-                expandableLayout.expand();
-                expandableLayout.showBody();
+//                expandableLayout.expand();
+//                expandableLayout.showBody();
+                hasSurvey = true;
 
                 return;
             }
@@ -607,5 +610,29 @@ public class PAMSurveyView extends LinearLayout {
 
     public void setCallback(OnPamSurveyCompletedCallback callback) {
         this.callback = callback;
+    }
+
+    public boolean hasSurvey() {
+        return hasSurvey;
+    }
+
+    public void expand() {
+        expandableLayout.expand();
+        expandableLayout.showBody();
+    }
+
+    public void reInit() {
+//        expandableLayout.removeAllViews();
+//        expandableLayout.removeContent();
+//        expandableLayout.removeBody();
+        expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
+//        expandableLayout.removeBody();
+//        expandableLayout.setBodyView(questionsLayout);
+        expandableLayout.showBody();
+//        expandableLayout.setBodyView(questionsLayout);
+//        init();
+//        expandableLayout.invalidate();
+//        invalidate();
+
     }
 }

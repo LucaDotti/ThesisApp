@@ -127,7 +127,7 @@ public class PHQ8SurveyView extends LinearLayout {
                 });
 
                 expandableLayout.setBodyView(questionsLayout);
-                expandableLayout.showBody();
+//                expandableLayout.showBody();
 
                 return;
             }
@@ -172,6 +172,11 @@ public class PHQ8SurveyView extends LinearLayout {
 
     public void setCallback(OnPhq8SurveyCompletedCallback callback) {
         this.callback = callback;
+    }
+
+    public void expand() {
+        expand();
+        expandableLayout.showBody();
     }
 
 

@@ -15,6 +15,7 @@ import usi.justmove.UI.ExpandableLayout;
 import usi.justmove.UI.views.PAMSurveyView;
 import usi.justmove.UI.views.PWBSurveyView;
 import usi.justmove.UI.views.TermSurveyView;
+import usi.justmove.gathering.surveys.config.SurveyType;
 
 /**
  * Created by usi on 04/02/17.
@@ -26,11 +27,8 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
     private PAMSurveyView pamView;
     private PWBSurveyView pwbView;
     private TermSurveyView termView;
-    private ExpandableLayout historyLayout;
-    private ExpandableLayout swlsLayout;
-    private ExpandableLayout pssLayout;
-    private ExpandableLayout shsLayout;
-    private ExpandableLayout phq8Layout;
+    private View currentVisible;
+
 
 
     @Nullable
@@ -42,11 +40,18 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
         initPam(root);
         initPwb(root);
         initTerm(root);
-//        initPhq8(root, inflater);
-//        initPss(root, inflater);
-//        initSwls(root, inflater);
-//        initShs(root, inflater);
-//        initHistory(root, inflater);
+
+        if(termView.hasSurvey()) {
+
+                termView.expand();
+
+        } else if(pwbView.hasSurvey()) {
+                pwbView.expand();
+
+        } else if (pamView.hasSurvey()) {
+                pamView.expand();
+
+        }
 
         return root;
     }
@@ -69,17 +74,33 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
     @Override
     public void onPamSurveyCompletedCallback() {
         callback.onSurveyCompletedCallback();
+        if(termView.hasSurvey()) {
+            termView.expand();
+        } else if(pwbView.hasSurvey()) {
+            pwbView.expand();
+        }
     }
 
     @Override
     public void onPwbSurveyCompletedCallback() {
         callback.onSurveyCompletedCallback();
+
+        if(termView.hasSurvey()) {
+            termView.expand();
+        } else if(pamView.hasSurvey()) {
+            pamView.expand();
+        }
     }
 
 
     @Override
     public void onTermSurveyCompleted() {
         callback.onSurveyCompletedCallback();
+        if(pamView.hasSurvey()) {
+            pamView.expand();
+        } else if(pwbView.hasSurvey()) {
+            pwbView.expand();
+        }
     }
 
 
@@ -95,6 +116,23 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnUserRegisteredCallback");
+        }
+    }
+
+    public void resetSurvey(SurveyType survey) {
+        switch (survey) {
+            case PAM:
+                pamView.reInit();
+//                pamView.expand();
+                break;
+            case PWB:
+                pwbView.reInit();
+//                pwbView.expand();
+                break;
+            case GROUPED_SSPP:
+                termView.reInit();
+//                termView.expand();
+                break;
         }
     }
 }

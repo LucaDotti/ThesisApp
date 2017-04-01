@@ -52,6 +52,8 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
 
     private Survey currentSurvey;
 
+    private boolean hasSurvey;
+
     public TermSurveyView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -115,7 +117,8 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
             showSurveys(survey);
             expandableLayout.setBodyView(questionsLayout);
             expandableLayout.showBody();
-            expandableLayout.expand();
+//            expandableLayout.expand();
+            hasSurvey = true;
         } else {
             questionsLayout.setVisibility(GONE);
             expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
@@ -127,24 +130,31 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
     }
 
     private void showSurveys(Survey survey) {
-        for(SurveyType s: surveys) {
-            if(!survey.getSurveys().get(s).getAttributes().getAsBoolean("completed")) {
-                switch(s) {
+        for(Map.Entry<SurveyType, TableHandler> entry: survey.getSurveys().entrySet()) {
+            if(!entry.getValue().getAttributes().getAsBoolean("completed")) {
+                switch (entry.getKey()) {
                     case SHS:
                         shsView.setVisibility(VISIBLE);
+//                        shsView.expand();
                         break;
                     case SWLS:
                         swlsView.setVisibility(VISIBLE);
+//                        swlsView.expand();
                         break;
                     case PHQ8:
                         phq8View.setVisibility(VISIBLE);
+//                        phq8View.expand();
                         break;
                     case PSS:
                         pssView.setVisibility(VISIBLE);
+//                        pssView.expand();
                         break;
                 }
+
                 break;
             }
+
+
         }
     }
 
@@ -221,5 +231,20 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
 
     public void setCallback(OnTermSurveyCompletedCallback callback) {
         this.callback = callback;
+    }
+
+    public boolean hasSurvey() {
+        return hasSurvey;
+    }
+
+    public void expand() {
+        expandableLayout.expand();
+    }
+
+    public void reInit() {
+//        expandableLayout.removeAllViews();
+//        init();
+//        invalidate();
+
     }
 }

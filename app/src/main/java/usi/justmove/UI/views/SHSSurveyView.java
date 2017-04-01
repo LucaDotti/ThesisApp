@@ -115,7 +115,7 @@ public class SHSSurveyView extends LinearLayout {
                 });
 
                 expandableLayout.setBodyView(questionsLayout);
-                expandableLayout.showBody();
+//                expandableLayout.showBody();
 
                 return;
             }
@@ -153,5 +153,10 @@ public class SHSSurveyView extends LinearLayout {
 
     public void setCallback(OnShsSurveyCompletedCallback callback) {
         this.callback = callback;
+    }
+
+    public void expand() {
+        expand();
+        expandableLayout.showBody();
     }
 }

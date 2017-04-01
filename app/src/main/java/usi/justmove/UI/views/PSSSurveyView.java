@@ -130,7 +130,7 @@ public class PSSSurveyView extends LinearLayout {
                 });
 
                 expandableLayout.setBodyView(questionsLayout);
-                expandableLayout.showBody();
+//                expandableLayout.showBody();
 
                 return;
             }
@@ -174,5 +174,10 @@ public class PSSSurveyView extends LinearLayout {
 
     public void setCallback(OnPssSurveyCompletedCallback callback) {
         this.callback = callback;
+    }
+
+    public void expand() {
+        expand();
+        expandableLayout.showBody();
     }
 }

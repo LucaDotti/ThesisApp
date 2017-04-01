@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:text="@string/pam_image_explanation"
             android:textSize="15dp"
+            android:paddingBottom="5dp"
             android:textColor="@android:color/white"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -160,7 +161,7 @@
                     android:text="@string/pam_q1_morning"
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
-                    android:paddingBottom="15dp"/>
+                    android:paddingBottom="5dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -203,7 +204,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/pam_q2_morning"
                     android:textSize="15dp"
-                    android:paddingBottom="15dp"
+                    android:paddingBottom="5dp"
                     android:textColor="@android:color/white"/>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -314,7 +315,7 @@
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
                     android:text="@string/pam_q3_morning"
-                    android:paddingBottom="15dp"/>
+                    android:paddingBottom="5dp"/>
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -468,7 +469,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/pam_q4_morning"
                     android:textSize="15dp"
-                    android:paddingBottom="15dp"
+                    android:paddingBottom="5dp"
                     android:textColor="@android:color/white"/>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -626,7 +627,7 @@
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
                     android:text="@string/pam_q1_afternoon"
-                    android:paddingBottom="15dp"/>
+                    android:paddingBottom="5dp"/>
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -742,7 +743,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
-                    android:paddingBottom="15dp"
+                    android:paddingBottom="5dp"
                     android:text="@string/pam_q2_afternoon"
                     android:id="@+id/pamSurveyAfternoonUniQ"/>
                 <RadioGroup
@@ -898,7 +899,7 @@
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
                     android:text="@string/pam_q3_afternoon"
-                    android:paddingBottom="15dp"/>
+                    android:paddingBottom="5dp"/>
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -1014,7 +1015,7 @@
                     android:text="@string/pam_q4_afternoon"
                     android:textSize="15dp"
                     android:textColor="@android:color/white"
-                    android:paddingBottom="15dp"/>
+                    android:paddingBottom="5dp"/>
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
