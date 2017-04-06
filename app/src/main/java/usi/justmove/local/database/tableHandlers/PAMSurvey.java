@@ -23,11 +23,12 @@ public class PAMSurvey extends TableHandler {
     public String transportation;
     public String activities;
     public String workload;
-    public int social;
+    public String social;
 
     public PAMSurvey(boolean isNewRecord) {
         super(isNewRecord);
         columns = LocalDbUtility.getTableColumns(table);
+        id = -1;
     }
 
     public static TableHandler findByPk(long pk) {
@@ -96,7 +97,7 @@ public class PAMSurvey extends TableHandler {
         }
 
         if(attributes.containsKey(columns[11])) {
-            social = attributes.getAsInteger(columns[11]);
+            social = attributes.getAsString(columns[11]);
         }
     }
 
@@ -228,7 +229,7 @@ public class PAMSurvey extends TableHandler {
                 workload = attribute.getAsString(PAMTable.KEY_PAM_WORKLOAD);
                 break;
             case PAMTable.KEY_PAM_SOCIAL:
-                social = attribute.getAsInteger(PAMTable.KEY_PAM_SOCIAL);
+                social = attribute.getAsString(PAMTable.KEY_PAM_SOCIAL);
                 break;
         }
     }
@@ -246,5 +247,10 @@ public class PAMSurvey extends TableHandler {
     @Override
     public void delete() {
         localController.delete(table.getTableName(), columns[0] + " = " + id);
+    }
+
+    @Override
+    public String toString() {
+        return "PAM_survey(id: " + id +  ", newRecord: " + isNewRecord + ", parendId: "  + parentId + ", period: " + period + ", imageId: " + imageId + ", stress: " + stress + ", sleep: " + sleep + ", location: " + location + ", transportation: " + transportation + ", activities: " + activities + ")\n";
     }
 }

@@ -54,9 +54,6 @@ public class DailyScheduler {
 
         long[] times = getAlarmsTimes();
 
-        for(long l: times) {
-            System.out.println("Time " + l);
-        }
 
         Survey[] surveys = new Survey[currConfig.surveysCount];
 
@@ -145,6 +142,7 @@ public class DailyScheduler {
         Survey survey = (Survey) LocalTables.getTableHandler(LocalTables.TABLE_SURVEY);
         ContentValues attributes = new ContentValues();
 
+        //CARE HERE
         if(scheduleTime < 0) {
             attributes.put(SurveyTable.KEY_SURVEY_SCHEDULED_AT, scheduleTime);
             attributes.put(SurveyTable.KEY_SURVEY_EXPIRED, true);
@@ -228,44 +226,55 @@ public class DailyScheduler {
             surveyStart = 1;
         }
 
-        DateTime now = new DateTime();
-        DateTime start;
-        DateTime end;
+        Calendar now = Calendar.getInstance();
+        Calendar start;
+        Calendar end;
         int[] timeStart;
         int[] timeEnd;
         long scheduleOffset;
         long diff;
-        DateTime schedule = null;
-        DateTime tempSchedule;
+        Calendar schedule = null;
+        Calendar tempSchedule;
         Random r = new Random();
 
         for (int i = surveyStart; i < currConfig.surveysCount; i++) {
             timeStart = parseTime(currConfig.dailyTimes[i].first);
             timeEnd = parseTime(currConfig.dailyTimes[i].second);
 
-            start = new DateTime().withTime(timeStart[0], timeStart[1], 0, 0);
-            end = new DateTime().withTime(timeEnd[0], timeEnd[1], 0, 0).minusMillis((int) currConfig.maxElapseTimeForCompletion);
+            start = Calendar.getInstance();
+            start.set(Calendar.HOUR_OF_DAY, timeStart[0]);
+            start.set(Calendar.MINUTE, timeStart[1]);
+            start.set(Calendar.SECOND, 0);
 
-            if(now.isAfter(end)) {
+            end = Calendar.getInstance();
+            end.set(Calendar.HOUR_OF_DAY, timeEnd[0]);
+            end.set(Calendar.MINUTE, timeEnd[1]);
+            end.set(Calendar.SECOND, 0);
+            end.add(Calendar.MILLISECOND, (int) -currConfig.maxElapseTimeForCompletion);
+
+            if(now.getTimeInMillis() > end.getTimeInMillis()) {
                 alarmsTimes[i] = -1;
                 if(currConfig.survey == SurveyType.GROUPED_SSPP) {
-                    alarmsTimes[i] = now.getMillis();
+                    alarmsTimes[i] = now.getTimeInMillis();
                 }
             } else {
-                diff = end.getMillis() - start.getMillis();
+                diff = end.getTimeInMillis() - start.getTimeInMillis();
                 scheduleOffset = r.nextInt((int) diff);
                 if (schedule != null) {
-                    tempSchedule = new DateTime(start.getMillis() + scheduleOffset).plusHours(1);
-                    while (Math.abs(tempSchedule.getMillis() - schedule.getMillis()) < currConfig.minElapseTimeBetweenSurveys) {
+                    tempSchedule = Calendar.getInstance();
+                    tempSchedule.setTimeInMillis(start.getTimeInMillis() + scheduleOffset);
+                    while (Math.abs(tempSchedule.getTimeInMillis() - schedule.getTimeInMillis()) < currConfig.minElapseTimeBetweenSurveys) {
                         scheduleOffset = r.nextInt((int) scheduleOffset);
-                        tempSchedule = new DateTime(start.getMillis() + scheduleOffset).plusHours(1);
+                        tempSchedule = Calendar.getInstance();
+                        tempSchedule.setTimeInMillis(start.getTimeInMillis() + scheduleOffset);
                     }
                     schedule = tempSchedule;
                 } else {
-                    schedule = new DateTime(start.getMillis() + scheduleOffset).plusHours(1);
+                    schedule = Calendar.getInstance();
+                    schedule.setTimeInMillis(start.getTimeInMillis() + scheduleOffset);
                 }
 
-                alarmsTimes[i] = schedule.getMillis();
+                alarmsTimes[i] = schedule.getTimeInMillis();
             }
         }
 

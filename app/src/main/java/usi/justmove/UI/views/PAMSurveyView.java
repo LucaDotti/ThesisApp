@@ -1,16 +1,25 @@
 package usi.justmove.UI.views;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -167,21 +176,26 @@ public class PAMSurveyView extends LinearLayout {
     private ExpandableLayout expandableLayout;
     private View titleView;
 
+    private View animation;
+
     public PAMSurveyView(Context context, AttributeSet attrs) {
         super(context, attrs);
         localController = SQLiteController.getInstance(context);
 
+        this.context = context;
+        pamTable = LocalTables.TABLE_PAM;
+        images =  new ImageView[4][4];
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.pam_layout, this, true);
+
         expandableLayout = (ExpandableLayout) findViewById(R.id.pamViewExpandableLayout);
         titleView = inflater.inflate(R.layout.expandable_layout_title, null);
         questionsLayout = (LinearLayout) inflater.inflate(R.layout.pam_questions_layout, null);
-
-        this.context = context;
-
-        pamTable = LocalTables.TABLE_PAM;
-        images =  new ImageView[4][4];
-        init();
+        morningQuestions = (LinearLayout) inflater.inflate(R.layout.pam_morning_questions_layout, null);
+        afternoonQuestions = (LinearLayout) inflater.inflate(R.layout.pam_afternoon_questions_layout, null);
+        animation = findViewById(R.id.pamAnimation);
+        initView();
     }
 
     private void notifySurveyCompleted() {
@@ -200,77 +214,162 @@ public class PAMSurveyView extends LinearLayout {
         }
     }
 
-    private void init() {
+    private Survey getCurrentSurvey() {
+        Survey survey = Survey.getAvailableSurvey(SurveyType.PAM);
+
+        if(survey != null) {
+            return survey;
+        }
+
+        survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+
+        if(survey != null) {
+            Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
+
+            if(children.containsKey(SurveyType.PAM)) {
+                return survey;
+            }
+        }
+
+        return null;
+    }
+
+    private void initView() {
         selectedImageId = -1;
+
+        expandableLayout.getBodyView().removeAllViews();
+        expandableLayout.getTitleView().removeAllViews();
         expandableLayout.setTitleView(titleView);
         expandableLayout.setTitleText(R.id.surveysTitle, "PAM");
 
         imagesContainer = (LinearLayout) questionsLayout.findViewById(R.id.pamSurveyImagesContainer);
         questions = (LinearLayout) questionsLayout.findViewById(R.id.pamSurveyQuestions);
-        morningQuestions = (LinearLayout) questionsLayout.findViewById(R.id.pamSurveyMorningQuestions);
-        afternoonQuestions = (LinearLayout) questionsLayout.findViewById(R.id.pamSurveyAfternoonQuestions);
 
-        Survey survey = Survey.getAvailableSurvey(SurveyType.PAM);
+        currentSurvey = getCurrentSurvey();
 
-        if(survey == null) {
-            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
-        }
+        if(currentSurvey != null) {
+            determineSurveyPeriod(currentSurvey);
+            initPamImages();
+            initQuestions();
 
-        if(survey != null) {
+            submitButton = (Button) questionsLayout.findViewById(R.id.pamSubmitButton);
+            submitButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(currentPeriod == PAM_MORNING) {
+                        saveMorningPam();
+                    } else {
+                        saveAfternoonPam();
+                    }
 
-            Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
+                    expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+                    expandableLayout.setNoContentMsg("No PAM survey available");
+                    expandableLayout.showNoContentMsg();
+                    expandableLayout.collapse();
+                    callback.onPamSurveyCompletedCallback();
 
-            if(children.containsKey(SurveyType.PAM)) {
-                determineSurveyPeriod(survey);
-                currentSurvey = survey;
-                initPamImages();
-                if(currentPeriod == PAM_MORNING) {
-                    initMorningQuestions();
-                    afternoonQuestions.setVisibility(GONE);
-                } else {
-                    initAfternoonQuestions();
-                    morningQuestions.setVisibility(GONE);
+                    if(!currentSurvey.grouped) {
+                        notifySurveyCompleted();
+                    }
+
+                    expandableLayout.stopBlink();
+
+                    Toast.makeText(getContext(), "PAM survey completed", Toast.LENGTH_SHORT).show();
                 }
+            });
 
-                submitButton = (Button) questionsLayout.findViewById(R.id.pamSubmitButton);
-                submitButton.setOnClickListener(new OnClickListener() {
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
+            expandableLayout.setBodyView(questionsLayout);
+            expandableLayout.showBody();
+            hasSurvey = true;
+        } else {
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+            expandableLayout.setNoContentMsg("No PAM survey available");
+            expandableLayout.showNoContentMsg();
+        }
+    }
+
+    private void initQuestions() {
+        questions.removeAllViews();
+        if(currentPeriod == PAM_MORNING) {
+            initMorningQuestions();
+            questions.addView(morningQuestions);
+        } else {
+            initAfternoonQuestions();
+            questions.addView(afternoonQuestions);
+        }
+    }
+
+    private void initPamImages() {
+        int imageViewId;
+        Random r = new Random();
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                imageViewId = getResources().getIdentifier("pamSurveyImages_" + (i+1) + "_" + (j+1), "id", getContext().getPackageName());
+                images[i][j] = (ImageView) questionsLayout.findViewById(imageViewId);
+                final int imagejId = r.nextInt(3);
+                final int imageiId = (i*images[i].length)+j;
+                images[i][j].setImageResource(pamImages[imageiId][imagejId]);
+                images[i][j].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(currentPeriod == PAM_MORNING) {
-                            saveMorningPam();
-                        } else {
-                            saveAfternoonPam();
-                        }
-                        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-                        expandableLayout.setNoContentMsg("No PAM survey available");
-                        expandableLayout.showNoContentMsg();
-                        expandableLayout.collapse();
-                        callback.onPamSurveyCompletedCallback();
-
-                        if(!currentSurvey.grouped) {
-                            notifySurveyCompleted();
-                        }
-
-                        Toast.makeText(getContext(), "PAM survey completed", Toast.LENGTH_SHORT).show();
+                        handlePamImageClick(v, imageiId, imagejId);
                     }
                 });
-
-                expandableLayout.setBodyView(questionsLayout);
-//                expandableLayout.expand();
-//                expandableLayout.showBody();
-                hasSurvey = true;
-
-                return;
             }
-
         }
-
-        imagesContainer.setVisibility(GONE);
-        questions.setVisibility(GONE);
-        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-        expandableLayout.setNoContentMsg("No PAM survey available");
-        expandableLayout.showNoContentMsg();
     }
+
+//    private void init() {
+//        selectedImageId = -1;
+//        expandableLayout.setTitleView(titleView);
+//        expandableLayout.setTitleText(R.id.surveysTitle, "PAM");
+//
+//        imagesContainer = (LinearLayout) questionsLayout.findViewById(R.id.pamSurveyImagesContainer);
+//        questions = (LinearLayout) questionsLayout.findViewById(R.id.pamSurveyQuestions);
+//
+//        Survey survey = Survey.getAvailableSurvey(SurveyType.PAM);
+//
+//        if(survey == null) {
+//            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+//        }
+//
+//        if(survey != null) {
+//
+//            Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
+//
+//            if(children.containsKey(SurveyType.PAM)) {
+//                determineSurveyPeriod(survey);
+//                currentSurvey = survey;
+//                initPamImages();
+//                if(currentPeriod == PAM_MORNING) {
+//                    initMorningQuestions();
+//                    afternoonQuestions.setVisibility(GONE);
+//                } else {
+//                    initAfternoonQuestions();
+//                    morningQuestions.setVisibility(GONE);
+//                }
+//
+//
+//
+//                expandableLayout.setBodyView(questionsLayout);
+////                expandableLayout.expand();
+////                expandableLayout.showBody();
+//                hasSurvey = true;
+//
+//                return;
+//            }
+//
+//        }
+//
+//        imagesContainer.setVisibility(GONE);
+//        questions.setVisibility(GONE);
+//        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+//        expandableLayout.setNoContentMsg("No PAM survey available");
+//        expandableLayout.showNoContentMsg();
+//    }
+
+
 
     private void determineSurveyPeriod(Survey survey) {
         DateTime scheduleTime = new DateTime(survey.scheduledAt * 1000);
@@ -283,17 +382,16 @@ public class PAMSurveyView extends LinearLayout {
     }
 
     private void initMorningQuestions() {
-        morningStressSeekBar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.pamSurveyMorningStressSeekBar);
+        morningStressSeekBar = (DiscreteSeekBar) morningQuestions.findViewById(R.id.pamSurveyMorningStressSeekBar);
 
         morningSleepRadioGroup = new ArrayList<>();
         RadioButton current;
         for(int i = 0; i < morningSleepRButtons.length; i++) {
-            current = (RadioButton) questionsLayout.findViewById(morningSleepRButtons[i]);
+            current = (RadioButton) morningQuestions.findViewById(morningSleepRButtons[i]);
             current.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(morningSleepSelectedRButton != null) {
-                        Log.d("FANCULO", "CAZZO");
                         morningSleepSelectedRButton.setChecked(false);
 
                     }
@@ -307,7 +405,7 @@ public class PAMSurveyView extends LinearLayout {
 
         morningLocationRadioGroup = new ArrayList<>();
         for(int i = 0; i < morningLocationRButtons.length; i++) {
-            current = (RadioButton) questionsLayout.findViewById(morningLocationRButtons[i]);
+            current = (RadioButton) morningQuestions.findViewById(morningLocationRButtons[i]);
             current.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -324,7 +422,7 @@ public class PAMSurveyView extends LinearLayout {
         morningTransportationCheckboxes = new ArrayList<>();
 
         for(int i = 0; i < checkboxIDs.length; i++) {
-            morningTransportationCheckboxes.add((CheckBox) questionsLayout.findViewById(checkboxIDs[i]));
+            morningTransportationCheckboxes.add((CheckBox) morningQuestions.findViewById(checkboxIDs[i]));
         }
     }
 
@@ -332,7 +430,7 @@ public class PAMSurveyView extends LinearLayout {
         afternoonSportRadioGroup =  new ArrayList<>();
         RadioButton current;
         for(int i = 0; i < afternoonSportRButtons.length; i++) {
-            current = (RadioButton) questionsLayout.findViewById(afternoonSportRButtons[i]);
+            current = (RadioButton) afternoonQuestions.findViewById(afternoonSportRButtons[i]);
             current.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -348,7 +446,7 @@ public class PAMSurveyView extends LinearLayout {
 
         afternoonLocationRadioGroup =  new ArrayList<>();
         for(int i = 0; i < afternoonLocationRButtons.length; i++) {
-            current = (RadioButton) questionsLayout.findViewById(afternoonLocationRButtons[i]);
+            current = (RadioButton) afternoonQuestions.findViewById(afternoonLocationRButtons[i]);
             current.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -364,7 +462,7 @@ public class PAMSurveyView extends LinearLayout {
 
         afternoonPeopleRadioGroup =  new ArrayList<>();
         for(int i = 0; i < afternoonPeopleRButtons.length; i++) {
-            current = (RadioButton) questionsLayout.findViewById(afternoonPeopleRButtons[i]);
+            current = (RadioButton) afternoonQuestions.findViewById(afternoonPeopleRButtons[i]);
             current.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -379,13 +477,13 @@ public class PAMSurveyView extends LinearLayout {
         }
 
         if(isUserStudent()) {
-            TextView uniQ = (TextView) questionsLayout.findViewById(R.id.pamSurveyAfternoonUniQ);
+            TextView uniQ = (TextView) afternoonQuestions.findViewById(R.id.pamSurveyAfternoonUniQ);
             uniQ.setText(context.getString(R.string.pam_q2_afternoon_2));
         }
 
         afternoonWorkloadRadioGroup = new ArrayList<>();
         for(int i = 0; i < afternoonWorkloadRButtons.length; i++) {
-            current = (RadioButton) questionsLayout.findViewById(afternoonWorkloadRButtons[i]);
+            current = (RadioButton) afternoonQuestions.findViewById(afternoonWorkloadRButtons[i]);
             current.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -415,26 +513,6 @@ public class PAMSurveyView extends LinearLayout {
 
         return true;
 
-    }
-
-    private void initPamImages() {
-        int imageViewId;
-        Random r = new Random();
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
-                imageViewId = getResources().getIdentifier("pamSurveyImages_" + (i+1) + "_" + (j+1), "id", getContext().getPackageName());
-                images[i][j] = (ImageView) questionsLayout.findViewById(imageViewId);
-                final int imagejId = r.nextInt(3);
-                final int imageiId = (i*images[i].length)+j;
-                images[i][j].setImageResource(pamImages[imageiId][imagejId]);
-                images[i][j].setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        handlePamImageClick(v, imageiId, imagejId);
-                    }
-                });
-            }
-        }
     }
 
     private void handlePamImageClick(View v, int i, int j) {
@@ -478,8 +556,8 @@ public class PAMSurveyView extends LinearLayout {
         pamAttributes.put(PAMTable.KEY_PAM_IMAGE_ID, imageId);
 
 
-        PAMSurvey pamSurvey = new PAMSurvey(true);
-        pamSurvey.setAttributes(pamAttributes);
+//        PAMSurvey pamSurvey = new PAMSurvey(true);
+//        pamSurvey.setAttributes(pamAttributes);
 
         Survey survey = (Survey) Survey.findByPk(currentSurvey.id);
         survey.getSurveys().get(SurveyType.PAM).setAttributes(pamAttributes);
@@ -489,6 +567,8 @@ public class PAMSurveyView extends LinearLayout {
             survey.completed = true;
             survey.ts = System.currentTimeMillis();
         }
+
+        survey.save();
     }
 
     private void saveAfternoonPam() {
@@ -625,14 +705,24 @@ public class PAMSurveyView extends LinearLayout {
 //        expandableLayout.removeAllViews();
 //        expandableLayout.removeContent();
 //        expandableLayout.removeBody();
-        expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
+//        expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
 //        expandableLayout.removeBody();
 //        expandableLayout.setBodyView(questionsLayout);
-        expandableLayout.showBody();
+//        expandableLayout.showBody();
 //        expandableLayout.setBodyView(questionsLayout);
 //        init();
 //        expandableLayout.invalidate();
 //        invalidate();
 
+        initView();
+
+    }
+
+    public void blink() {
+        expandableLayout.startBlink();
+    }
+
+    public void stopBlink() {
+        expandableLayout.stopBlink();
     }
 }

@@ -92,13 +92,13 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
         surveys[2] = SurveyType.PHQ8;
         surveys[3] = SurveyType.PSS;
 
+        expandableLayout.getTitleView().removeAllViews();
         expandableLayout.setTitleView(titleView);
         expandableLayout.setTitleText(R.id.surveysTitle, "Term survey");
 
-        Survey survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
-//        Survey survey = null;
-        if(survey != null) {
-            currentSurvey = survey;
+        currentSurvey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+
+        if(currentSurvey != null) {
 
             shsView = (SHSSurveyView) questionsLayout.findViewById(R.id.termSurvey_SHS);
             shsView.setVisibility(GONE);
@@ -114,13 +114,12 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
             phq8View.setCallback(this);
 
 
-            showSurveys(survey);
+            showSurveys(currentSurvey);
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
             expandableLayout.setBodyView(questionsLayout);
             expandableLayout.showBody();
-//            expandableLayout.expand();
             hasSurvey = true;
         } else {
-            questionsLayout.setVisibility(GONE);
             expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
             expandableLayout.setNoContentMsg("No term survey available");
             expandableLayout.showNoContentMsg();
@@ -189,18 +188,6 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
 
     private void processSurveyCompleted() {
         Survey s = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
-
-//        LocalStorageController c = SQLiteController.getInstance(context);
-
-//        Cursor shs = c.rawQuery("SELECT * FROM " + SHSTable.TABLE_SHS, null);
-//        Cursor swls = c.rawQuery("SELECT * FROM " + SWLSTable.TABLE_SWLS, null);
-//        Cursor phq8 = c.rawQuery("SELECT * FROM " + PHQ8Table.TABLE_PHQ8, null);
-//        Cursor pss = c.rawQuery("SELECT * FROM " + PSSTable.TABLE_PSS, null);
-//
-//        if(shs.getCount() > 0) printSurvey(shs, "SHS");
-//        if(swls.getCount() > 0) printSurvey(swls, "SWLS");
-//        if(phq8.getCount() > 0) printSurvey(phq8, "PHQ8");
-//        if(pss.getCount() > 0) printSurvey(pss, "PSS");
         showSurveys(s);
         if(checkCompleted(s)) {
             expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
@@ -212,7 +199,6 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
             s.ts = System.currentTimeMillis();
             s.save();
 
-            callback.onTermSurveyCompleted();
             notifySurveyCompleted();
             Toast.makeText(getContext(), "Term survey completed", Toast.LENGTH_SHORT).show();
             callback.onTermSurveyCompleted();
@@ -242,9 +228,10 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
     }
 
     public void reInit() {
-//        expandableLayout.removeAllViews();
-//        init();
-//        invalidate();
-
+        init();
+        shsView.reInit();
+        swlsView.reInit();
+        phq8View.reInit();
+        pssView.reInit();
     }
 }

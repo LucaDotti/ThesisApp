@@ -42,15 +42,11 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
         initTerm(root);
 
         if(termView.hasSurvey()) {
-
-                termView.expand();
-
+            termView.expand();
         } else if(pwbView.hasSurvey()) {
-                pwbView.expand();
-
+            pwbView.expand();
         } else if (pamView.hasSurvey()) {
-                pamView.expand();
-
+            pamView.blink();
         }
 
         return root;
@@ -74,6 +70,7 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
     @Override
     public void onPamSurveyCompletedCallback() {
         callback.onSurveyCompletedCallback();
+        pamView.stopBlink();
         if(termView.hasSurvey()) {
             termView.expand();
         } else if(pwbView.hasSurvey()) {
@@ -123,6 +120,7 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
         switch (survey) {
             case PAM:
                 pamView.reInit();
+                pamView.blink();
 //                pamView.expand();
                 break;
             case PWB:

@@ -75,56 +75,68 @@ public class SHSSurveyView extends LinearLayout {
         }
     }
 
-    private void init() {
-        expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "SHS");
-
+    private Survey getCurrentSurvey() {
         Survey survey = Survey.getAvailableSurvey(SurveyType.SHS);
 
-        if(survey == null) {
-            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+        if(survey != null) {
+            return survey;
         }
+
+        survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
 
         if(survey != null) {
             Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
 
             if(children.containsKey(SurveyType.SHS)) {
-                currentSurvey= survey;
-                q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ1SeekBar);
-                q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ2SeekBar);
-                q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ3SeekBar);
-                q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ4SeekBar);
-
-                submiButton = (Button) questionsLayout.findViewById(R.id.shsSubmitButton);
-
-                submiButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        saveSHSSurvey();
-                        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-                        expandableLayout.setNoContentMsg("No SHS survey available");
-                        expandableLayout.showNoContentMsg();
-                        expandableLayout.collapse();
-                        callback.onShsSurveyCompletedCallback();
-                        if(!currentSurvey.grouped) {
-                            notifySurveyCompleted();
-                        }
-
-                        Toast.makeText(getContext(), "SHS survey completed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                expandableLayout.setBodyView(questionsLayout);
-//                expandableLayout.showBody();
-
-                return;
+                return survey;
             }
         }
 
-        questionsLayout.setVisibility(GONE);
-        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-        expandableLayout.setNoContentMsg("No SHS survey available");
-        expandableLayout.showNoContentMsg();
+        return null;
+    }
+
+    private void init() {
+        expandableLayout.getTitleView().removeAllViews();
+        expandableLayout.setTitleView(titleView);
+        expandableLayout.setTitleText(R.id.surveysTitle, "SHS");
+
+        currentSurvey = getCurrentSurvey();
+
+        if(currentSurvey != null) {
+            q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ1SeekBar);
+            q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ2SeekBar);
+            q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ3SeekBar);
+            q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ4SeekBar);
+
+            submiButton = (Button) questionsLayout.findViewById(R.id.shsSubmitButton);
+
+            submiButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    saveSHSSurvey();
+                    expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+                    expandableLayout.setNoContentMsg("No SHS survey available");
+                    expandableLayout.showNoContentMsg();
+                    expandableLayout.collapse();
+                    callback.onShsSurveyCompletedCallback();
+                    if(!currentSurvey.grouped) {
+                        notifySurveyCompleted();
+                    }
+
+                    Toast.makeText(getContext(), "SHS survey completed", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
+            expandableLayout.setBodyView(questionsLayout);
+            expandableLayout.showBody();
+//            hasSurvey = true;
+        } else {
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+            expandableLayout.setNoContentMsg("No SHS survey available");
+            expandableLayout.showNoContentMsg();
+        }
+
     }
 
     private void saveSHSSurvey() {
@@ -158,5 +170,9 @@ public class SHSSurveyView extends LinearLayout {
     public void expand() {
         expand();
         expandableLayout.showBody();
+    }
+
+    public void reInit() {
+        init();
     }
 }

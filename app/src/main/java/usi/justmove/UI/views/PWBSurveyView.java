@@ -82,54 +82,64 @@ public class PWBSurveyView extends LinearLayout {
         }
     }
 
-    private void init() {
-        expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "PWB");
-
+    private Survey getCurrentSurvey() {
         Survey survey = Survey.getAvailableSurvey(SurveyType.PWB);
 
-        if(survey == null) {
-            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+        if(survey != null) {
+            return survey;
         }
+
+        survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
 
         if(survey != null) {
             Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
 
             if(children.containsKey(SurveyType.PWB)) {
-                currentSurvey = survey;
-                initQuestions();
-                submitButton = (Button) questionsLayout.findViewById(R.id.pwbSubmitButton);
-                submitButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        savePwbSurvey();
-                        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-                        expandableLayout.setNoContentMsg("No PWB survey available");
-                        expandableLayout.showNoContentMsg();
-                        expandableLayout.collapse();
-                        callback.onPwbSurveyCompletedCallback();
-
-                        if(!currentSurvey.grouped) {
-                            notifySurveyCompleted();
-                        }
-
-                        Toast.makeText(getContext(), "PWB survey completed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                expandableLayout.setBodyView(questionsLayout);
-//                expandableLayout.showBody();
-
-                hasSurvey = true;
-
-                return;
+                return survey;
             }
         }
 
-        questionsLayout.setVisibility(GONE);
-        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-        expandableLayout.setNoContentMsg("No PWB survey available");
-        expandableLayout.showNoContentMsg();
+        return null;
+    }
+
+    private void init() {
+        expandableLayout.getTitleView().removeAllViews();
+        expandableLayout.setTitleView(titleView);
+        expandableLayout.setTitleText(R.id.surveysTitle, "PWB");
+
+        currentSurvey = getCurrentSurvey();
+
+        if(currentSurvey != null) {
+            initQuestions();
+
+            submitButton = (Button) questionsLayout.findViewById(R.id.pwbSubmitButton);
+            submitButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    savePwbSurvey();
+                    expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+                    expandableLayout.setNoContentMsg("No PWB survey available");
+                    expandableLayout.showNoContentMsg();
+                    expandableLayout.collapse();
+                    callback.onPwbSurveyCompletedCallback();
+
+                    if(!currentSurvey.grouped) {
+                        notifySurveyCompleted();
+                    }
+
+                    Toast.makeText(getContext(), "PWB survey completed", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
+            expandableLayout.setBodyView(questionsLayout);
+            expandableLayout.showBody();
+            hasSurvey = true;
+        } else {
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+            expandableLayout.setNoContentMsg("No PWB survey available");
+            expandableLayout.showNoContentMsg();
+        }
     }
 
     private void initQuestions() {
@@ -185,8 +195,6 @@ public class PWBSurveyView extends LinearLayout {
     }
 
     public void reInit() {
-//        expandableLayout.removeAllViews();
-//        init();
-//        invalidate();
+        init();
     }
 }

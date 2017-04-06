@@ -26,6 +26,8 @@ import usi.justmove.local.database.tables.PSSTable;
 import usi.justmove.local.database.tables.PWBTable;
 import usi.justmove.local.database.tables.SHSTable;
 
+import static android.os.Build.VERSION_CODES.M;
+
 /**
  * Created by usi on 07/03/17.
  */
@@ -83,63 +85,75 @@ public class PSSSurveyView extends LinearLayout {
         }
     }
 
-    private void init() {
-        expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "PSS");
-
+    private Survey getCurrentSurvey() {
         Survey survey = Survey.getAvailableSurvey(SurveyType.PSS);
 
-        if(survey == null) {
-            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+        if(survey != null) {
+            return survey;
         }
+
+        survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
 
         if(survey != null) {
             Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
 
             if(children.containsKey(SurveyType.PSS)) {
-                currentSurvey = survey;
-                q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ1SeekBar);
-                q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ2SeekBar);
-                q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ3SeekBar);
-                q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ4SeekBar);
-                q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ5SeekBar);
-                q6Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ6SeekBar);
-                q7Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ7SeekBar);
-                q8Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ8SeekBar);
-                q9Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ9SeekBar);
-                q10Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ10SeekBar);
-
-                submiButton = (Button) questionsLayout.findViewById(R.id.pssSubmitButton);
-
-                submiButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        savePssSurvey();
-                        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-                        expandableLayout.setNoContentMsg("No PSS survey available");
-                        expandableLayout.showNoContentMsg();
-                        expandableLayout.collapse();
-                        callback.onPssSurveyCompletedCallback();
-
-                        if(!currentSurvey.grouped) {
-                            notifySurveyCompleted();
-                        }
-
-                        Toast.makeText(getContext(), "PSS survey completed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                expandableLayout.setBodyView(questionsLayout);
-//                expandableLayout.showBody();
-
-                return;
+                return survey;
             }
         }
 
-        questionsLayout.setVisibility(GONE);
-        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-        expandableLayout.setNoContentMsg("No PSS survey available");
-        expandableLayout.showNoContentMsg();
+        return null;
+    }
+
+    private void init() {
+
+        expandableLayout.getTitleView().removeAllViews();
+        expandableLayout.setTitleView(titleView);
+        expandableLayout.setTitleText(R.id.surveysTitle, "PSS");
+
+        currentSurvey = getCurrentSurvey();
+
+        if(currentSurvey != null) {
+            q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ1SeekBar);
+            q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ2SeekBar);
+            q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ3SeekBar);
+            q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ4SeekBar);
+            q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ5SeekBar);
+            q6Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ6SeekBar);
+            q7Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ7SeekBar);
+            q8Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ8SeekBar);
+            q9Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ9SeekBar);
+            q10Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ10SeekBar);
+
+            submiButton = (Button) questionsLayout.findViewById(R.id.pssSubmitButton);
+
+            submiButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    savePssSurvey();
+                    expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+                    expandableLayout.setNoContentMsg("No PSS survey available");
+                    expandableLayout.showNoContentMsg();
+                    expandableLayout.collapse();
+                    callback.onPssSurveyCompletedCallback();
+
+                    if(!currentSurvey.grouped) {
+                        notifySurveyCompleted();
+                    }
+
+                    Toast.makeText(getContext(), "PSS survey completed", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
+            expandableLayout.setBodyView(questionsLayout);
+            expandableLayout.showBody();
+//            hasSurvey = true;
+        } else {
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+            expandableLayout.setNoContentMsg("No PSS survey available");
+            expandableLayout.showNoContentMsg();
+        }
     }
 
     private void savePssSurvey() {
@@ -179,5 +193,9 @@ public class PSSSurveyView extends LinearLayout {
     public void expand() {
         expand();
         expandableLayout.showBody();
+    }
+
+    public void reInit() {
+        init();
     }
 }

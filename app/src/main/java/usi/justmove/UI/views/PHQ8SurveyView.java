@@ -1,5 +1,7 @@
 package usi.justmove.UI.views;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
@@ -82,56 +84,74 @@ public class PHQ8SurveyView extends LinearLayout {
         }
     }
 
-    private void init() {
-        expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "PHQ8");
-
+    private Survey getCurrentSurvey() {
         Survey survey = Survey.getAvailableSurvey(SurveyType.PHQ8);
 
-        if(survey == null) {
-            survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+        if(survey != null) {
+            return survey;
         }
+
+        survey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
 
         if(survey != null) {
             Map<SurveyType, TableHandler> children =  survey.getChildSurveys(false);
 
             if(children.containsKey(SurveyType.PHQ8)) {
-                currentSurvey = survey;
-                q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q1SeekBar);
-                q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q2SeekBar);
-                q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q3SeekBar);
-                q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q4SeekBar);
-                q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q5SeekBar);
-                q6Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q6SeekBar);
-                q7Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q7SeekBar);
-                q8Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q8SeekBar);
-
-                submiButton = (Button) questionsLayout.findViewById(R.id.phq8SubmitButton);
-
-                submiButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        savePhq8Survey();
-                        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-                        expandableLayout.setNoContentMsg("No PHQ8 survey available");
-                        expandableLayout.showNoContentMsg();
-                        expandableLayout.collapse();
-                        callback.onPhq8SurveyCompletedCallback();
-
-                        if(!currentSurvey.grouped) {
-                            notifySurveyCompleted();
-                        }
-
-                        Toast.makeText(getContext(), "PHQ8 survey completed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                expandableLayout.setBodyView(questionsLayout);
-//                expandableLayout.showBody();
-
-                return;
+                return survey;
             }
+        }
 
+        return null;
+    }
+
+    private void init() {
+        expandableLayout.getTitleView().removeAllViews();
+        expandableLayout.setTitleView(titleView);
+        expandableLayout.setTitleText(R.id.surveysTitle, "PHQ8");
+
+        currentSurvey = getCurrentSurvey();
+
+
+        if(currentSurvey != null) {
+            q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q1SeekBar);
+            q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q2SeekBar);
+            q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q3SeekBar);
+            q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q4SeekBar);
+            q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q5SeekBar);
+            q6Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q6SeekBar);
+            q7Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q7SeekBar);
+            q8Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPhq8Q8SeekBar);
+
+            submiButton = (Button) questionsLayout.findViewById(R.id.phq8SubmitButton);
+
+            submiButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    savePhq8Survey();
+                    expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+                    expandableLayout.setNoContentMsg("No PHQ8 survey available");
+                    expandableLayout.showNoContentMsg();
+                    expandableLayout.collapse();
+                    callback.onPhq8SurveyCompletedCallback();
+
+                    if(!currentSurvey.grouped) {
+                        notifySurveyCompleted();
+                    }
+
+                    Toast.makeText(getContext(), "PHQ8 survey completed", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
+            expandableLayout.setBodyView(questionsLayout);
+            expandableLayout.showBody();
+
+
+//            hasSurvey = true;
+        } else {
+            expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
+            expandableLayout.setNoContentMsg("No PHQ8 survey available");
+            expandableLayout.showNoContentMsg();
         }
 
         questionsLayout.setVisibility(GONE);
@@ -179,5 +199,7 @@ public class PHQ8SurveyView extends LinearLayout {
         expandableLayout.showBody();
     }
 
-
+    public void reInit() {
+        init();
+    }
 }

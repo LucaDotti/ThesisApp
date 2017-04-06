@@ -4,16 +4,18 @@
     <!-- ++++++++++++++++++++++++++++++++++++++++ PAM ++++++++++++++++++++++++++++++++++++++++ -->
     <string name="PAM_daily_count">2</string>
     <string-array name="PAM_daily_times">
-        <!--<item>08:00,23:59</item>-->
+        <!--&lt;!&ndash;<item>08:00,23:59</item>&ndash;&gt;-->
         <item>08:00,13:00</item>
         <item>13:00,22:00</item>
+        <!--<item>22:33,22:35</item>-->
+        <!--<item>22:35,22:37</item>-->
     </string-array>
     <string name="PAM_min_elapse_time_between_surveys">7200000</string>
     <string name="PAM_max_elapse_time_for_completion">7200000</string>
     <string name="PAM_notifications_count">4</string>
 
     <string name="PAM_frequency">daily</string>
-    <string name="PAM_immediate">true</string>
+    <string name="PAM_immediate">false</string>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++ PWB ++++++++++++++++++++++++++++++++++++++++ -->
     <string name="PWB_daily_count">1</string>

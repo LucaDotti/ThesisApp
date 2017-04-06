@@ -289,8 +289,16 @@ public class Survey extends TableHandler {
     }
 
 
-    public static TableHandler find(String select, String clause) {
-        Cursor surveyRecord = localController.rawQuery("SELECT " + select + " FROM " + LocalDbUtility.getTableName(table) + " WHERE " + clause + " LIMIT " + 1, null);
+    public static TableHandler find(String select, String clause, String order) {
+        String query = "SELECT " + select + " FROM " + LocalDbUtility.getTableName(table);
+
+        if(clause != null && !clause.equals("")) {
+            query += " WHERE " + clause;
+        }
+
+        query += " " + order;
+        query += " LIMIT " + 1;
+        Cursor surveyRecord = localController.rawQuery(query, null);
 
         if(surveyRecord.getCount() == 0) {
             return null;
@@ -454,7 +462,7 @@ public class Survey extends TableHandler {
                 columnExpired + " = " + 0 + " AND " +
                 columnType + " = \"" + survey.getSurveyName() + "\"";
 
-        return (Survey) find("*", query);
+        return (Survey) find("*", query, "");
     }
 
 
@@ -592,6 +600,12 @@ public class Survey extends TableHandler {
 
     @Override
     public String toString() {
-        return "Survey(id: " + id + ", ts: " + ts + ", scheduledAt: " + scheduledAt + ", completed: " + completed + ", notified: " + notified + ", expired: " + expired + ", grouped: " + grouped + ", ts: " + surveyType.getSurveyName() + ")";
+        String ret = "Survey(id: " + id +  ", newRecord: " + isNewRecord + ", ts: " + ts + ", scheduledAt: " + scheduledAt + ", completed: " + completed + ", notified: " + notified + ", expired: " + expired + ", grouped: " + grouped + ", ts: " + surveyType.getSurveyName() + ")\n";
+
+        for(Map.Entry<SurveyType, TableHandler> record: surveys.entrySet()) {
+            ret += "\t" + record.getValue().toString() + "\n";
+        }
+
+        return ret;
     }
 }

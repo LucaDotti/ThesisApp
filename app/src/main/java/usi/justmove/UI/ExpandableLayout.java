@@ -6,7 +6,9 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -14,6 +16,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import usi.justmove.R;
+
+import static usi.justmove.R.styleable.expandableLayout;
 
 /**
  * Created by usi on 19/02/17.
@@ -34,6 +38,8 @@ public class ExpandableLayout extends LinearLayout {
     private int angle;
     private Context context;
     private AttributeSet attrs;
+
+    private boolean isAnimating;
     public ExpandableLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -75,7 +81,7 @@ public class ExpandableLayout extends LinearLayout {
             }
         });
 
-        TypedArray customStyle = context.obtainStyledAttributes(attrs, R.styleable.expandableLayout);
+        TypedArray customStyle = context.obtainStyledAttributes(attrs, expandableLayout);
         if (customStyle == null) {
             return;
         }
@@ -200,15 +206,29 @@ public class ExpandableLayout extends LinearLayout {
         v.startAnimation(a);
     }
 
-    public View getTitleView() {
+    public LinearLayout getTitleView() {
         return titleContent;
     }
 
-    public View getBodyView() {
+    public LinearLayout getBodyView() {
         return bodyContent;
     }
 
     public void removeBody() {
         bodyContent.removeAllViews();
     }
+
+    public void startBlink() {
+        AlphaAnimation blinkanimation= new AlphaAnimation(1, 0.1f); // Change alpha from fully visible to invisible
+        blinkanimation.setDuration(700); // duration - half a second
+        blinkanimation.setInterpolator(new LinearInterpolator()); // do not alter animation rate
+        blinkanimation.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
+        blinkanimation.setRepeatMode(Animation.REVERSE);
+        titleContent.startAnimation(blinkanimation);
+    }
+
+    public void stopBlink() {
+        titleContent.getAnimation().cancel();
+    }
+
 }

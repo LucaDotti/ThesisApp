@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import org.greenrobot.eventbus.EventBus;
@@ -19,6 +20,7 @@ import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
 import usi.justmove.gathering.surveys.schedulation.Scheduler;
 import usi.justmove.local.database.tableHandlers.Survey;
 import usi.justmove.local.database.tableHandlers.SurveyAlarms;
+import usi.justmove.local.database.tables.SurveyTable;
 
 import static android.R.attr.y;
 import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.NOTIFICATION_INTENT;
@@ -63,6 +65,7 @@ public class SurveyNotifier {
                     currSurvey.expired = true;
                     currSurvey.save();
 
+
                     notifyCancelAlarm();
                     EventBus.getDefault().post(new SurveyEvent(surveyId, false));
                     return;
@@ -70,6 +73,7 @@ public class SurveyNotifier {
 
                 createNotification(currSurvey, config);
 
+//                Log.d("NOTIFIER", currSurvey.toString());
                 currSurvey.save();
 
                 EventBus.getDefault().post(new SurveyEvent(surveyId, false));
@@ -78,8 +82,12 @@ public class SurveyNotifier {
     }
 
     private void notifyCancelAlarm() {
-        SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
-        Scheduler.getInstance().deleteAlarm((int) currentAlarm.id);
+        Survey s = (Survey) Survey.find("*", "", "ORDER BY " + SurveyTable.KEY_SURVEY_ID + " DESC");
+
+        if(s.id == currSurvey.id) {
+            SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
+            Scheduler.getInstance().deleteAlarm((int) currentAlarm.id);
+        }
     }
 
     private void cancelNotification(int id) {

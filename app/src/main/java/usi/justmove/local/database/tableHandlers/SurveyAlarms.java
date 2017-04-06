@@ -7,6 +7,7 @@ import usi.justmove.gathering.surveys.config.SurveyType;
 import usi.justmove.local.database.LocalDbUtility;
 import usi.justmove.local.database.LocalTables;
 
+import static com.sun.mail.imap.SortTerm.FROM;
 import static usi.justmove.R.array.surveys;
 
 /**
@@ -121,13 +122,21 @@ public class SurveyAlarms extends TableHandler {
     }
 
     public static TableHandler[] findAll(String select, String clause) {
-        Cursor records = localController.rawQuery("SELECT " + select + " FROM " + LocalDbUtility.getTableName(table) + " WHERE " + clause, null);
+        String query = "SELECT " + select + "FROM " + table.getTableName();
+
+        if(!clause.equals("") && clause != null) {
+            query += " WHERE " + clause;
+        }
+
+        Cursor records = localController.rawQuery(query, null);
 
         TableHandler[] alarms =  new TableHandler[records.getCount()];
 
         if(records.getCount() == 0) {
             return alarms;
         }
+
+
 
         int i = 0;
         SurveyAlarms alarm;
@@ -145,9 +154,11 @@ public class SurveyAlarms extends TableHandler {
     public static SurveyAlarms getCurrentAlarm(SurveyType survey) {
         String columnCurrent = LocalDbUtility.getTableColumns(table)[1];
         String columnType = LocalDbUtility.getTableColumns(table)[3];
+        String columnId = LocalDbUtility.getTableColumns(table)[0];
 
-        Cursor record = localController.rawQuery("SELECT * FROM " + table.getTableName() + " WHERE " +
-                        columnCurrent + " = " + 1 + " AND " + columnType + " = \"" + survey.getSurveyName() + "\"", null);
+
+
+        Cursor record = localController.rawQuery("SELECT * FROM " + table.getTableName() + " WHERE " + columnType + " = \"" + survey.getSurveyName() + "\" ORDER BY " + columnId + " ASC", null);
 
         if(record.getCount() == 0) {
             return null;
@@ -164,4 +175,43 @@ public class SurveyAlarms extends TableHandler {
         return alarm;
     }
 
+    public static TableHandler find(String select, String clause) {
+
+        String query = "SELECT " + select + " FROM " + LocalDbUtility.getTableName(table);
+
+        if(!clause.equals("") && clause != null) {
+            query += " WHERE " + clause;
+        }
+
+        query += " LIMIT " + 1;
+
+        Cursor surveyRecord = localController.rawQuery(query, null);
+
+        if(surveyRecord.getCount() == 0) {
+            return null;
+        }
+
+        SurveyAlarms survey = new SurveyAlarms(false);
+
+        surveyRecord.moveToFirst();
+
+        survey.setAttributes(survey.getAttributesFromCursor(surveyRecord));
+
+
+        surveyRecord.close();
+        return survey;
+    }
+
+    public static int getCount(SurveyType survey) {
+        String columnType = LocalDbUtility.getTableColumns(table)[3];
+
+        Cursor c = localController.rawQuery("SELECT COUNT(*) FROM " + table.getTableName() + " WHERE " + columnType + " = \"" + survey.getSurveyName() + "\"", null);
+        c.moveToFirst();
+        return c.getInt(0);
+    }
+
+    @Override
+    public String toString() {
+        return "SurveyAlarms(id: " + id + ", current: " + current + ", ts: " + ts + ", type: " + type;
+    }
 }
