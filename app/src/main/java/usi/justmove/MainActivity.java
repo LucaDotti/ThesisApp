@@ -99,9 +99,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         if(action != null && action.equals(NotificationBroadcastReceiver.OPEN_SURVEYS_ACTION)) {
             viewPager.setCurrentItem(1);
-        } else {
-//            deleteDatabase("JustMove");
-        }
+        } 
 
         SQLiteController.getInstance(this);
 
@@ -141,9 +139,9 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         gSys.addSensor(SensorType.PHONE_CALLS);
         gSys.addSensor(SensorType.SMS);
         gSys.addSensor(SensorType.USED_APPS);
-//        gSys.start();
+        gSys.start();
 
-//        startService(new Intent(this, DataUploadService.class));
+        startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
     }
 
