@@ -153,12 +153,6 @@ public class PHQ8SurveyView extends LinearLayout {
             expandableLayout.setNoContentMsg("No PHQ8 survey available");
             expandableLayout.showNoContentMsg();
         }
-
-        questionsLayout.setVisibility(GONE);
-        expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);
-        expandableLayout.setNoContentMsg("No PHQ8 survey available");
-        expandableLayout.showNoContentMsg();
-
     }
 
     private void savePhq8Survey() {

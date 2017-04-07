@@ -680,7 +680,12 @@ public class PAMSurveyView extends LinearLayout {
             }
         }
 
-        return transps.substring(0, transps.length()-2);
+        if(transps.length() != 0) {
+            return transps.substring(0, transps.length()-2);
+        } else {
+            return "no answer";
+        }
+
     }
 
     public interface OnPamSurveyCompletedCallback {

@@ -102,7 +102,7 @@
 
     <string name="staff_email"></string>
     <string name="staff_email_pass"></string>
-    <string name="leave_study_target_email">something@something.ch</string>
+    <string name="leave_study_target_email">usilab107@gmail.com</string>
 
     <string name="pwb_explanation">Please answer the following questions by marking them with a number from 1 (strongly disagree) to 7 (strongly agree).</string>
     <string name="pwb_q1">1. I lead a purposeful and meaningful life</string>

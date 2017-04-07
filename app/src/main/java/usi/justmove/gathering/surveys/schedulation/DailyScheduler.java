@@ -173,6 +173,7 @@ public class DailyScheduler {
         Calendar now = Calendar.getInstance();
 
         int notificationStart = 0;
+
         if(immediate) {
             PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) now.getTimeInMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -187,6 +188,27 @@ public class DailyScheduler {
             notificationStart = 1;
         }
 
+        long oldSchedule = survey.scheduledAt;
+        if(notificationStart == 1) {
+            Calendar startDay = Calendar.getInstance();
+            startDay.set(Calendar.HOUR_OF_DAY, 7);
+            startDay.set(Calendar.MINUTE, 0);
+            startDay.set(Calendar.SECOND, 0);
+
+            Calendar endDay = Calendar.getInstance();
+            endDay.set(Calendar.HOUR_OF_DAY, 20);
+            endDay.set(Calendar.MINUTE, 0);
+            endDay.set(Calendar.SECOND, 0);
+
+            if(survey.scheduledAt*1000 < startDay.getTimeInMillis() && survey.scheduledAt*1000 > endDay.getTimeInMillis()) {
+                Random r = new Random();
+
+                long newSchedule = r.nextInt((int) (endDay.getTimeInMillis() - startDay.getTimeInMillis()));
+                survey.scheduledAt = newSchedule;
+
+            }
+        }
+
         for (int i = notificationStart; i < currConfig.notificationsCount; i++) {
             if(now.getTimeInMillis() <= (survey.scheduledAt*1000) + i * notificationInterval) {
                 setAlarm(intent, survey.scheduledAt*1000 + i * notificationInterval);
@@ -194,6 +216,7 @@ public class DailyScheduler {
             }
         }
 
+        survey.scheduledAt = oldSchedule;
         Log.d("DailyScheduler", "-----------------------------");
     }
 
