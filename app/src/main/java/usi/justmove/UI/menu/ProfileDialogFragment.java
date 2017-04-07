@@ -178,7 +178,7 @@ public class ProfileDialogFragment extends AppCompatDialogFragment {
 
             statusPicker = (NumberPicker) root.findViewById(R.id.status_picker);
             statusPicker.setMinValue(0);
-            statusPicker.setMaxValue(3);
+            statusPicker.setMaxValue(4);
 
 
             String selectedStatus = c.getString(7);

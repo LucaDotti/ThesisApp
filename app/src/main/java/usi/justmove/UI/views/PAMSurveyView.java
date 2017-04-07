@@ -194,7 +194,6 @@ public class PAMSurveyView extends LinearLayout {
         questionsLayout = (LinearLayout) inflater.inflate(R.layout.pam_questions_layout, null);
         morningQuestions = (LinearLayout) inflater.inflate(R.layout.pam_morning_questions_layout, null);
         afternoonQuestions = (LinearLayout) inflater.inflate(R.layout.pam_afternoon_questions_layout, null);
-        animation = findViewById(R.id.pamAnimation);
         initView();
     }
 

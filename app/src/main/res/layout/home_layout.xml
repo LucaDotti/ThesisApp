@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="30dp"
-            android:text="Hello"
+            android:text="Welcome to MEMOTION"
             android:textColor="@android:color/white"/>
         <TextView
             android:layout_width="match_parent"

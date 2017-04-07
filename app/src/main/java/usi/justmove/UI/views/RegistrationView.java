@@ -114,9 +114,7 @@ public class RegistrationView extends LinearLayout {
         record.put(UserTable.KEY_USER_GENDER, currentSelectedRadioButton.getId() == R.id.genderFemaleRadioButton ? "female" : "male");
         record.put(UserTable.KEY_USER_AGREED, "1");
         record.put(UserTable.KEY_USER_FACULTY, "Informatics");
-        if(!academicStatusValues[statusPicker.getValue()].equals(academicStatusValues[4])) {
-            record.put(UserTable.KEY_USER_ACADEMIC_STATUS, academicStatusValues[statusPicker.getValue()]);
-        }
+        record.put(UserTable.KEY_USER_ACADEMIC_STATUS, academicStatusValues[statusPicker.getValue()]);
         record.put(UserTable.KEY_USER_EMAIL, "");
         record.put(UserTable.KEY_USER_CREATION_TS, time);
         record.put(UserTable.KEY_USER_UPDATE_TS, time);
@@ -177,7 +175,7 @@ public class RegistrationView extends LinearLayout {
 
         NumberPicker statusPicker = (NumberPicker) view.findViewById(R.id.status_picker);
         statusPicker.setMinValue(0);
-        statusPicker.setMaxValue(3);
+        statusPicker.setMaxValue(4);
         statusPicker.setDisplayedValues(academicStatusValues);
     }
 

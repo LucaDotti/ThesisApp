@@ -25,7 +25,9 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -165,13 +167,18 @@ public class HomeView extends LinearLayout{
         String tableName = LocalDbUtility.getTableName(LocalTables.TABLE_SIMPLE_MOOD);
         String columnTs = LocalDbUtility.getTableColumns(LocalTables.TABLE_SIMPLE_MOOD)[1];
 
-        LocalDateTime startDateTime = new LocalDateTime().withTime(0, 0, 0, 0);
-        LocalDateTime endDateTime = new LocalDateTime().withTime(23, 59, 59, 999);
-        long startMillis = startDateTime.toDateTime().getMillis()/1000;
-        long endMillis = endDateTime.toDateTime().getMillis()/1000;
+        Calendar startDateTime = Calendar.getInstance();
+        startDateTime.set(Calendar.HOUR_OF_DAY, 0);
+        startDateTime.set(Calendar.MINUTE, 0);
+        startDateTime.set(Calendar.SECOND, 0);
+
+        Calendar endDateTime = Calendar.getInstance();
+        endDateTime.set(Calendar.HOUR_OF_DAY, 23);
+        endDateTime.set(Calendar.MINUTE, 59);
+        endDateTime.set(Calendar.SECOND, 59);
 
         Cursor c = localController.rawQuery("SELECT * FROM " + tableName
-                + " WHERE " + columnTs + " >= " + startMillis + " AND " + columnTs + " <= " + endMillis
+                + " WHERE " + columnTs + " >= " + startDateTime.getTimeInMillis()/1000 + " AND " + columnTs + " <= " + endDateTime.getTimeInMillis()/1000
                 + " LIMIT " + 1, null);
 
         if(c.getCount() == 0) {
@@ -250,25 +257,28 @@ public class HomeView extends LinearLayout{
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 int id = (int) value;
-                DateTimeFormatter dtfOut = DateTimeFormat.forPattern("MM-dd-yy");
                 if(id >= 0) {
                     if(id < nbRecords) {
                         Cursor c = localController.rawQuery("SELECT * FROM " + SimpleMoodTable.TABLE_SIMPLE_MOOD +
                                 " WHERE " + SimpleMoodTable.KEY_SIMPLE_MOOD_ID + " = " + Integer.toString(id+1), null);
                         c.moveToFirst();
-                        DateTime date = new DateTime(c.getLong(1));
+                        Calendar date = Calendar.getInstance();
+                        date.setTimeInMillis(c.getLong(1)*1000);
                         c.close();
-                        return dtfOut.print(date);
+                        SimpleDateFormat mdformat = new SimpleDateFormat("MM-dd-yyyy");
+                        return mdformat.format(date.getTime());
                     }
 
                     if(id >= nbRecords) {
                         Cursor c = localController.rawQuery("SELECT * FROM " + SimpleMoodTable.TABLE_SIMPLE_MOOD +
                                 " WHERE " + SimpleMoodTable.KEY_SIMPLE_MOOD_ID + " = " + Integer.toString(id), null);
                         c.moveToFirst();
-                        DateTime date = new DateTime(c.getLong(1));
-                        date = date.plusDays(1);
+                        Calendar date = Calendar.getInstance();
+                        date.setTimeInMillis(c.getLong(1)*1000);
+                        date.add(Calendar.DAY_OF_MONTH, 1);
                         c.close();
-                        return dtfOut.print(date);
+                        SimpleDateFormat mdformat = new SimpleDateFormat("MM-dd-yyyy");
+                        return mdformat.format(date.getTime());
                     }
                 }
 
@@ -301,8 +311,6 @@ public class HomeView extends LinearLayout{
 
         nbRecords = c.getCount();
         while(c.moveToNext()) {
-            DateTime date = new DateTime(c.getLong(1)*1000);
-            DateTimeFormatter dtfOut = DateTimeFormat.forPattern("MM-dd-yy");
             data.add(new Entry(c.getInt(0)-1, c.getInt(2)));
         }
 

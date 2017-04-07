@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         if(action != null && action.equals(NotificationBroadcastReceiver.OPEN_SURVEYS_ACTION)) {
             viewPager.setCurrentItem(1);
-        } 
+        }
 
         SQLiteController.getInstance(this);
 

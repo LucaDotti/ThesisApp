@@ -206,7 +206,6 @@ public class Scheduler {
                 }
 
                 String startDate = currConfig.startStudy;
-                Log.d("SCHEDULER", "START " + startDate);
                 Calendar start = Calendar.getInstance();
                 String[] split = startDate.split("-");
 
