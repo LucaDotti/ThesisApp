@@ -93,6 +93,7 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
         surveys[3] = SurveyType.PSS;
 
         expandableLayout.getTitleView().removeAllViews();
+        expandableLayout.getBodyView().removeAllViews();
         expandableLayout.setTitleView(titleView);
         expandableLayout.setTitleText(R.id.surveysTitle, "Term survey");
 
