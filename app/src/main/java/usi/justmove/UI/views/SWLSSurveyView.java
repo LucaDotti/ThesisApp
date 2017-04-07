@@ -41,10 +41,10 @@ public class SWLSSurveyView extends LinearLayout{
     private ExpandableLayout expandableLayout;
 
     private SeekBar q1Seekbar;
-    private DiscreteSeekBar q2Seekbar;
-    private DiscreteSeekBar q3Seekbar;
-    private DiscreteSeekBar q4Seekbar;
-    private DiscreteSeekBar q5Seekbar;
+    private SeekBar q2Seekbar;
+    private SeekBar q3Seekbar;
+    private SeekBar q4Seekbar;
+    private SeekBar q5Seekbar;
     private Button submiButton;
 
     private Survey currentSurvey;
@@ -111,10 +111,14 @@ public class SWLSSurveyView extends LinearLayout{
         if(currentSurvey != null) {
             q1Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ1SeekBar);
             q1Seekbar.setMax(6);
-            q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ2SeekBar);
-            q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ3SeekBar);
-            q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ4SeekBar);
-            q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ5SeekBar);
+            q2Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ2SeekBar);
+            q2Seekbar.setMax(6);
+            q3Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ3SeekBar);
+            q3Seekbar.setMax(6);
+            q4Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ4SeekBar);
+            q4Seekbar.setMax(6);
+            q5Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ5SeekBar);
+            q5Seekbar.setMax(6);
 
             submiButton = (Button) questionsLayout.findViewById(R.id.swlsSubmitButton);
 

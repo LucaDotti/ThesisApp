@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -148,7 +149,7 @@ public class PAMSurveyView extends LinearLayout {
 
     //morning questions
     private LinearLayout morningQuestions;
-    private DiscreteSeekBar morningStressSeekBar;
+    private SeekBar morningStressSeekBar;
     private List<RadioButton> morningSleepRadioGroup;
     private RadioButton morningSleepSelectedRButton;
     private List<RadioButton> morningLocationRadioGroup;
@@ -380,8 +381,8 @@ public class PAMSurveyView extends LinearLayout {
     }
 
     private void initMorningQuestions() {
-        morningStressSeekBar = (DiscreteSeekBar) morningQuestions.findViewById(R.id.pamSurveyMorningStressSeekBar);
-
+        morningStressSeekBar = (SeekBar) morningQuestions.findViewById(R.id.pamSurveyMorningStressSeekBar);
+        morningStressSeekBar.setMax(4);
         morningSleepRadioGroup = new ArrayList<>();
         RadioButton current;
         for(int i = 0; i < morningSleepRButtons.length; i++) {
@@ -527,7 +528,7 @@ public class PAMSurveyView extends LinearLayout {
         int imageId = selectedImageId;
         long timestamp = System.currentTimeMillis();
         int completed = 1;
-        int stress = morningStressSeekBar.getProgress();
+        int stress = morningStressSeekBar.getProgress()+1;
         String sleep;
         if(morningSleepSelectedRButton != null) {
             sleep = parseStringChoice(morningSleepSelectedRButton.getId());

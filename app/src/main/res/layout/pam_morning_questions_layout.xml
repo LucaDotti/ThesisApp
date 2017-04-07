@@ -31,15 +31,13 @@
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
                 android:text="1"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/pamSurveyMorningStressSeekBar"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                app:dsb_min="1"
-                app:dsb_max="5"/>
+                android:layout_weight="1"/>
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"

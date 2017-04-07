@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -41,16 +42,16 @@ public class PSSSurveyView extends LinearLayout {
     private LinearLayout questionsLayout;
     private ExpandableLayout expandableLayout;
 
-    private DiscreteSeekBar q1Seekbar;
-    private DiscreteSeekBar q2Seekbar;
-    private DiscreteSeekBar q3Seekbar;
-    private DiscreteSeekBar q4Seekbar;
-    private DiscreteSeekBar q5Seekbar;
-    private DiscreteSeekBar q6Seekbar;
-    private DiscreteSeekBar q7Seekbar;
-    private DiscreteSeekBar q8Seekbar;
-    private DiscreteSeekBar q9Seekbar;
-    private DiscreteSeekBar q10Seekbar;
+    private SeekBar q1Seekbar;
+    private SeekBar q2Seekbar;
+    private SeekBar q3Seekbar;
+    private SeekBar q4Seekbar;
+    private SeekBar q5Seekbar;
+    private SeekBar q6Seekbar;
+    private SeekBar q7Seekbar;
+    private SeekBar q8Seekbar;
+    private SeekBar q9Seekbar;
+    private SeekBar q10Seekbar;
     private Button submiButton;
 
     private Survey currentSurvey;
@@ -114,16 +115,26 @@ public class PSSSurveyView extends LinearLayout {
         currentSurvey = getCurrentSurvey();
 
         if(currentSurvey != null) {
-            q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ1SeekBar);
-            q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ2SeekBar);
-            q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ3SeekBar);
-            q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ4SeekBar);
-            q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ5SeekBar);
-            q6Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ6SeekBar);
-            q7Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ7SeekBar);
-            q8Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ8SeekBar);
-            q9Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ9SeekBar);
-            q10Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPssQ10SeekBar);
+            q1Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ1SeekBar);
+            q1Seekbar.setMax(4);
+            q2Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ2SeekBar);
+            q2Seekbar.setMax(4);
+            q3Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ3SeekBar);
+            q3Seekbar.setMax(4);
+            q4Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ4SeekBar);
+            q4Seekbar.setMax(4);
+            q5Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ5SeekBar);
+            q5Seekbar.setMax(4);
+            q6Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ6SeekBar);
+            q6Seekbar.setMax(4);
+            q7Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ7SeekBar);
+            q7Seekbar.setMax(4);
+            q8Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ8SeekBar);
+            q8Seekbar.setMax(4);
+            q9Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ9SeekBar);
+            q9Seekbar.setMax(4);
+            q10Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPssQ10SeekBar);
+            q10Seekbar.setMax(4);
 
             submiButton = (Button) questionsLayout.findViewById(R.id.pssSubmitButton);
 

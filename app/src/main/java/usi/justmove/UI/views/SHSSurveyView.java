@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -37,10 +38,10 @@ public class SHSSurveyView extends LinearLayout {
     private LinearLayout questionsLayout;
     private ExpandableLayout expandableLayout;
 
-    private DiscreteSeekBar q1Seekbar;
-    private DiscreteSeekBar q2Seekbar;
-    private DiscreteSeekBar q3Seekbar;
-    private DiscreteSeekBar q4Seekbar;
+    private SeekBar q1Seekbar;
+    private SeekBar q2Seekbar;
+    private SeekBar q3Seekbar;
+    private SeekBar q4Seekbar;
     private Button submiButton;
 
     private Survey currentSurvey;
@@ -104,10 +105,14 @@ public class SHSSurveyView extends LinearLayout {
         currentSurvey = getCurrentSurvey();
 
         if(currentSurvey != null) {
-            q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ1SeekBar);
-            q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ2SeekBar);
-            q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ3SeekBar);
-            q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysShsQ4SeekBar);
+            q1Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysShsQ1SeekBar);
+            q1Seekbar.setMax(4);
+            q2Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysShsQ2SeekBar);
+            q2Seekbar.setMax(4);
+            q3Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysShsQ3SeekBar);
+            q3Seekbar.setMax(4);
+            q4Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysShsQ4SeekBar);
+            q4Seekbar.setMax(4);
 
             submiButton = (Button) questionsLayout.findViewById(R.id.shsSubmitButton);
 

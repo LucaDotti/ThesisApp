@@ -46,12 +46,10 @@
                 android:textColor="@android:color/white"
                 android:text="1"
                 android:textSize="10dp"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/surveysPwbQ1SeekBar"
-                app:dsb_min="1"
-                app:dsb_max="7"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"/>
@@ -87,14 +85,12 @@
                 android:textColor="@android:color/white"
                 android:textSize="10dp"
                 android:text="1"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/surveysPwbQ2SeekBar"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                app:dsb_min="1"
-                app:dsb_max="7"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"/>
             <TextView
                 android:layout_width="20dp"
@@ -128,15 +124,13 @@
                 android:textColor="@android:color/white"
                 android:textSize="10dp"
                 android:text="1"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/surveysPwbQ3SeekBar"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                app:dsb_min="1"
-                app:dsb_max="7"/>
+                style="@style/Widget.AppCompat.SeekBar.Discrete"/>
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -169,14 +163,12 @@
                 android:textSize="10dp"
                 android:textColor="@android:color/white"
                 android:text="1"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/surveysPwbQ4SeekBar"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                app:dsb_min="1"
-                app:dsb_max="7"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"/>
             <TextView
                 android:layout_width="20dp"
@@ -210,15 +202,13 @@
                 android:textColor="@android:color/white"
                 android:textSize="10dp"
                 android:text="1"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/surveysPwbQ5SeekBar"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                app:dsb_min="1"
-                app:dsb_max="7"/>
+                style="@style/Widget.AppCompat.SeekBar.Discrete"/>
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -251,14 +241,12 @@
                 android:textColor="@android:color/white"
                 android:textSize="10dp"
                 android:text="1"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/surveysPwbQ6SeekBar"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                app:dsb_min="1"
-                app:dsb_max="7"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"/>
             <TextView
                 android:layout_width="20dp"
@@ -292,15 +280,13 @@
                 android:textColor="@android:color/white"
                 android:textSize="10dp"
                 android:text="1"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/surveysPwbQ7SeekBar"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                app:dsb_min="1"
-                app:dsb_max="7"/>
+                android:layout_weight="1"/>
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"
@@ -333,15 +319,13 @@
                 android:textColor="@android:color/white"
                 android:text="1"
                 android:textSize="10dp"/>
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/surveysPwbQ8SeekBar"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                app:dsb_min="1"
-                app:dsb_max="7"/>
+                android:layout_weight="1"/>
             <TextView
                 android:layout_width="20dp"
                 android:layout_height="wrap_content"

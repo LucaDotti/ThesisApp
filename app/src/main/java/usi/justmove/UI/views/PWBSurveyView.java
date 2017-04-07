@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -40,14 +41,14 @@ public class PWBSurveyView extends LinearLayout {
     private ExpandableLayout expandableLayout;
     private View titleView;
 
-    private DiscreteSeekBar q1Seekbar;
-    private DiscreteSeekBar q2Seekbar;
-    private DiscreteSeekBar q3Seekbar;
-    private DiscreteSeekBar q4Seekbar;
-    private DiscreteSeekBar q5Seekbar;
-    private DiscreteSeekBar q6Seekbar;
-    private DiscreteSeekBar q7Seekbar;
-    private DiscreteSeekBar q8Seekbar;
+    private SeekBar q1Seekbar;
+    private SeekBar q2Seekbar;
+    private SeekBar q3Seekbar;
+    private SeekBar q4Seekbar;
+    private SeekBar q5Seekbar;
+    private SeekBar q6Seekbar;
+    private SeekBar q7Seekbar;
+    private SeekBar q8Seekbar;
     private Button submitButton;
 
     private boolean hasSurvey;
@@ -145,14 +146,23 @@ public class PWBSurveyView extends LinearLayout {
     }
 
     private void initQuestions() {
-        q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ1SeekBar);
-        q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ2SeekBar);
-        q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ3SeekBar);
-        q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ4SeekBar);
-        q5Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ5SeekBar);
-        q6Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ6SeekBar);
-        q7Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ7SeekBar);
-        q8Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysPwbQ8SeekBar);
+        q1Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPwbQ1SeekBar);
+        q1Seekbar.setMax(6);
+        q2Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPwbQ2SeekBar);
+        q2Seekbar.setMax(6);
+        q3Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPwbQ3SeekBar);
+        q3Seekbar.setMax(6);
+        q4Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPwbQ4SeekBar);
+        q4Seekbar.setMax(6);
+        q5Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPwbQ5SeekBar);
+        q5Seekbar.setMax(6);
+        q6Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPwbQ6SeekBar);
+        q6Seekbar.setMax(6);
+        q7Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPwbQ7SeekBar);
+        q7Seekbar.setMax(6);
+        q8Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysPwbQ8SeekBar);
+        q8Seekbar.setMax(6);
+
     }
 
 
@@ -160,14 +170,14 @@ public class PWBSurveyView extends LinearLayout {
         ContentValues attributes = new ContentValues();
         attributes.put(PWBTable.KEY_PWB_PARENT_SURVEY_ID, currentSurvey.id);
         attributes.put(PWBTable.KEY_PWB_COMPLETED, true);
-        attributes.put(PWBTable.KEY_PWB_Q1, q1Seekbar.getProgress());
-        attributes.put(PWBTable.KEY_PWB_Q2, q2Seekbar.getProgress());
-        attributes.put(PWBTable.KEY_PWB_Q3, q3Seekbar.getProgress());
-        attributes.put(PWBTable.KEY_PWB_Q4, q4Seekbar.getProgress());
-        attributes.put(PWBTable.KEY_PWB_Q5, q5Seekbar.getProgress());
-        attributes.put(PWBTable.KEY_PWB_Q6, q6Seekbar.getProgress());
-        attributes.put(PWBTable.KEY_PWB_Q7, q7Seekbar.getProgress());
-        attributes.put(PWBTable.KEY_PWB_Q8, q8Seekbar.getProgress());
+        attributes.put(PWBTable.KEY_PWB_Q1, q1Seekbar.getProgress()+1);
+        attributes.put(PWBTable.KEY_PWB_Q2, q2Seekbar.getProgress()+1);
+        attributes.put(PWBTable.KEY_PWB_Q3, q3Seekbar.getProgress()+1);
+        attributes.put(PWBTable.KEY_PWB_Q4, q4Seekbar.getProgress()+1);
+        attributes.put(PWBTable.KEY_PWB_Q5, q5Seekbar.getProgress()+1);
+        attributes.put(PWBTable.KEY_PWB_Q6, q6Seekbar.getProgress()+1);
+        attributes.put(PWBTable.KEY_PWB_Q7, q7Seekbar.getProgress()+1);
+        attributes.put(PWBTable.KEY_PWB_Q8, q8Seekbar.getProgress()+1);
 
         currentSurvey.getSurveys().get(SurveyType.PWB).setAttributes(attributes);
 
