@@ -195,14 +195,15 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
             expandableLayout.setNoContentMsg("No term survey available");
             expandableLayout.showNoContentMsg();
             expandableLayout.collapse();
-
+            callback.onTermSurveyCompleted();
             s.completed = true;
             s.ts = System.currentTimeMillis();
             s.save();
 
             notifySurveyCompleted();
             Toast.makeText(getContext(), "Term survey completed", Toast.LENGTH_SHORT).show();
-            callback.onTermSurveyCompleted();
+
+            hasSurvey = false;
         }
     }
 
@@ -224,15 +225,21 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
         return hasSurvey;
     }
 
-    public void expand() {
-        expandableLayout.expand();
-    }
-
     public void reInit() {
         init();
         shsView.reInit();
         swlsView.reInit();
         phq8View.reInit();
         pssView.reInit();
+    }
+
+    public void blink() {
+        expandableLayout.startBlink();
+    }
+
+    public void stopBlink() {
+        expandableLayout.stopBlink();
+        expandableLayout.getTitleView().setAlpha(1);
+//        expandableLayout.getTitleView().findViewById(R.id.surveysTitle).setAlpha(1);
     }
 }

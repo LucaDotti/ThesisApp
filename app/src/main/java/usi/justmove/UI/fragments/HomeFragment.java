@@ -79,7 +79,6 @@ public class HomeFragment extends Fragment implements RegistrationView.OnUserReg
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("HOME FRAGMENT", "ON CREATE VIEW");
         localController = SQLiteController.getInstance(getContext());
         View root = inflater.inflate(R.layout.home_layoutt, null);
 

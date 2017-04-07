@@ -3,6 +3,7 @@ package usi.justmove.UI;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -228,7 +229,9 @@ public class ExpandableLayout extends LinearLayout {
     }
 
     public void stopBlink() {
+
         titleContent.getAnimation().cancel();
+//        ((TextView) titleContent.findViewById(R.id.surveysTitle)).setAlpha(1);
     }
 
 }

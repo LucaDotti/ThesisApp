@@ -238,9 +238,12 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
 
 
-        String surveyFragmentTag = makeFragmentName(viewPager.getId(), 1);
-        SurveysFragment fragment = (SurveysFragment) getSupportFragmentManager().findFragmentByTag(surveyFragmentTag);
-        fragment.resetSurvey(s.surveyType);
+        if(event.isScheduled()) {
+            String surveyFragmentTag = makeFragmentName(viewPager.getId(), 1);
+            SurveysFragment fragment = (SurveysFragment) getSupportFragmentManager().findFragmentByTag(surveyFragmentTag);
+            fragment.resetSurvey(s.surveyType);
+        }
+
 //        tabLayout.getTabAt(1).setCustomView(R.layout.surveys_tab_layout);
         showSurveyNotification();
 //        tabLayout.setViewPa

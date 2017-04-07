@@ -15,7 +15,7 @@
     <string name="PAM_notifications_count">4</string>
 
     <string name="PAM_frequency">daily</string>
-    <string name="PAM_immediate">false</string>
+    <string name="PAM_immediate">true</string>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++ PWB ++++++++++++++++++++++++++++++++++++++++ -->
     <string name="PWB_daily_count">1</string>
@@ -29,7 +29,7 @@
     <string name="PWB_frequency">weekly</string>
     <string name="PWB_week_period">weekend</string>
     <string name="PWB_count">1</string>
-    <string name="PWB_immediate">false</string>
+    <string name="PWB_immediate">true</string>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++ Term ++++++++++++++++++++++++++++++++++++++++ -->
     <string name="term_daily_count">1</string>

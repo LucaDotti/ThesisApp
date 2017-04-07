@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -39,7 +40,7 @@ public class SWLSSurveyView extends LinearLayout{
     private LinearLayout questionsLayout;
     private ExpandableLayout expandableLayout;
 
-    private DiscreteSeekBar q1Seekbar;
+    private SeekBar q1Seekbar;
     private DiscreteSeekBar q2Seekbar;
     private DiscreteSeekBar q3Seekbar;
     private DiscreteSeekBar q4Seekbar;
@@ -108,7 +109,8 @@ public class SWLSSurveyView extends LinearLayout{
         currentSurvey = getCurrentSurvey();
 
         if(currentSurvey != null) {
-            q1Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ1SeekBar);
+            q1Seekbar = (SeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ1SeekBar);
+            q1Seekbar.setMax(6);
             q2Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ2SeekBar);
             q3Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ3SeekBar);
             q4Seekbar = (DiscreteSeekBar) questionsLayout.findViewById(R.id.surveysSwlsQ4SeekBar);

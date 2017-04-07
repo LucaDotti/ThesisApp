@@ -271,9 +271,8 @@ public class PAMSurveyView extends LinearLayout {
                         notifySurveyCompleted();
                     }
 
-                    expandableLayout.stopBlink();
-
                     Toast.makeText(getContext(), "PAM survey completed", Toast.LENGTH_SHORT).show();
+                    hasSurvey = false;
                 }
             });
 
@@ -706,18 +705,6 @@ public class PAMSurveyView extends LinearLayout {
     }
 
     public void reInit() {
-//        expandableLayout.removeAllViews();
-//        expandableLayout.removeContent();
-//        expandableLayout.removeBody();
-//        expandableLayout.setTitleImage(R.id.surveysNotificationImage, R.drawable.notification_1);
-//        expandableLayout.removeBody();
-//        expandableLayout.setBodyView(questionsLayout);
-//        expandableLayout.showBody();
-//        expandableLayout.setBodyView(questionsLayout);
-//        init();
-//        expandableLayout.invalidate();
-//        invalidate();
-
         initView();
 
     }
@@ -728,5 +715,7 @@ public class PAMSurveyView extends LinearLayout {
 
     public void stopBlink() {
         expandableLayout.stopBlink();
+        expandableLayout.getTitleView().setAlpha(1);
+//        expandableLayout.getTitleView().findViewById(R.id.surveysTitle).setAlpha(1);
     }
 }

@@ -28,6 +28,7 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
     private PWBSurveyView pwbView;
     private TermSurveyView termView;
     private View currentVisible;
+    private View currSurvey;
 
 
 
@@ -42,10 +43,13 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
         initTerm(root);
 
         if(termView.hasSurvey()) {
-            termView.expand();
+            currSurvey = termView;
+            termView.blink();
         } else if(pwbView.hasSurvey()) {
-            pwbView.expand();
+            currSurvey = pwbView;
+            pwbView.blink();
         } else if (pamView.hasSurvey()) {
+            currSurvey = pamView;
             pamView.blink();
         }
 
@@ -72,20 +76,28 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
         callback.onSurveyCompletedCallback();
         pamView.stopBlink();
         if(termView.hasSurvey()) {
-            termView.expand();
+            termView.blink();
+            currSurvey = termView;
+            Log.d("SurveyFrag", "Start blink term");
         } else if(pwbView.hasSurvey()) {
-            pwbView.expand();
+            currSurvey = pwbView;
+            pwbView.blink();
+            Log.d("SurveyFrag", "Start blink pwb");
         }
     }
 
     @Override
     public void onPwbSurveyCompletedCallback() {
         callback.onSurveyCompletedCallback();
-
+        pwbView.stopBlink();
         if(termView.hasSurvey()) {
-            termView.expand();
+            currSurvey = termView;
+            termView.blink();
+            Log.d("SurveyFrag", "Start blink term");
         } else if(pamView.hasSurvey()) {
-            pamView.expand();
+            currSurvey = pamView;
+            pamView.blink();
+            Log.d("SurveyFrag", "Start blink pam");
         }
     }
 
@@ -93,10 +105,15 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
     @Override
     public void onTermSurveyCompleted() {
         callback.onSurveyCompletedCallback();
-        if(pamView.hasSurvey()) {
-            pamView.expand();
-        } else if(pwbView.hasSurvey()) {
-            pwbView.expand();
+        termView.stopBlink();
+        if(pwbView.hasSurvey()) {
+            currSurvey = pwbView;
+            pwbView.blink();
+            Log.d("SurveyFrag", "Start blink pwb");
+        } else if(pamView.hasSurvey()) {
+            currSurvey = pamView;
+            pamView.blink();
+            Log.d("SurveyFrag", "Start blink pam");
         }
     }
 
@@ -118,19 +135,31 @@ public class SurveysFragment extends Fragment implements PAMSurveyView.OnPamSurv
 
     public void resetSurvey(SurveyType survey) {
         switch (survey) {
+            case GROUPED_SSPP:
+                termView.reInit();
+                if(currSurvey == null || currSurvey.equals(termView)) {
+                    currSurvey = termView;
+                    Log.d("SurveyFrag", "Start blink term");
+                    termView.blink();
+                }
+                break;
             case PAM:
                 pamView.reInit();
-                pamView.blink();
-//                pamView.expand();
+                if(currSurvey == null || currSurvey.equals(pamView)) {
+                    currSurvey = pamView;
+                    pamView.blink();
+                    Log.d("SurveyFrag", "Start blink pam");
+                }
                 break;
             case PWB:
                 pwbView.reInit();
-//                pwbView.expand();
+                if(currSurvey == null || currSurvey.equals(pwbView)) {
+                    currSurvey = pwbView;
+                    pwbView.blink();
+                    Log.d("SurveyFrag", "Start blink pwb");
+                }
                 break;
-            case GROUPED_SSPP:
-                termView.reInit();
-//                termView.expand();
-                break;
+
         }
     }
 }

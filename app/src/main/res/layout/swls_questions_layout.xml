@@ -43,12 +43,10 @@
             android:textColor="@android:color/white"
             android:text="1"
             android:textSize="10dp"/>
-        <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/surveysSwlsQ1SeekBar"
-            app:dsb_min="0"
-            app:dsb_max="7"
             android:layout_weight="1"
             android:layout_gravity="center"
             style="@style/Widget.AppCompat.SeekBar.Discrete"/>

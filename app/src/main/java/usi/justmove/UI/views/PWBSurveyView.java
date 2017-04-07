@@ -104,6 +104,7 @@ public class PWBSurveyView extends LinearLayout {
 
     private void init() {
         expandableLayout.getTitleView().removeAllViews();
+        expandableLayout.getBodyView().removeAllViews();
         expandableLayout.setTitleView(titleView);
         expandableLayout.setTitleText(R.id.surveysTitle, "PWB");
 
@@ -128,6 +129,7 @@ public class PWBSurveyView extends LinearLayout {
                     }
 
                     Toast.makeText(getContext(), "PWB survey completed", Toast.LENGTH_SHORT).show();
+                    hasSurvey = false;
                 }
             });
 
@@ -196,5 +198,15 @@ public class PWBSurveyView extends LinearLayout {
 
     public void reInit() {
         init();
+    }
+
+    public void blink() {
+        expandableLayout.startBlink();
+    }
+
+    public void stopBlink() {
+        expandableLayout.stopBlink();
+        expandableLayout.getTitleView().setAlpha(1);
+//        expandableLayout.getTitleView().findViewById(R.id.surveysTitle).setAlpha(1);
     }
 }

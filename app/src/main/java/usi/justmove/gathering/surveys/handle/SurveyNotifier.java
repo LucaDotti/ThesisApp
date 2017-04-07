@@ -67,7 +67,7 @@ public class SurveyNotifier {
 
 
                     notifyCancelAlarm();
-                    EventBus.getDefault().post(new SurveyEvent(surveyId, false));
+                    EventBus.getDefault().post(new SurveyEvent(surveyId, true));
                     return;
                 }
 
@@ -76,19 +76,12 @@ public class SurveyNotifier {
 //                Log.d("NOTIFIER", currSurvey.toString());
                 currSurvey.save();
 
-                EventBus.getDefault().post(new SurveyEvent(surveyId, false));
+                EventBus.getDefault().post(new SurveyEvent(surveyId, true));
             }
         }
     }
 
     private void notifyCancelAlarm() {
-        Log.d("Alarm", "Deliting");
-        Survey s = (Survey) Survey.find("*", "", "ORDER BY " + SurveyTable.KEY_SURVEY_ID + " DESC");
-
-//        if(s.id == currSurvey.id) {
-//
-//        }
-
         SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
         Scheduler.getInstance().deleteAlarm((int) currentAlarm.id);
     }

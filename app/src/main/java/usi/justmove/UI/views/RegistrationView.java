@@ -88,11 +88,13 @@ public class RegistrationView extends LinearLayout {
             public void onClick(View v) {
                 registerUser();
                 callback.onUserRegisteredCallback();
+                formLayout.stopBlink();
             }
         });
 
         registerButton.setEnabled(false);
 
+        consentLayout.startBlink();
     }
 
     public void setOnUserRegisteredCallback(OnUserRegisteredCallback callback) {
@@ -122,7 +124,7 @@ public class RegistrationView extends LinearLayout {
     }
 
     private void initConsent(View view) {
-        TextView consentForm = (TextView) view.findViewById(R.id.consentForm);
+        final TextView consentForm = (TextView) view.findViewById(R.id.consentForm);
         consentForm.setText(getContext().getString(R.string.consent_form));
 
         CheckBox agreeCheckbox = (CheckBox) view.findViewById(R.id.agreeCheckbox);
@@ -134,6 +136,8 @@ public class RegistrationView extends LinearLayout {
                     consentLayout.collapse();
                     registerButton.setEnabled(true);
                     formLayout.expand();
+                    consentLayout.stopBlink();
+                    formLayout.startBlink();
                 }
             }
         });
