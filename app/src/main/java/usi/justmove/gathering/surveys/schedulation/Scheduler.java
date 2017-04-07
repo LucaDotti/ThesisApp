@@ -158,7 +158,8 @@ public class Scheduler {
                 scheduleTime.setTimeInMillis(alarm.ts * 1000);
 
                 if(now.getTimeInMillis() <= scheduleTime.getTimeInMillis() + currConfig.maxElapseTimeForCompletion) {
-                    Log.d("Alarm", "Checking alarm with id " + alarm.id + " " + alarm.type);
+                    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
+                    Log.d("Alarm", "Checking alarm with id " + alarm.id + " " + alarm.type + " " + format.format(a.getAttributes().get("ts")));
                     if(!checkAlarmExists((int) alarm.id)) {
                         if(i == 0 && currConfig.immediate) {
                             createImmediateAlarm((int) alarm.id);
@@ -285,11 +286,12 @@ public class Scheduler {
     }
 
     public void deleteAlarm(int id) {
+        Log.d("Alarm", "Deleting alarm " + id);
         TableHandler[] alarms = SurveyAlarms.findAll("*", "");
 
-        for(TableHandler handler: alarms) {
-            Log.d("SCHEDULER", handler.toString());
-        }
+//        for(TableHandler handler: alarms) {
+//            Log.d("SCHEDULER", handler.toString());
+//        }
 
         SurveyAlarms alarm = (SurveyAlarms) SurveyAlarms.findByPk(id);
 

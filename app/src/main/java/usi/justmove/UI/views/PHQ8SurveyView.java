@@ -105,6 +105,7 @@ public class PHQ8SurveyView extends LinearLayout {
     }
 
     private void init() {
+        expandableLayout.getBodyView().removeAllViews();
         expandableLayout.getTitleView().removeAllViews();
         expandableLayout.setTitleView(titleView);
         expandableLayout.setTitleText(R.id.surveysTitle, "PHQ8");

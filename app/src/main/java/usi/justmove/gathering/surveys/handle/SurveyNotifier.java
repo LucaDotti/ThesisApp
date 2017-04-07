@@ -82,12 +82,15 @@ public class SurveyNotifier {
     }
 
     private void notifyCancelAlarm() {
+        Log.d("Alarm", "Deliting");
         Survey s = (Survey) Survey.find("*", "", "ORDER BY " + SurveyTable.KEY_SURVEY_ID + " DESC");
 
-        if(s.id == currSurvey.id) {
-            SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
-            Scheduler.getInstance().deleteAlarm((int) currentAlarm.id);
-        }
+//        if(s.id == currSurvey.id) {
+//
+//        }
+
+        SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
+        Scheduler.getInstance().deleteAlarm((int) currentAlarm.id);
     }
 
     private void cancelNotification(int id) {
