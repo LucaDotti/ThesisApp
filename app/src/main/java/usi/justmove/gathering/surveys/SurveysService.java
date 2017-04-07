@@ -24,7 +24,7 @@ public class SurveysService extends Service {
         Log.d("START", "SURVEY");
         scheduler = Scheduler.getInstance();
         scheduler.addSurvey(SurveyType.PAM);
-//        scheduler.addSurvey(SurveyType.PWB);
+        scheduler.addSurvey(SurveyType.PWB);
         scheduler.addSurvey(SurveyType.GROUPED_SSPP);
 
         scheduler.initSchedulers();
