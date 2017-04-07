@@ -29,7 +29,7 @@
     <string name="PWB_frequency">weekly</string>
     <string name="PWB_week_period">weekend</string>
     <string name="PWB_count">1</string>
-    <string name="PWB_immediate">true</string>
+    <string name="PWB_immediate">false</string>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++ Term ++++++++++++++++++++++++++++++++++++++++ -->
     <string name="term_daily_count">1</string>

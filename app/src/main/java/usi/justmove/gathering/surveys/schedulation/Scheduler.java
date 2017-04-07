@@ -158,7 +158,7 @@ public class Scheduler {
                 scheduleTime.setTimeInMillis(alarm.ts * 1000);
 
                 if(now.getTimeInMillis() <= scheduleTime.getTimeInMillis() + currConfig.maxElapseTimeForCompletion) {
-                    Log.d("Alarm", "Checking alarm with id " + alarm.id);
+                    Log.d("Alarm", "Checking alarm with id " + alarm.id + " " + alarm.type);
                     if(!checkAlarmExists((int) alarm.id)) {
                         if(i == 0 && currConfig.immediate) {
                             createImmediateAlarm((int) alarm.id);
@@ -226,12 +226,9 @@ public class Scheduler {
                 end.set(Calendar.DAY_OF_MONTH, Integer.parseInt(split[0]));
                 end.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
 
-
-                Log.d("SCHEDULER", "END " + endDate);
                 long interval = (end.getTimeInMillis() - start.getTimeInMillis())/(currConfig.dayCount-1);
                 int daysInterval = (int) (interval/(24 * 60 * 60 * 1000));
 
-                Log.d("SCHEDULER", "DAYS " + daysInterval);
                 start.add(Calendar.DAY_OF_MONTH, surveyCount * daysInterval);
                 start.set(Calendar.HOUR_OF_DAY, scheduleTime[0]);
                 start.set(Calendar.MINUTE, scheduleTime[1]);
