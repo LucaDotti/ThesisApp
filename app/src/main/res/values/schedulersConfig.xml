@@ -15,7 +15,7 @@
     <string name="PAM_notifications_count">4</string>
 
     <string name="PAM_frequency">daily</string>
-    <string name="PAM_immediate">true</string>
+    <string name="PAM_immediate">false</string>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++ PWB ++++++++++++++++++++++++++++++++++++++++ -->
     <string name="PWB_daily_count">1</string>

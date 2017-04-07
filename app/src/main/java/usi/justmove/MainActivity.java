@@ -34,7 +34,9 @@ import usi.justmove.UI.menu.ProfileDialogFragment;
 import usi.justmove.UI.menu.StudyDialogFragment;
 import usi.justmove.gathering.surveys.SurveysService;
 import usi.justmove.gathering.surveys.handle.SurveyEvent;
+import usi.justmove.gathering.surveys.schedulation.Scheduler;
 import usi.justmove.local.database.LocalSQLiteDBHelper;
+import usi.justmove.local.database.LocalStorageController;
 import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.gathering.GatheringSystem;
 import usi.justmove.gathering.base.SensorType;
@@ -43,6 +45,7 @@ import usi.justmove.local.database.tables.UserTable;
 import usi.justmove.remote.database.upload.DataUploadService;
 
 import static android.R.attr.fragment;
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback, HomeFragment.OnRegistrationSurveyChoice {
     private GatheringSystem gSys;
@@ -74,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         tabLayout.getTabAt(1).setCustomView(R.layout.surveys_tab_layout);
 
-//        deleteDatabase("JustMove");
 //        LocalSQLiteDBHelper dbHelper = new LocalSQLiteDBHelper(this);
 //        dbHelper.getWritableDatabase();
         showSurveyNotification();
@@ -119,17 +121,14 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
                             Manifest.permission.INTERNET},
                     PERMISSION_REQUEST_STATUS);
         } else {
-
-            if(checkUserRegistered()) {
+            boolean user = checkUserRegistered();
+            if(user) {
                 init();
-
             }
-//            init();
         }
     }
 
     private void init() {
-//        deleteDatabase("JustMove");
         gSys = new GatheringSystem(getApplicationContext());
         gSys.addSensor(SensorType.LOCK);
         gSys.addSensor(SensorType.WIFI);
@@ -141,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         gSys.addSensor(SensorType.USED_APPS);
         gSys.start();
 
+//        Scheduler.getInstance().initSchedulers();
         startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
     }
@@ -158,13 +158,13 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
     }
 
     private boolean checkPermissions() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean checkUserRegistered() {
@@ -172,10 +172,11 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         if(c.getCount() == 0) {
             return false;
-        } else  {
-            c.moveToFirst();
-            return c.getInt(2) == 0 ? true : false;
         }
+
+        c.moveToFirst();
+        boolean agreed = c.getInt(2) == 0 ? false : true;
+        return agreed;
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
