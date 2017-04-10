@@ -19,7 +19,10 @@ import usi.justmove.gathering.surveys.config.SurveyConfig;
 import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
 import usi.justmove.gathering.surveys.schedulation.Scheduler;
 import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.SurveyAlarmSurvey;
 import usi.justmove.local.database.tableHandlers.SurveyAlarms;
+import usi.justmove.local.database.tableHandlers.TableHandler;
+import usi.justmove.local.database.tables.SurveyAlarmSurveyTable;
 import usi.justmove.local.database.tables.SurveyTable;
 
 import static android.R.attr.y;
@@ -41,6 +44,7 @@ public class SurveyNotifier {
     }
 
     public void notify(long surveyId, String action) {
+        Log.d("Notifier", "NOTIFYY");
         if(surveyId >= 0) {
             currSurvey = (Survey) Survey.findByPk(surveyId);
             if(action.equals(SURVEY_COMPLETED_INTENT)) {
@@ -65,7 +69,6 @@ public class SurveyNotifier {
                     currSurvey.expired = true;
                     currSurvey.save();
 
-
                     notifyCancelAlarm();
                     EventBus.getDefault().post(new SurveyEvent(surveyId, true));
                     return;
@@ -73,7 +76,6 @@ public class SurveyNotifier {
 
                 createNotification(currSurvey, config);
 
-//                Log.d("NOTIFIER", currSurvey.toString());
                 currSurvey.save();
 
                 EventBus.getDefault().post(new SurveyEvent(surveyId, true));
@@ -82,8 +84,27 @@ public class SurveyNotifier {
     }
 
     private void notifyCancelAlarm() {
-        SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
-        Scheduler.getInstance().deleteAlarm((int) currentAlarm.id);
+        SurveyAlarms alarm = SurveyAlarmSurvey.getAlarm(currSurvey.id);
+        Survey[] surveys = SurveyAlarmSurvey.getSurveys(alarm.id);
+
+        TableHandler[] t = Survey.findAll("*", "");
+
+        if(checkSurveysCompleted(surveys)) {
+            Scheduler.getInstance().deleteAlarm((int) alarm.id);
+        }
+
+//        SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
+
+    }
+
+    private boolean checkSurveysCompleted(Survey[] surveys) {
+        for(Survey s: surveys) {
+            if(!s.completed) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void cancelNotification(int id) {

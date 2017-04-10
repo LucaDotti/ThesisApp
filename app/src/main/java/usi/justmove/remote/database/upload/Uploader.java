@@ -182,7 +182,8 @@ public class Uploader {
         if(table == LocalTables.TABLE_SWLS || table == LocalTables.TABLE_PWB ||
            table == LocalTables.TABLE_PSS || table == LocalTables.TABLE_PHQ8 ||
            table == LocalTables.TABLE_SHS || table == LocalTables.TABLE_PAM ||
-           table == LocalTables.TABLE_SURVEY_ALARMS || table == LocalTables.TABLE_USER) {
+           table == LocalTables.TABLE_SURVEY_ALARMS || table == LocalTables.TABLE_USER ||
+           table == LocalTables.TABLE_SURVEY_ALARMS_SURVEY) {
             return;
         }
 

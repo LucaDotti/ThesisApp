@@ -3,6 +3,7 @@ package usi.justmove;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -13,10 +14,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.content.SharedPreferences.Editor;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
     private SwipeChoiceViewPager viewPager;
     private FragmentPagerAdapter tabFragmentAdapter;
     private android.support.v7.widget.Toolbar toolbar;
+    public static boolean running;
 
     private final int PERMISSION_REQUEST_STATUS = 0;
 
@@ -138,10 +142,10 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         gSys.addSensor(SensorType.PHONE_CALLS);
         gSys.addSensor(SensorType.SMS);
         gSys.addSensor(SensorType.USED_APPS);
-        gSys.start();
+//        gSys.start();
 
 //        Scheduler.getInstance().initSchedulers();
-        startService(new Intent(this, DataUploadService.class));
+//        startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
     }
 
@@ -223,13 +227,36 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("Activity", "Start");
+//        running = true;
+//        stopService(new Intent(this, SurveysService.class));
+//        startService(new Intent(this, SurveysService.class));
+//        if(checkUserRegistered()) {
+//            Scheduler.getInstance().initSchedulers();
+//        }
+        SharedPreferences sp = getSharedPreferences("OURINFO", MODE_PRIVATE);
+        Editor ed = sp.edit();
+        ed.putBoolean("active", true);
+        ed.commit();
         EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+//        running = false;
+        SharedPreferences sp = getSharedPreferences("OURINFO", MODE_PRIVATE);
+        Editor ed = sp.edit();
+        ed.putBoolean("active", false);
+        ed.commit();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        running = true;
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

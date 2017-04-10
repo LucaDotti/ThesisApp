@@ -25,8 +25,10 @@ import usi.justmove.gathering.surveys.handle.SurveyEventReceiver;
 import usi.justmove.local.database.LocalTables;
 import usi.justmove.local.database.tableHandlers.PAMSurvey;
 import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.SurveyAlarmSurvey;
 import usi.justmove.local.database.tableHandlers.SurveyAlarms;
 import usi.justmove.local.database.tableHandlers.TableHandler;
+import usi.justmove.local.database.tables.SurveyAlarmSurveyTable;
 import usi.justmove.local.database.tables.SurveyAlarmsTable;
 import usi.justmove.local.database.tables.SurveyTable;
 
@@ -53,9 +55,7 @@ public class Scheduler {
     private AlarmManager alarmMgr;
     private Context context;
     private SurveyConfig currConfig;
-    private int currAlarmsCount;
-    public String test;
-    private boolean init;
+    private boolean checked;
 
     private Map<SurveyType, Boolean> surveys;
 
@@ -83,7 +83,6 @@ public class Scheduler {
     }
 
     public void initSchedulers() {
-        Log.d("SCHEDULER", "COUNT " + surveys.size());
         for(Map.Entry<SurveyType, Boolean> entry: surveys.entrySet()) {
             if(!entry.getValue()) {
                 surveys.put(entry.getKey(), true);
@@ -94,6 +93,7 @@ public class Scheduler {
     }
 
     public void initScheduler(SurveyType survey) {
+        Log.d("AAAAA", "init");
         if(!surveys.containsKey(survey)) {
             surveys.put(survey, true);
         }
@@ -118,62 +118,113 @@ public class Scheduler {
     }
 
     public void schedule(SurveyType survey) {
+        Log.d("Scheduler", "Scheduling");
         currConfig = SurveyConfigFactory.getConfig(survey, context);
         TableHandler[] alarms = SurveyAlarms.findAll("*", SurveyAlarmsTable.KEY_SURVEY_ALARM_SURVEY_TYPE + " = \"" + survey.getSurveyName() + "\" ORDER BY " + SurveyAlarmsTable.KEY_SURVEY_ALARM_ID + " ASC");
 
-        currAlarmsCount = alarms.length;
 
         Calendar scheduleTime = Calendar.getInstance();
         Calendar now = Calendar.getInstance();
 
         if(alarms.length == 0) {
-            long currentScheduleTime = getSurveyScheduleTime(false);
+            long currentScheduleTime = getSurveyScheduleTime(false)/1000;
+
             if(currConfig.immediate) {
-                currentScheduleTime = now.getTimeInMillis();
+                currentScheduleTime = now.getTimeInMillis()/1000;
             }
+
             SurveyAlarms current = insertSurveyAlarmsRecord(survey, currentScheduleTime, true);
-
-//            long nextScheduleTime = getSurveyScheduleTime(true);
-//            SurveyAlarms next = insertSurveyAlarmsRecord(survey, nextScheduleTime, false);
-
 
             if(currConfig.immediate) {
                 createImmediateAlarm((int) current.id);
             } else {
-                createAlarm((int) current.id, current.ts);
+                createAlarm((int) current.id, current.ts * 1000);
             }
 
-//            createAlarm((int) next.id, next.ts);
-        } else if (alarms.length == 1) {
-            long nextScheduleTime = getSurveyScheduleTime(true);
+        } else if (alarms.length == 1 && checkNextSchedule()) {
+//            Log.d("Scheduler", "Size " + 1);
+            long nextScheduleTime = getSurveyScheduleTime(true)/1000;
+
 
             SurveyAlarms next = insertSurveyAlarmsRecord(survey, nextScheduleTime, false);
-
-            createAlarm((int) next.id, next.ts);
+            createAlarm((int) next.id, next.ts * 1000);
         } else {
-            SurveyAlarms alarm;
-            int i = 0;
-            for(TableHandler a: alarms) {
-                alarm = (SurveyAlarms) a;
-                scheduleTime.setTimeInMillis(alarm.ts * 1000);
+            if(true) {
 
-                if(now.getTimeInMillis() <= scheduleTime.getTimeInMillis() + currConfig.maxElapseTimeForCompletion) {
-                    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
-                    Log.d("Alarm", "Checking alarm with id " + alarm.id + " " + alarm.type + " " + format.format(a.getAttributes().get("ts")));
-                    if(!checkAlarmExists((int) alarm.id)) {
-                        if(i == 0 && currConfig.immediate) {
-                            createImmediateAlarm((int) alarm.id);
+//                if(all.length == 0) {
+                    SurveyAlarms alarm;
+                    for(TableHandler a: alarms) {
+                        alarm = (SurveyAlarms) a;
+                        scheduleTime.setTimeInMillis(alarm.ts * 1000);
+
+                        if(now.getTimeInMillis() <= scheduleTime.getTimeInMillis() + getInterval()) {
+                            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
+                            Log.d("Scheduler", "Checking alarm with id " + alarm.id + " " + alarm.type + " " + format.format(a.getAttributes().getAsLong("ts") * 1000));
+                            if(!checkAlarmExists((int) alarm.id)) {
+                                Survey[] all = SurveyAlarmSurvey.getSurveys(alarm.id);
+                                for(Survey s: all) {
+                                    Log.d("Scheduler", s.toString());
+                                }
+
+                                if(all.length == 0) {
+                                    Log.d("Scheduler", "Survey count 0");
+                                    createAlarm((int) alarm.id, alarm.ts * 1000);
+                                }
+
+                            }
                         } else {
-                            createAlarm((int) alarm.id, alarm.ts);
+                            Log.d("Scheduler", "Deleting alarm with id " + alarm.id + " " + alarm.type);
+                            alarm.delete();
                         }
-
                     }
-                } else {
-                    alarm.delete();
-                }
+//                }
 
-                i++;
+//                checked = true;
             }
+        }
+    }
+
+    private long getInterval() {
+        long freq = Frequency.getMilliseconds(currConfig.frequency);
+
+        if(freq > 0) {
+            return freq;
+        } else {
+            int surveyCount = Survey.getDoneSurveysCount(SurveyType.GROUPED_SSPP);
+
+            String startDate = currConfig.startStudy;
+            Calendar start = Calendar.getInstance();
+            String[] split = startDate.split("-");
+
+            start.set(Calendar.HOUR_OF_DAY, 1);
+            start.set(Calendar.MINUTE, 0);
+            start.set(Calendar.SECOND, 0);
+            start.set(Calendar.DAY_OF_MONTH, Integer.parseInt(split[0]));
+            start.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
+
+
+            String endDate = currConfig.endStudy;
+            Calendar end = Calendar.getInstance();
+            split = endDate.split("-");
+
+            end.set(Calendar.HOUR_OF_DAY, 1);
+            end.set(Calendar.MINUTE, 0);
+            end.set(Calendar.SECOND, 0);
+            end.set(Calendar.DAY_OF_MONTH, Integer.parseInt(split[0]));
+            end.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
+
+            return (end.getTimeInMillis() - start.getTimeInMillis())/(currConfig.dayCount-1);
+        }
+    }
+
+    private boolean checkNextSchedule() {
+        long nextScheduleTime = getSurveyScheduleTime(true)/1000;
+        SurveyAlarms s = (SurveyAlarms) SurveyAlarms.find("*", SurveyAlarmsTable.KEY_SURVEY_ALARM_TS + " = " + nextScheduleTime);
+
+        if(s == null) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -247,8 +298,9 @@ public class Scheduler {
         intent.putExtra("survey", currConfig.survey.getSurveyName());
         intent.putExtra("immediate", true);
         intent.putExtra("survey_id", id);
+        intent.putExtra("alarm_id", id);
 
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         try {
             alarmIntent.send();
@@ -264,7 +316,7 @@ public class Scheduler {
         intent.putExtra("survey", currConfig.survey.getSurveyName());
         intent.putExtra("alarm_id", id);
 
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmMgr.setExact(AlarmManager.RTC_WAKEUP, scheduleTime, alarmIntent);
 
@@ -275,10 +327,19 @@ public class Scheduler {
     private boolean checkAlarmExists(int id) {
         Intent intent = new Intent(context, SchedulerAlarmReceiver.class);
         intent.putExtra("survey", currConfig.survey.getSurveyName());
+        intent.putExtra("alarm_id", id);
 
-        return PendingIntent.getBroadcast(context, id,
+
+
+//        for(Survey s: all) {
+//            Log.d("Scheduler", s.toString());
+//        }
+
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, id,
                 intent,
-                PendingIntent.FLAG_NO_CREATE) != null;
+                PendingIntent.FLAG_NO_CREATE);
+        Log.d("Scheduler", "Alarm " + pIntent);
+        return pIntent != null;
     }
 
     public void addSurvey(SurveyType survey) {
@@ -287,8 +348,8 @@ public class Scheduler {
 
     public void deleteAlarm(int id) {
         Log.d("Alarm", "Deleting alarm " + id);
-        TableHandler[] alarms = SurveyAlarms.findAll("*", "");
 
+//        TableHandler[] alarms = SurveyAlarms.findAll("*", "");
 //        for(TableHandler handler: alarms) {
 //            Log.d("SCHEDULER", handler.toString());
 //        }
@@ -297,13 +358,19 @@ public class Scheduler {
 
         alarm.delete();
 
-        SurveyAlarms nextAlarm = (SurveyAlarms) SurveyAlarms.find("*", "");
+        SurveyAlarmSurvey[] records = SurveyAlarmSurvey.findAllByAttribute(SurveyAlarmSurveyTable.KEY_SURVEY_ALARMS_SURVEY_SURVEY_ALARMS_ID, Integer.toString(id));
 
-        if(nextAlarm != null) {
-            nextAlarm.current = true;
-            nextAlarm.save();
-            Log.d("ALARM COUNT", "" + SurveyAlarms.getCount(SurveyType.PAM));
+        for(SurveyAlarmSurvey r: records) {
+            r.delete();
         }
+
+//        SurveyAlarms nextAlarm = (SurveyAlarms) SurveyAlarms.find("*", SurveyAlarmsTable.KEY_SURVEY_ALARM_SURVEY_TYPE + " = \"" + alarm.type + "\"");
+//
+//        if(nextAlarm != null) {
+//            nextAlarm.current = true;
+//            nextAlarm.save();
+//            Log.d("ALARM COUNT", "" + SurveyAlarms.getCount(SurveyType.PAM));
+//        }
     }
 }
 

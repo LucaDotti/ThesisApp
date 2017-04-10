@@ -2,12 +2,15 @@ package usi.justmove.gathering.surveys;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
+import usi.justmove.MainActivity;
 import usi.justmove.gathering.surveys.config.SurveyType;
 import usi.justmove.gathering.surveys.schedulation.Scheduler;
 
@@ -21,14 +24,16 @@ public class SurveysService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("START", "SURVEY");
+        Log.d("START", "SURVEY " + MainActivity.running);
+//        if(checkActivityIsRunning()) {
+//
+//        }
         scheduler = Scheduler.getInstance();
         scheduler.addSurvey(SurveyType.PAM);
         scheduler.addSurvey(SurveyType.PWB);
         scheduler.addSurvey(SurveyType.GROUPED_SSPP);
 
         scheduler.initSchedulers();
-
     }
 
     @Nullable
@@ -40,5 +45,10 @@ public class SurveysService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    private boolean checkActivityIsRunning() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getBoolean("running", true);
     }
 }

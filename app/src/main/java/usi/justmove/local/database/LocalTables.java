@@ -23,6 +23,7 @@ import usi.justmove.local.database.tables.SHSTable;
 import usi.justmove.local.database.tables.SMSTable;
 import usi.justmove.local.database.tables.SWLSTable;
 import usi.justmove.local.database.tables.SimpleMoodTable;
+import usi.justmove.local.database.tables.SurveyAlarmSurveyTable;
 import usi.justmove.local.database.tables.SurveyAlarmsTable;
 import usi.justmove.local.database.tables.SurveyTable;
 import usi.justmove.local.database.tables.UsedAppTable;
@@ -53,7 +54,8 @@ public enum LocalTables {
     TABLE_SWLS(SWLSTable.class),
     TABLE_SURVEY(SurveyTable.class),
     TABLE_SURVEY_ALARMS(SurveyAlarmsTable.class),
-    TABLE_USER(UserTable.class);
+    TABLE_USER(UserTable.class),
+    TABLE_SURVEY_ALARMS_SURVEY(SurveyAlarmSurveyTable.class);
 
 
     LocalTables(Class a) {
@@ -104,6 +106,8 @@ public enum LocalTables {
                 return SurveyAlarmsTable.TABLE_SURVEY_ALARM;
             case TABLE_USER:
                 return UserTable.TABLE_USER;
+            case TABLE_SURVEY_ALARMS_SURVEY:
+                return SurveyAlarmSurveyTable.TABLE_SURVEY_ALARMS_SURVEY_TABLE;
             default:
                 throw new IllegalArgumentException("Table not found!");
         }

@@ -22,6 +22,7 @@ public class User extends TableHandler {
 
     public User(boolean isNewRecord) {
         super(isNewRecord);
+        id = -1;
     }
 
     @Override

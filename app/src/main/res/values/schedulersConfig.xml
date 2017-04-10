@@ -7,8 +7,8 @@
         <!--&lt;!&ndash;<item>08:00,23:59</item>&ndash;&gt;-->
         <item>08:00,13:00</item>
         <item>13:00,22:00</item>
-        <!--<item>22:33,22:35</item>-->
-        <!--<item>22:35,22:37</item>-->
+        <!--<item>15:45,15:47</item>-->
+        <!--<item>15:47,15:49</item>-->
     </string-array>
     <string name="PAM_min_elapse_time_between_surveys">7200000</string>
     <string name="PAM_max_elapse_time_for_completion">7200000</string>

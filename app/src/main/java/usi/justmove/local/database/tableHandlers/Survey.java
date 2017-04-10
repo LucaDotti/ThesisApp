@@ -199,7 +199,13 @@ public class Survey extends TableHandler {
     }
 
     public static TableHandler[] findAll(String select, String clause) {
-        Cursor surveyRecords = localController.rawQuery("SELECT " + select + " FROM " + LocalDbUtility.getTableName(table) + " WHERE " + clause, null);
+        String query = "SELECT " + select + " FROM " + LocalDbUtility.getTableName(table);
+
+        if(clause != null && !clause.equals("")) {
+            query += " WHERE " + clause;
+        }
+
+        Cursor surveyRecords = localController.rawQuery(query, null);
         TableHandler[] surveys =  new TableHandler[surveyRecords.getCount()];
 
         if(surveyRecords.getCount() == 0) {
@@ -383,10 +389,17 @@ public class Survey extends TableHandler {
         String columnNotified = LocalDbUtility.getTableColumns(table)[4];
         String columnExpired = LocalDbUtility.getTableColumns(table)[5];
 
-        DateTime startDateTime = new DateTime().withTime(0, 0, 1, 0).plusHours(1);
-        DateTime endDateTime = new DateTime().withTime(23, 59, 59, 999).plusHours(1);
-        long startMillis = startDateTime.getMillis()/1000;
-        long endMillis = endDateTime.getMillis()/1000;
+        Calendar startDateTime = Calendar.getInstance();
+        startDateTime.set(Calendar.HOUR_OF_DAY, 0);
+        startDateTime.set(Calendar.MINUTE, 0);
+        startDateTime.set(Calendar.SECOND, 1);
+
+        Calendar endDateTime = Calendar.getInstance();
+        endDateTime.set(Calendar.HOUR_OF_DAY, 23);
+        endDateTime.set(Calendar.MINUTE, 59);
+        endDateTime.set(Calendar.SECOND, 59);
+        long startMillis = startDateTime.getTimeInMillis()/1000;
+        long endMillis = endDateTime.getTimeInMillis()/1000;
 
         String query = "SELECT COUNT(*) FROM " + tableName +
                 " WHERE " +
@@ -402,46 +415,50 @@ public class Survey extends TableHandler {
         if(c.getCount() > 0) {
             c.moveToFirst();
 //            Log.d("RECORD", "ID: " + c.getInt(0) + ", TS: " + c.getLong(1) + ", SCHEDULED_AT: " + c.getLong(2) + ", COMPLETED: " + c.getInt(3) +  ", NOTIFIED: " + c.getInt(4));
-            return c.getInt(0);
+            int a = c.getInt(0);
+            c.close();
+            return a;
         }
+
+        c.close();
 
         return 0;
 
     }
 
-    public static int getAvailableSurveyCount(SurveyType type) {
-        String tableName = LocalDbUtility.getTableName(table);
-        String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
-        String columnCompleted = LocalDbUtility.getTableColumns(table)[3];
-        String columnNotified = LocalDbUtility.getTableColumns(table)[4];
-        String columnExpired = LocalDbUtility.getTableColumns(table)[5];
-        String columnType = LocalDbUtility.getTableColumns(table)[7];
-
-        DateTime startDateTime = new DateTime().withTime(0, 0, 1, 0).plusHours(1);
-        DateTime endDateTime = new DateTime().withTime(23, 59, 59, 999).plusHours(1);
-        long startMillis = startDateTime.getMillis()/1000;
-        long endMillis = endDateTime.getMillis()/1000;
-
-        String query = "SELECT COUNT(*) FROM " + tableName +
-                " WHERE " +
-                columnSchedule + " >= " + startMillis + " AND " +
-                columnSchedule + " <= " + endMillis + " AND " +
-                columnCompleted + " = " + 0 + " AND " +
-                columnNotified + " > " + 0 + " AND " +
-                columnExpired + " = " + 0 + " AND " +
-                columnType + " = \"" + type.getSurveyName() + "\"";
-
-        Cursor c = localController.rawQuery(query, null);
-//        Cursor c = localController.rawQuery("SELECT * FROM " + tableName, null);
-
-        if(c.getCount() > 0) {
-            c.moveToFirst();
-//            Log.d("RECORD", "ID: " + c.getInt(0) + ", TS: " + c.getLong(1) + ", SCHEDULED_AT: " + c.getLong(2) + ", COMPLETED: " + c.getInt(3) +  ", NOTIFIED: " + c.getInt(4));
-            return c.getInt(0);
-        }
-
-        return 0;
-    }
+//    public static int getAvailableSurveyCount(SurveyType type) {
+//        String tableName = LocalDbUtility.getTableName(table);
+//        String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
+//        String columnCompleted = LocalDbUtility.getTableColumns(table)[3];
+//        String columnNotified = LocalDbUtility.getTableColumns(table)[4];
+//        String columnExpired = LocalDbUtility.getTableColumns(table)[5];
+//        String columnType = LocalDbUtility.getTableColumns(table)[7];
+//
+//        DateTime startDateTime = new DateTime().withTime(0, 0, 1, 0).plusHours(1);
+//        DateTime endDateTime = new DateTime().withTime(23, 59, 59, 999).plusHours(1);
+//        long startMillis = startDateTime.getMillis()/1000;
+//        long endMillis = endDateTime.getMillis()/1000;
+//
+//        String query = "SELECT COUNT(*) FROM " + tableName +
+//                " WHERE " +
+//                columnSchedule + " >= " + startMillis + " AND " +
+//                columnSchedule + " <= " + endMillis + " AND " +
+//                columnCompleted + " = " + 0 + " AND " +
+//                columnNotified + " > " + 0 + " AND " +
+//                columnExpired + " = " + 0 + " AND " +
+//                columnType + " = \"" + type.getSurveyName() + "\"";
+//
+//        Cursor c = localController.rawQuery(query, null);
+////        Cursor c = localController.rawQuery("SELECT * FROM " + tableName, null);
+//
+//        if(c.getCount() > 0) {
+//            c.moveToFirst();
+////            Log.d("RECORD", "ID: " + c.getInt(0) + ", TS: " + c.getLong(1) + ", SCHEDULED_AT: " + c.getLong(2) + ", COMPLETED: " + c.getInt(3) +  ", NOTIFIED: " + c.getInt(4));
+//            return c.getInt(0);
+//        }
+//
+//        return 0;
+//    }
 
     public static Survey getAvailableSurvey(SurveyType survey) {
         String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
@@ -450,10 +467,17 @@ public class Survey extends TableHandler {
         String columnType = LocalDbUtility.getTableColumns(table)[7];
         String columnExpired = LocalDbUtility.getTableColumns(table)[5];
 
-        LocalDateTime startDateTime = new LocalDateTime().withTime(0, 0, 0, 0);
-        LocalDateTime endDateTime = new LocalDateTime().withTime(23, 59, 59, 999);
-        long startMillis = startDateTime.toDateTime().getMillis()/1000;
-        long endMillis = endDateTime.toDateTime().getMillis()/1000;
+        Calendar startDateTime = Calendar.getInstance();
+        startDateTime.set(Calendar.HOUR_OF_DAY, 0);
+        startDateTime.set(Calendar.MINUTE, 0);
+        startDateTime.set(Calendar.SECOND, 1);
+
+        Calendar endDateTime = Calendar.getInstance();
+        endDateTime.set(Calendar.HOUR_OF_DAY, 23);
+        endDateTime.set(Calendar.MINUTE, 59);
+        endDateTime.set(Calendar.SECOND, 59);
+        long startMillis = startDateTime.getTimeInMillis()/1000;
+        long endMillis = endDateTime.getTimeInMillis()/1000;
 
         String query = columnSchedule + " >= " + startMillis + " AND " +
                 columnSchedule + " <= " + endMillis + " AND " +
@@ -471,10 +495,17 @@ public class Survey extends TableHandler {
         String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
         String columnType = LocalDbUtility.getTableColumns(table)[7];
 
-        DateTime startDateTime = new DateTime().withTime(0, 0, 0, 0);
-        DateTime endDateTime = new DateTime().withTime(23, 59, 59, 999);
-        long startMillis = startDateTime.getMillis()/1000;
-        long endMillis = endDateTime.getMillis()/1000;
+        Calendar startDateTime = Calendar.getInstance();
+        startDateTime.set(Calendar.HOUR_OF_DAY, 0);
+        startDateTime.set(Calendar.MINUTE, 0);
+        startDateTime.set(Calendar.SECOND, 1);
+
+        Calendar endDateTime = Calendar.getInstance();
+        endDateTime.set(Calendar.HOUR_OF_DAY, 23);
+        endDateTime.set(Calendar.MINUTE, 59);
+        endDateTime.set(Calendar.SECOND, 59);
+        long startMillis = startDateTime.getTimeInMillis()/1000;
+        long endMillis = endDateTime.getTimeInMillis()/1000;
 
         String query = "SELECT COUNT(*) FROM " + tableName +
                 " WHERE " +
@@ -485,11 +516,14 @@ public class Survey extends TableHandler {
         Cursor c = localController.rawQuery(query, null);
 
         if(c.getCount() == 0) {
+            c.close();
             return 0;
         }
 
         c.moveToFirst();
-        return c.getInt(0);
+        int a = c.getInt(0);
+        c.close();
+        return a;
     }
 
     public static Survey[] getTodaySurveys(SurveyType survey) {
@@ -498,10 +532,17 @@ public class Survey extends TableHandler {
         String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
         String columnType = LocalDbUtility.getTableColumns(table)[7];
 
-        DateTime startDateTime = new DateTime().withTime(0, 0, 0, 0);
-        DateTime endDateTime = new DateTime().withTime(23, 59, 59, 999);
-        long startMillis = startDateTime.getMillis()/1000;
-        long endMillis = endDateTime.getMillis()/1000;
+        Calendar startDateTime = Calendar.getInstance();
+        startDateTime.set(Calendar.HOUR_OF_DAY, 0);
+        startDateTime.set(Calendar.MINUTE, 0);
+        startDateTime.set(Calendar.SECOND, 1);
+
+        Calendar endDateTime = Calendar.getInstance();
+        endDateTime.set(Calendar.HOUR_OF_DAY, 23);
+        endDateTime.set(Calendar.MINUTE, 59);
+        endDateTime.set(Calendar.SECOND, 59);
+        long startMillis = startDateTime.getTimeInMillis()/1000;
+        long endMillis = endDateTime.getTimeInMillis()/1000;
 
         String query = "SELECT * FROM " + tableName +
                 " WHERE " +
@@ -513,6 +554,7 @@ public class Survey extends TableHandler {
 
         if(c.getCount() == 0) {
             surveys = new Survey[0];
+            c.close();
             return surveys;
         } else {
             surveys = new Survey[c.getCount()];
@@ -528,6 +570,8 @@ public class Survey extends TableHandler {
                 i++;
             }
         }
+
+        c.close();
 
         return surveys;
     }
@@ -581,7 +625,9 @@ public class Survey extends TableHandler {
 
         c.moveToFirst();
 
-        return c.getInt(0);
+        int a = c.getInt(0);
+        c.close();
+        return a;
     }
 
     public static int getDoneSurveysCount(SurveyType survey) {
@@ -595,7 +641,9 @@ public class Survey extends TableHandler {
 
         c.moveToFirst();
 
-        return c.getInt(0);
+        int a = c.getInt(0);
+        c.close();
+        return a;
     }
 
     @Override

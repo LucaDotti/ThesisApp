@@ -230,7 +230,10 @@ public class ExpandableLayout extends LinearLayout {
 
     public void stopBlink() {
 
-        titleContent.getAnimation().cancel();
+        if(titleContent.getAnimation() != null) {
+            titleContent.getAnimation().cancel();
+        }
+
 //        ((TextView) titleContent.findViewById(R.id.surveysTitle)).setAlpha(1);
     }
 

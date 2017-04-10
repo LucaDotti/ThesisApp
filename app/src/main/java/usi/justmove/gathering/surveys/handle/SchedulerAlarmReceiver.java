@@ -27,10 +27,7 @@ public class SchedulerAlarmReceiver extends BroadcastReceiver {
 
         SurveyType survey = SurveyType.getSurvey(intent.getStringExtra("survey"));
 
-
-        boolean immediate = intent.getBooleanExtra("immediate", false);
-
-        dailyScheduler.schedule(survey, immediate);
+        dailyScheduler.schedule(intent);
         scheduler.schedule(survey);
     }
 }
