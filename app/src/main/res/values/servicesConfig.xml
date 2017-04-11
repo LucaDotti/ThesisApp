@@ -9,7 +9,7 @@
     <!--location frequencies-->
     <string name="locationDayFreq">300000</string>
     <string name="locationNightFreq">1200000</string>
-    <string name="locationMinDistance">10</string>
+    <string name="locationMinDistance">0</string>
 
     <!--wifi frequencies-->
     <string name="wifiDayFreq">300000</string>

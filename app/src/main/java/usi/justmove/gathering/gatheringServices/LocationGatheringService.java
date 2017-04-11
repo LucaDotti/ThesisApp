@@ -103,7 +103,7 @@ class LocationTimeBasedStateMachineListener extends TimeBasedStateMachineListene
             locationHandlerThread = new HandlerThread("LocationHandlerThread");
             locationHandlerThread.start();
 
-            mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, FrequencyHelper.getElapseTimeMillis(dayFreq), minDistance, listener, locationHandlerThread.getLooper());
+            mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, dayFreq, minDistance, listener, locationHandlerThread.getLooper());
         }
 
     }
@@ -122,6 +122,7 @@ class LocationTimeBasedStateMachineListener extends TimeBasedStateMachineListene
 
         Looper.prepare();
         mgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FrequencyHelper.getElapseTimeMillis(nightFreq), minDistance, listener);
+        mgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
 }
 
