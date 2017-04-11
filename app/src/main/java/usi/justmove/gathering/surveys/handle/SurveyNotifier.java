@@ -47,39 +47,43 @@ public class SurveyNotifier {
         Log.d("Notifier", "NOTIFYY");
         if(surveyId >= 0) {
             currSurvey = (Survey) Survey.findByPk(surveyId);
-            if(action.equals(SURVEY_COMPLETED_INTENT)) {
-                currSurvey.completed = true;
-                currSurvey.save();
-
-                cancelNotification((int) currSurvey.id);
-
-                notifyCancelAlarm();
-                EventBus.getDefault().post(new SurveyEvent(surveyId, false));
-            } else {
-                SurveyConfig config = SurveyConfigFactory.getConfig(currSurvey.surveyType, context);
-
-                if(currSurvey.completed) {
-                    return;
-                }
-
-                currSurvey.notified++;
-                if(currSurvey.notified >= config.notificationsCount) {
-                    cancelNotification((int) currSurvey.id);
-
-                    currSurvey.expired = true;
+            if(currSurvey != null) {
+                if(action.equals(SURVEY_COMPLETED_INTENT)) {
+                    currSurvey.completed = true;
                     currSurvey.save();
 
+                    cancelNotification((int) currSurvey.id);
+
                     notifyCancelAlarm();
+                    EventBus.getDefault().post(new SurveyEvent(surveyId, false));
+                } else {
+
+                    SurveyConfig config = SurveyConfigFactory.getConfig(currSurvey.surveyType, context);
+
+                    if(currSurvey.completed) {
+                        return;
+                    }
+
+                    currSurvey.notified++;
+                    if(currSurvey.notified >= config.notificationsCount) {
+                        cancelNotification((int) currSurvey.id);
+
+                        currSurvey.expired = true;
+                        currSurvey.save();
+
+                        notifyCancelAlarm();
+                        EventBus.getDefault().post(new SurveyEvent(surveyId, true));
+                        return;
+                    }
+
+                    createNotification(currSurvey, config);
+
+                    currSurvey.save();
+
                     EventBus.getDefault().post(new SurveyEvent(surveyId, true));
-                    return;
                 }
-
-                createNotification(currSurvey, config);
-
-                currSurvey.save();
-
-                EventBus.getDefault().post(new SurveyEvent(surveyId, true));
             }
+
         }
     }
 
@@ -99,7 +103,7 @@ public class SurveyNotifier {
 
     private boolean checkSurveysCompleted(Survey[] surveys) {
         for(Survey s: surveys) {
-            if(!s.completed) {
+            if(s != null && !s.completed) {
                 return false;
             }
         }

@@ -44,6 +44,11 @@ public class PhoneCallGatheringService extends Service  {
         getApplicationContext().registerReceiver(receiver, filter);
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

@@ -142,7 +142,7 @@ public class Uploader {
             currS = (Survey) s;
             if(currSurvey != currS.surveyType) {
                 currSurvey = currS.surveyType;
-                fileName = buildSurveyFileName(currSurvey);
+
                 currCsv = buildSurveyCSV(gSurveys);
 
                 Log.d("SCSV", currCsv);
@@ -150,12 +150,12 @@ public class Uploader {
 
                 //if the file was put, delete records and update the arrays
                 if(response >= 200 && response <= 207) {
-                    removeSurveyRecords(gSurveys);
+//                    removeSurveyRecords(gSurveys);
                     incrementFilePartId(SurveyType.getSurveyTable(currSurvey));
                 } else {
                     Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
                 }
-
+                fileName = buildSurveyFileName(currSurvey);
                 currCsv = "";
             } else {
                 gSurveys.add(currS);

@@ -47,8 +47,8 @@ public class SurveysService extends Service {
         super.onDestroy();
     }
 
-    private boolean checkActivityIsRunning() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        return prefs.getBoolean("running", true);
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
     }
 }

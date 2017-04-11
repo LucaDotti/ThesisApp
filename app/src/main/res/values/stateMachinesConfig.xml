@@ -10,6 +10,6 @@
 
     <!--WIFI-POWER-MEMORY BASED-->
     <string name="uploaderMaxDbSize">10000000</string>
-    <string name="uploaderUploadThreshold">60000</string>
+    <string name="uploaderUploadThreshold">1000000</string>
     <string name="uploaderMinBatteryLevel">30</string>
 </resources>

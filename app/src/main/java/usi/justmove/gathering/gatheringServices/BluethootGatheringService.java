@@ -52,6 +52,11 @@ public class BluethootGatheringService extends Service {
         timer = new Timer();
         timer.schedule(new BluetoothScanTask(), 0, freq);
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
 }
 
 class BluetoothEventReceiver extends BroadcastReceiver {

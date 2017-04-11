@@ -54,6 +54,11 @@ public class AccelerometerGatheringService extends Service {
         super.onDestroy();
         sensorManager.unregisterListener(listener);
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
 }
 
 class AccelerometerEventListener implements SensorEventListener {

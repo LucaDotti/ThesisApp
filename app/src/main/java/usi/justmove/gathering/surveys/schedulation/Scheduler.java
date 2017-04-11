@@ -163,7 +163,7 @@ public class Scheduler {
                             if(!checkAlarmExists((int) alarm.id)) {
                                 Survey[] all = SurveyAlarmSurvey.getSurveys(alarm.id);
                                 for(Survey s: all) {
-                                    Log.d("Scheduler", s.toString());
+                                    System.out.println(s);
                                 }
 
                                 if(all.length == 0) {
