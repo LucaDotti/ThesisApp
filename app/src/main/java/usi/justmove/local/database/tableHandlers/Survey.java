@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 import java.net.ContentHandlerFactory;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -423,7 +424,10 @@ public class Survey extends TableHandler {
         int count = 0;
 
         if(grouped != null) {
-            count = 1;
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+            if(!format.format(grouped.scheduledAt * 1000).equals(format.format(startDateTime.getTime()))) {
+                count = 1;
+            }
         }
 
         if(c.getCount() > 0) {

@@ -15,58 +15,60 @@ import usi.justmove.local.database.tableHandlers.User;
  */
 
 public class SurveyConfigFactory {
-    private static Map<SurveyType, SurveyConfig> instances = new HashMap<>();
 
     public static SurveyConfig getConfig(SurveyType survey, Context context) {
 
-        if(instances.containsKey(survey)) {
-            return instances.get(survey);
-        } else {
-            SurveyConfig config = new SurveyConfig();
-            switch(survey) {
-                case PAM:
-                    config.survey = SurveyType.PAM;
-                    config.frequency = Frequency.getFrequency(context.getString(R.string.PAM_frequency));
-                    config.surveysCount = Integer.parseInt(context.getString(R.string.PAM_daily_count));
-                    config.dailyTimes = parseTimes(context.getResources().getStringArray(R.array.PAM_daily_times));
-                    config.maxElapseTimeForCompletion = Long.parseLong(context.getString(R.string.PAM_max_elapse_time_for_completion));
-                    config.minElapseTimeBetweenSurveys = Long.parseLong(context.getString(R.string.PAM_min_elapse_time_between_surveys));
-                    config.notificationsCount = Integer.parseInt(context.getString(R.string.PAM_notifications_count));
-                    config.immediate = Boolean.parseBoolean(context.getString(R.string.PAM_immediate));
-                    instances.put(SurveyType.PAM, config);
-                    break;
-                case PWB:
-                    config.survey = SurveyType.PWB;
-                    config.frequency = Frequency.getFrequency(context.getString(R.string.PWB_frequency));
-                    config.surveysCount = Integer.parseInt(context.getString(R.string.PWB_daily_count));
-                    config.dailyTimes = parseTimes(context.getResources().getStringArray(R.array.PWB_daily_times));
-                    config.maxElapseTimeForCompletion = Long.parseLong(context.getString(R.string.PWB_max_elapse_time_for_completion));
-                    config.notificationsCount = Integer.parseInt(context.getString(R.string.PWB_notifications_count));
-                    config.period = Period.getPeriod(context.getString(R.string.PWB_week_period));
-                    config.dayCount = Integer.parseInt(context.getString(R.string.PWB_count));
-                    config.immediate = Boolean.parseBoolean(context.getString(R.string.PWB_immediate));
-                    instances.put(SurveyType.PWB, config);
-                    break;
-                case GROUPED_SSPP:
-                    config.survey = SurveyType.GROUPED_SSPP;
-                    config.frequency = Frequency.getFrequency(context.getString(R.string.term_frequency));
-                    config.surveysCount = Integer.parseInt(context.getString(R.string.term_daily_count));
-                    config.dailyTimes = parseTimes(context.getResources().getStringArray(R.array.term_daily_times));
-                    config.maxElapseTimeForCompletion = Long.parseLong(context.getString(R.string.term_max_elapse_time_for_completion));
-                    config.notificationsCount = Integer.parseInt(context.getString(R.string.term_notifications_count));
+//        if(instances.containsKey(survey)) {
+//            return instances.get(survey);
+//        } else {
+//
+//            return config;
+//        }
+        SurveyConfig config = new SurveyConfig();
+        switch(survey) {
+            case PAM:
+                config.survey = SurveyType.PAM;
+                config.frequency = Frequency.getFrequency(context.getString(R.string.PAM_frequency));
+                config.surveysCount = Integer.parseInt(context.getString(R.string.PAM_daily_count));
+                config.dailyTimes = parseTimes(context.getResources().getStringArray(R.array.PAM_daily_times));
+                config.maxElapseTimeForCompletion = Long.parseLong(context.getString(R.string.PAM_max_elapse_time_for_completion));
+                config.minElapseTimeBetweenSurveys = Long.parseLong(context.getString(R.string.PAM_min_elapse_time_between_surveys));
+                config.notificationsCount = Integer.parseInt(context.getString(R.string.PAM_notifications_count));
+                config.immediate = Boolean.parseBoolean(context.getString(R.string.PAM_immediate));
+//                instances.put(SurveyType.PAM, config);
+                break;
+            case PWB:
+                config.survey = SurveyType.PWB;
+                config.frequency = Frequency.getFrequency(context.getString(R.string.PWB_frequency));
+                config.surveysCount = Integer.parseInt(context.getString(R.string.PWB_daily_count));
+                config.dailyTimes = parseTimes(context.getResources().getStringArray(R.array.PWB_daily_times));
+                config.maxElapseTimeForCompletion = Long.parseLong(context.getString(R.string.PWB_max_elapse_time_for_completion));
+                config.notificationsCount = Integer.parseInt(context.getString(R.string.PWB_notifications_count));
+                config.period = Period.getPeriod(context.getString(R.string.PWB_week_period));
+                config.dayCount = Integer.parseInt(context.getString(R.string.PWB_count));
+                config.immediate = Boolean.parseBoolean(context.getString(R.string.PWB_immediate));
+//                instances.put(SurveyType.PWB, config);
+                break;
+            case GROUPED_SSPP:
+                config.survey = SurveyType.GROUPED_SSPP;
+                config.frequency = Frequency.getFrequency(context.getString(R.string.term_frequency));
+                config.surveysCount = Integer.parseInt(context.getString(R.string.term_daily_count));
+                config.dailyTimes = parseTimes(context.getResources().getStringArray(R.array.term_daily_times));
+                config.maxElapseTimeForCompletion = Long.parseLong(context.getString(R.string.term_max_elapse_time_for_completion));
+                config.notificationsCount = Integer.parseInt(context.getString(R.string.term_notifications_count));
 //                    config.period = Period.getPeriod(context.getString(R.string.term_week_period));
-                    config.dayCount = Integer.parseInt(context.getString(R.string.term_count));
-                    config.grouped = true;
-                    config.endStudy = context.getString(R.string.term_end_study_date);
-                    config.startStudy = User.getCreationDate();
-                    config.immediate = Boolean.parseBoolean(context.getString(R.string.term_immediate));
-                    instances.put(SurveyType.GROUPED_SSPP, config);
-                    break;
-                default:
+                config.dayCount = Integer.parseInt(context.getString(R.string.term_count));
+                config.grouped = true;
+                config.endStudy = context.getString(R.string.term_end_study_date);
+                config.startStudy = User.getCreationDate();
+                config.immediate = Boolean.parseBoolean(context.getString(R.string.term_immediate));
+//                instances.put(SurveyType.GROUPED_SSPP, config);
+                break;
+            default:
 
-            }
-            return config;
         }
+
+        return config;
 
     }
 
