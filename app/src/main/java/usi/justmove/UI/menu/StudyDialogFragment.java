@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +48,8 @@ public class StudyDialogFragment extends AppCompatDialogFragment {
 
         builder.setView(root);
 
+        TextView text = (TextView) root.findViewById(R.id.aboutThisStudyDesription);
+        text.setText(Html.fromHtml(getContext().getString(R.string.study_description)));
         return builder.create();
     }
 }

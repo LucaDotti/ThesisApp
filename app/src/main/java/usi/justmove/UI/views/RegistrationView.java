@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,6 +83,9 @@ public class RegistrationView extends LinearLayout {
 
             }
         });
+
+        TextView consentText = (TextView) consentBody.findViewById(R.id.consentForm);
+        consentText.setText(Html.fromHtml(context.getString(R.string.consent_form)));
 
         registerButton.setOnClickListener(new OnClickListener() {
             @Override

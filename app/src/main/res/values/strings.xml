@@ -2,22 +2,25 @@
     <string name="app_name">JustMove</string>
     <string name="dbName">JustMove</string>
     <string name="consent_form">
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
-        bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla
 
+        <Data><![CDATA[<b>Purpose of the research study</b>]]> </Data>:  The purpose of this study is assess the user’s well-being over time and the factors that may influence it, using smartphones. &lt;br /&gt; &lt;br /&gt;
+        <Data><![CDATA[<b>What will you do in the study</b>]]> </Data>:  The smartphone will unobtrusively gather some sensor’s data (e.g: GPS, Wifi, Accelerometer, Bluetooth, Number of App used,..). You will be asked to fill-in short questionnaires twice per day. Your answers and the data gathered from the smartphone will allow us to get information about your subjective perception of your well-being and to understand which are the main factors that may contribute to your happiness. You can refrain from answering any question you might prefer not to answer (e.g., because it makes you uncomfortable) and you can stop the survey at any time. &lt;br /&gt; &lt;br /&gt;
+        <Data><![CDATA[<b>Time required</b>]]> </Data>: The study will require few minutes of your daily time.&lt;br /&gt; &lt;br /&gt;
+        <Data><![CDATA[<b>Confidentiality</b>]]> </Data>: The information and data collected  in this study will be stored safely and handled confidentially. Your data will be anonymized through the assignment of an alphanumerical code and your name will never be mentioned in connection to the data or in any report. Any attempt to deduce your identity from the data is explicitly forbidden by our data analysis policy.&lt;br /&gt; &lt;br /&gt;
+        <Data><![CDATA[<b>Voluntary participation</b>]]> </Data>: Your participation in the study is completely voluntary. You have the right to withdraw from the study at any time without penalty and to require your data to be entirely and permanently deleted.&lt;br /&gt; &lt;br /&gt;
+        <Data><![CDATA[<b>Contact person if you  have questions about the study</b>]]> </Data>: Luca Dotti, luca.dotti@usi.ch. / Elena Di Lascio: elena.di.lascio@usi.ch &lt;br /&gt; &lt;br /&gt; &lt;br /&gt;
+        <Data><![CDATA[ <b>I confirmed that I carefully read and understand the information reported above and that I agree to participate in the research study</b>.]]> </Data>
+
+    </string>
+    <string name="study_description">
+        <Data><![CDATA[<b>What is the study about?</b>]]> </Data> &lt;br /&gt; &lt;br /&gt;
+        In the last century depression and mental health disorders among students and academics have been noted as a significantly increasing problem. Addressing this problem has become a key concern for several Universities.&lt;br /&gt;
+        Recently a quite new branch of psychology, called positive psychology, rather than threating mental illness, has focused its attention more on personal growth and happiness. What is new with positive psychology is trying to make intervention to increase well-being since it has as side effect the decreasing of suffering. Happiness, also known as subjective wellbeing, has been defined as a combination of satisfaction of one\'s life with positive and negative emotional reactions. &lt;br /&gt;
+        Positive psychology indicates that happiness can be affected and improved in different ways. Several daily external factors can contribute to the individual\'s overall well-being, such as physical activities, workload, mobility, social interaction, sleep quality,.. In order to improve our quality of life and increase our resilience to adversity, it\'s really important to keep track of their influence in our daily life. Traditionally well-being has been explored using questionnaires and interviews, this approach however presents several drawbacks, it\’s time consuming and difficult to manage in large scale. Nowadays people of different ages carry their smartphone all the time and interact with it several times per day. This makes smartphone an emerging and attractive option for collecting tones of daily data from users and environmental context, that can be analysed to get information of human\'s attitude, interests and health.&lt;br /&gt; &lt;br /&gt;
+        <Data><![CDATA[<b>Goal of the study</b>]]> </Data> &lt;br /&gt; &lt;br /&gt;
+        This study belongs to a Master\’s thesis project. The main goal of the project is to investigate, using  smartphones, which are the main factors  that affect the well-being  and to which extent they contribute to  the participants\' happiness changes over time. Researchers have been shown that depression contribute to a reduction of mobility. Based on that we have decided to focus our attention mainly on the correlation between location information and well-being changes.&lt;br /&gt;
+        During the data collection some feedbacks will be provided to the users which can become more aware of their well-being changes.&lt;br /&gt; &lt;br /&gt;
+        Contact person if you  have questions about the study: Luca Dotti, luca.dotti@usi.ch /Elena Di Lascio, elena.di.lascio@usi.ch
     </string>
     <string name="leave_study_alert">
         ATTENTION! If you check this checkbox you are confirming that you want to leave the study. This action implies that you no longer participate to our study and all your data will be removed from your phone and our remote storage.
