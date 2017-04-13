@@ -10,8 +10,8 @@ import android.util.Log;
  */
 
 public class SurveyEventReceiver extends BroadcastReceiver {
-    public final static String NOTIFICATION_INTENT = "notification_event";
-    public final static String SURVEY_SCHEDULED_INTENT = "survey_scheduled_intent";
+    public final static String SURVEY_NOTIFICATION_INTENT = "survey_notification_intent";
+    public final static String SURVEY_EXPIRED_INTENT = "survey_expired_intent";
     public final static String SURVEY_COMPLETED_INTENT = "survey_completed_intent";
 
 

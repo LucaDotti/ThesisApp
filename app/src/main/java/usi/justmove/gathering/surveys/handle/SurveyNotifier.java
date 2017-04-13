@@ -26,7 +26,6 @@ import usi.justmove.local.database.tables.SurveyAlarmSurveyTable;
 import usi.justmove.local.database.tables.SurveyTable;
 
 import static android.R.attr.y;
-import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.NOTIFICATION_INTENT;
 import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.SURVEY_COMPLETED_INTENT;
 
 /**
@@ -44,11 +43,11 @@ public class SurveyNotifier {
     }
 
     public void notify(long surveyId, String action) {
-        Log.d("Notifier", "NOTIFYY");
         if(surveyId >= 0) {
             currSurvey = (Survey) Survey.findByPk(surveyId);
             if(currSurvey != null) {
                 if(action.equals(SURVEY_COMPLETED_INTENT)) {
+                    Log.d("Notifier", "Completed " + currSurvey.toString());
                     currSurvey.completed = true;
                     currSurvey.save();
 
@@ -57,15 +56,16 @@ public class SurveyNotifier {
                     notifyCancelAlarm();
                     EventBus.getDefault().post(new SurveyEvent(surveyId, false));
                 } else {
-
                     SurveyConfig config = SurveyConfigFactory.getConfig(currSurvey.surveyType, context);
 
                     if(currSurvey.completed) {
+                        Log.d("Notifier", "Already completed " + currSurvey.toString());
                         return;
                     }
 
                     currSurvey.notified++;
-                    if(currSurvey.notified >= config.notificationsCount) {
+                    if(currSurvey.notified >= config.notificationsCount+1) {
+                        Log.d("Notifier", "Survey expired " + currSurvey.toString());
                         cancelNotification((int) currSurvey.id);
 
                         currSurvey.expired = true;
@@ -76,6 +76,7 @@ public class SurveyNotifier {
                         return;
                     }
 
+                    Log.d("Notifier", "Creating notification for " + currSurvey.toString());
                     createNotification(currSurvey, config);
 
                     currSurvey.save();
@@ -83,7 +84,6 @@ public class SurveyNotifier {
                     EventBus.getDefault().post(new SurveyEvent(surveyId, true));
                 }
             }
-
         }
     }
 
@@ -91,19 +91,14 @@ public class SurveyNotifier {
         SurveyAlarms alarm = SurveyAlarmSurvey.getAlarm(currSurvey.id);
         Survey[] surveys = SurveyAlarmSurvey.getSurveys(alarm.id);
 
-        TableHandler[] t = Survey.findAll("*", "");
-
         if(checkSurveysCompleted(surveys)) {
             Scheduler.getInstance().deleteAlarm((int) alarm.id);
         }
-
-//        SurveyAlarms currentAlarm = SurveyAlarms.getCurrentAlarm(currSurvey.surveyType);
-
     }
 
     private boolean checkSurveysCompleted(Survey[] surveys) {
         for(Survey s: surveys) {
-            if(s != null && !s.completed) {
+            if(s != null && !s.completed && !s.expired) {
                 return false;
             }
         }
@@ -159,7 +154,7 @@ public class SurveyNotifier {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(android.R.drawable.stat_sys_warning)
 //                        .setCustomBigContentView(remoteViews)
-                        .setContentTitle("JustMove")
+                        .setContentTitle("MEmotion")
                         .setContentText("New " + config.survey.getSurveyName() + " survey available!")
                         .setSubText("Time left \t" + missingTime + timeUnit);
 
@@ -180,7 +175,7 @@ public class SurveyNotifier {
     }
 
     private String getMissingTime(Survey survey, SurveyConfig config) {
-        int notificationCount = survey.notified;
+        int notificationCount = survey.notified-1;
         long elapseTimeBetweenPersistentNotifications = (config.maxElapseTimeForCompletion/config.notificationsCount);
         long missingTime = (config.notificationsCount - notificationCount)*elapseTimeBetweenPersistentNotifications;
         String split[] = formatMillis(missingTime).split("\\.");

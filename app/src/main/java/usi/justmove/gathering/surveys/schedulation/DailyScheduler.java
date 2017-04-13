@@ -2,33 +2,31 @@ package usi.justmove.gathering.surveys.schedulation;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
-import org.joda.time.DateTime;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
 
 import usi.justmove.MyApplication;
-import usi.justmove.gathering.surveys.config.Frequency;
 import usi.justmove.gathering.surveys.config.SurveyType;
 import usi.justmove.gathering.surveys.config.SurveyConfig;
 import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
+import usi.justmove.gathering.surveys.handle.SchedulerAlarmReceiver;
 import usi.justmove.gathering.surveys.handle.SurveyEventReceiver;
 import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.local.database.tableHandlers.Survey;
 import usi.justmove.local.database.LocalTables;
+import usi.justmove.local.database.tableHandlers.SurveyAlarmSurvey;
 import usi.justmove.local.database.tables.SurveyAlarmSurveyTable;
 import usi.justmove.local.database.tables.SurveyTable;
 
+import static android.R.attr.format;
 import static android.R.attr.id;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static usi.justmove.R.array.surveys;
+import static usi.justmove.local.database.tableHandlers.SurveyAlarmSurvey.getSurveys;
 
 /**
  * Created by usi on 14/03/17.
@@ -47,56 +45,71 @@ public class DailyScheduler {
     }
 
     public void schedule(Intent intent) {
+        Log.d("Daily Scheduler", "-----------------------------");
         SurveyType surveyType = SurveyType.getSurvey(intent.getStringExtra("survey"));
         isImmediate = intent.getBooleanExtra("immediate", false);
         currAlarmId = intent.getIntExtra("alarm_id", -1);
 
         currConfig = SurveyConfigFactory.getConfig(surveyType, context);
 
-//        int count = Survey.getAvailableSurveyCount(surveyType);
-        int count = Survey.getTodaySurveyCount(surveyType);
-        Log.d("COUNT", surveyType.getSurveyName() + "" + count);
+        Survey[] currSurveys = SurveyAlarmSurvey.getSurveys(currAlarmId);
 
         long[] times = getAlarmsTimes();
 
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
-        String ss;
-        for(long t: times) {
-            if(t >= 0) {
-                Log.d("TIMES", format.format(t));
-            }
-        }
-
         Survey[] surveys = new Survey[currConfig.surveysCount];
 
-        if(count < currConfig.surveysCount) {
+        if(currSurveys.length == 0) {
+            Log.d("Daily scheduler", "No notification alarms found for alarm " + currAlarmId);
             for (int i = 0; i < currConfig.surveysCount; i++) {
                 if(times[i] >= 0) {
                     surveys[i] = insertSurveyRecord(times[i]);
                 } else {
-                    Log.d("Daily scheduler", "Too late for that survey");
+                    Log.d("Daily scheduler", "\tToo late for that survey");
                 }
             }
+
+            long[] notificationTimes;
+            for (int i = 0; i < surveys.length; i++) {
+                if(times[i] >= 0) {
+                    notificationTimes = getNotificationAlarmTimes(surveys[i], isImmediate);
+                    setAlarms(surveys[i], notificationTimes, isImmediate);
+                }
+                isImmediate = false;
+            }
         } else {
-            surveys = Survey.getTodaySurveys(surveyType);
-
-            int notified;
-            for(Survey s: surveys) {
-                notified = s.getAttributes().getAsInteger("notified");
-                notified--;
-                ContentValues attr = new ContentValues();
-                attr.put("notified", notified);
-                s.setAttribute("notified", attr);
-                s.save();
+            long[] notificationTimes;
+            for(Survey s: currSurveys) {
+                Log.d("Daily scheduler", "Checking alarm for " + s.toString());
+                notificationTimes = getNotificationAlarmTimes(s, isImmediate);
+                checkNotificationAlarms(s, notificationTimes);
             }
         }
 
-        for (int i = 0; i < currConfig.surveysCount; i++) {
-            if(times[i] >= 0) {
-                setAlarms(surveys[i], isImmediate);
+        Log.d("Daily Scheduler", "-----------------------------");
+    }
+
+    private void checkNotificationAlarms(Survey s, long[] times) {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
+        Intent intent = new Intent(context, SurveyEventReceiver.class);
+        intent.putExtra("survey_id", s.id);
+        intent.setAction(SurveyEventReceiver.SURVEY_NOTIFICATION_INTENT);
+
+        for(int i = s.notified; i < times.length; i++) {
+            if(!checkAlarmExists((int) times[i], intent)) {
+                Log.d("Daily scheduler", "\t Alarm " + times[i] + " does not exists. Resetting alarm...");
+                Log.d("Daily Scheduler", "\t Scheduled survey " + currConfig.survey.getSurveyName() + " notification at " + format.format(times[i]));
+                setAlarm(intent, times[i]);
+            } else {
+                Log.d("Daily scheduler", "\t Alarm " + times[i] + " already exists");
             }
-            isImmediate = false;
         }
+    }
+
+    private boolean checkAlarmExists(int alarmId, Intent i) {
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, alarmId,
+                i,
+                PendingIntent.FLAG_NO_CREATE);
+        return pIntent != null;
     }
 
     private Survey insertSurveyRecord(long scheduleTime) {
@@ -107,7 +120,7 @@ public class DailyScheduler {
             attributes.put(SurveyTable.KEY_SURVEY_SCHEDULED_AT, scheduleTime);
             attributes.put(SurveyTable.KEY_SURVEY_EXPIRED, true);
         } else {
-            attributes.put(SurveyTable.KEY_SURVEY_SCHEDULED_AT, scheduleTime/1000);
+            attributes.put(SurveyTable.KEY_SURVEY_SCHEDULED_AT, scheduleTime);
             attributes.put(SurveyTable.KEY_SURVEY_EXPIRED, false);
         }
 
@@ -119,6 +132,7 @@ public class DailyScheduler {
         survey.save();
 
         insertSurveyAlarmsSurveyRecord(survey.id);
+        Log.d("Daily Scheduler", "\tInserting " + survey.toString());
         return survey;
     }
 
@@ -131,35 +145,47 @@ public class DailyScheduler {
         c.insertRecord(SurveyAlarmSurveyTable.TABLE_SURVEY_ALARMS_SURVEY_TABLE, record);
     }
 
-    private void setAlarms(Survey survey, boolean immediate) {
+    private void setAlarms(Survey survey, long[] notificationTimes, boolean isImmediate) {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
+
         Intent intent = new Intent(context, SurveyEventReceiver.class);
         intent.putExtra("survey_id", survey.id);
-        intent.setAction(SurveyEventReceiver.SURVEY_SCHEDULED_INTENT);
+        intent.setAction(SurveyEventReceiver.SURVEY_NOTIFICATION_INTENT);
 
-
-        long notificationInterval = currConfig.maxElapseTimeForCompletion / currConfig.notificationsCount;
-
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
-        Calendar now = Calendar.getInstance();
-
-        int notificationStart = 0;
-
-        if(immediate) {
-            PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) now.getTimeInMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            try {
-                alarmIntent.send();
-            } catch (PendingIntent.CanceledException e) {
-                e.printStackTrace();
+        for(long t: notificationTimes) {
+            if(isImmediate) {
+                setImmediateAlarm(intent, t);
+                isImmediate = false;
+            } else {
+                setAlarm(intent, t);
             }
 
-            Log.d("DailyScheduler", "Scheduled immediate survey " + currConfig.survey.getSurveyName() + " notification at " + format.format(now.getTime()));
-
-            notificationStart = 1;
+            Log.d("Daily Scheduler", "\tScheduled survey " + currConfig.survey.getSurveyName() + " notification at " + format.format(t));
         }
+    }
 
-        long oldSchedule = survey.scheduledAt;
-        if(notificationStart == 1) {
+    private void setImmediateAlarm(Intent intent, long t) {
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) t, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        try {
+            alarmIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private long[] getNotificationAlarmTimes(Survey survey, boolean immediate) {
+        long notificationInterval = currConfig.maxElapseTimeForCompletion / currConfig.notificationsCount;
+
+        int notificationStart = 1;
+
+        long[] times = new long[currConfig.notificationsCount+1];
+        times[0] = survey.scheduledAt;
+
+        if(immediate) {
+            notificationStart = 2;
+            times[0] = survey.scheduledAt;
+
             Calendar startDay = Calendar.getInstance();
             startDay.set(Calendar.HOUR_OF_DAY, 7);
             startDay.set(Calendar.MINUTE, 0);
@@ -170,29 +196,23 @@ public class DailyScheduler {
             endDay.set(Calendar.MINUTE, 0);
             endDay.set(Calendar.SECOND, 0);
 
-            if(survey.scheduledAt*1000 < startDay.getTimeInMillis() && survey.scheduledAt*1000 > endDay.getTimeInMillis()) {
+            if(survey.scheduledAt < startDay.getTimeInMillis() && survey.scheduledAt > endDay.getTimeInMillis()) {
                 Random r = new Random();
 
-                long newSchedule = r.nextInt((int) (endDay.getTimeInMillis() - startDay.getTimeInMillis()));
-                survey.scheduledAt = newSchedule;
-
+                times[1] = r.nextInt((int) (endDay.getTimeInMillis() - startDay.getTimeInMillis()));
             }
         }
 
-        for (int i = notificationStart; i < currConfig.notificationsCount; i++) {
-            if(now.getTimeInMillis() <= (survey.scheduledAt*1000) + i * notificationInterval) {
-                setAlarm(intent, survey.scheduledAt*1000 + i * notificationInterval);
-                Log.d("DailyScheduler", "Scheduled survey " + currConfig.survey.getSurveyName() + " notification at " + format.format(survey.scheduledAt*1000 + i * notificationInterval));
-            }
+        for(int i = notificationStart; i < times.length; i++) {
+            times[i] = times[i-1]+notificationInterval;
         }
 
-        survey.scheduledAt = oldSchedule;
-        Log.d("DailyScheduler", "-----------------------------");
+        return times;
     }
 
     private void setAlarm(Intent i, long time) {
         Calendar c = Calendar.getInstance();
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) time, i, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmMgr.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent);
     }
 
@@ -202,7 +222,6 @@ public class DailyScheduler {
         if(currConfig.dailyTimes == null) {
             alarmsTimes  = new long[1];
             Calendar c = Calendar.getInstance();
-//            c.add(Calendar.MINUTE, 2);
             alarmsTimes[0] = c.getTimeInMillis();
 
             return alarmsTimes;

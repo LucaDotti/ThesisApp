@@ -78,4 +78,14 @@ public class User extends TableHandler {
 
         return null;
     }
+
+    public static int getTermSurveyCount() {
+        Cursor c = localController.rawQuery("SELECT * FROM " + table.getTableName(), null);
+        if(c.getCount() != 0) {
+            c.moveToFirst();
+            return c.getInt(10);
+        }
+
+        return -1;
+    }
 }

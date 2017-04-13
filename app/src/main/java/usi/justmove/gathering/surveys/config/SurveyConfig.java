@@ -2,8 +2,6 @@ package usi.justmove.gathering.surveys.config;
 
 import android.util.Pair;
 
-import java.util.List;
-
 /**
  * Created by usi on 15/02/17.
  */
@@ -34,6 +32,7 @@ public class SurveyConfig {
     //| info to schedule the survey day               |
     //+-----------------------------------------------+
     //the frequency of the survey(s)
+//    public FrequencyUnit frequency;
     public Frequency frequency;
 
     //used by WEEKLY frequency

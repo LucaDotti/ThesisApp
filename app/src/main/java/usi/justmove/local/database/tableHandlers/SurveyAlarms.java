@@ -177,7 +177,7 @@ public class SurveyAlarms extends TableHandler {
 
     public static TableHandler find(String select, String clause) {
 
-        String query = "SELECT " + select + " FROM " + LocalDbUtility.getTableName(table);
+        String query = "SELECT " + select + " FROM " + table.getTableName();
 
         if(!clause.equals("") && clause != null) {
             query += " WHERE " + clause;

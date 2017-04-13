@@ -15,6 +15,7 @@ public class UserTable {
     public static final String KEY_USER_ACADEMIC_STATUS = "academic_status";
     public static final String KEY_USER_UPDATE_TS = "update_timestamp";
     public static final String KEY_USER_CREATION_TS = "creation_timestamp";
+    public static final String KEY_USER_TERM_SURVEY_COUNT = "term_survey_count";
 
     public static String getCreateQuery() {
         return "CREATE TABLE IF NOT EXISTS " + TABLE_USER +
@@ -28,11 +29,13 @@ public class UserTable {
                 KEY_USER_FACULTY + " TEXT," +
                 KEY_USER_ACADEMIC_STATUS + " TEXT, " +
                 KEY_USER_CREATION_TS + " INTEGER DEFAULT CURRENT_TIMESTAMP, " +
-                KEY_USER_UPDATE_TS + " INTEGER DEFAULT CURRENT_TIMESTAMP)";
+                KEY_USER_UPDATE_TS + " INTEGER DEFAULT CURRENT_TIMESTAMP, " +
+                KEY_USER_TERM_SURVEY_COUNT + " INTEGER" +
+                ")";
     }
 
     public static String[] getColumns() {
-        String[] columns = {KEY_USER_ID, KEY_USER_UID, KEY_USER_AGREED, KEY_USER_AGE, KEY_USER_GENDER, KEY_USER_EMAIL, KEY_USER_FACULTY, KEY_USER_ACADEMIC_STATUS};
+        String[] columns = {KEY_USER_ID, KEY_USER_UID, KEY_USER_AGREED, KEY_USER_AGE, KEY_USER_GENDER, KEY_USER_EMAIL, KEY_USER_FACULTY, KEY_USER_ACADEMIC_STATUS, KEY_USER_TERM_SURVEY_COUNT};
         return columns;
     }
 }

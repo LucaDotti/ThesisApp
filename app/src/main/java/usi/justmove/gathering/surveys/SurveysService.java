@@ -30,8 +30,8 @@ public class SurveysService extends Service {
 //        }
         scheduler = Scheduler.getInstance();
         scheduler.addSurvey(SurveyType.PAM);
-        scheduler.addSurvey(SurveyType.PWB);
-        scheduler.addSurvey(SurveyType.GROUPED_SSPP);
+//        scheduler.addSurvey(SurveyType.PWB);
+//        scheduler.addSurvey(SurveyType.GROUPED_SSPP);
 
         scheduler.initSchedulers();
     }

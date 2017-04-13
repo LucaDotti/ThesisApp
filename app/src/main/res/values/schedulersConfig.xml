@@ -2,19 +2,20 @@
 <resources>
     <string name="schedule_time">07:00</string>
     <!-- ++++++++++++++++++++++++++++++++++++++++ PAM ++++++++++++++++++++++++++++++++++++++++ -->
-    <string name="PAM_daily_count">2</string>
+    <string name="PAM_daily_count">1</string>
     <string-array name="PAM_daily_times">
         <!--&lt;!&ndash;<item>08:00,23:59</item>&ndash;&gt;-->
-        <item>08:00,13:00</item>
-        <item>13:00,22:00</item>
+        <!--<item>08:00,13:00</item>-->
+        <!--<item>13:00,22:00</item>-->
         <!--<item>15:45,15:47</item>-->
         <!--<item>15:47,15:49</item>-->
     </string-array>
-    <string name="PAM_min_elapse_time_between_surveys">7200000</string>
-    <string name="PAM_max_elapse_time_for_completion">7200000</string>
-    <string name="PAM_notifications_count">4</string>
-
-    <string name="PAM_frequency">daily</string>
+    <string name="PAM_min_elapse_time_between_surveys">60000</string>
+    <string name="PAM_max_elapse_time_for_completion">60000</string>
+    <string name="PAM_notifications_count">2</string>
+    <string name="PAM_count">1</string>
+    <string name="PAM_frequency">minute</string>
+    <string name="PAM_frequency_multiplier">2</string>
     <string name="PAM_immediate">false</string>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++ PWB ++++++++++++++++++++++++++++++++++++++++ -->
@@ -27,6 +28,7 @@
     <string name="PWB_notifications_count">4</string>
 
     <string name="PWB_frequency">weekly</string>
+    <string name="PWB_frequency_multiplier">1</string>
     <string name="PWB_week_period">weekend</string>
     <string name="PWB_count">1</string>
     <string name="PWB_immediate">false</string>

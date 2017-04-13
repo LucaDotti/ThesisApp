@@ -5,13 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import usi.justmove.gathering.surveys.config.Frequency;
-import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
 import usi.justmove.gathering.surveys.config.SurveyType;
 import usi.justmove.gathering.surveys.schedulation.DailyScheduler;
 import usi.justmove.gathering.surveys.schedulation.Scheduler;
-import usi.justmove.local.database.tableHandlers.SurveyAlarms;
-import usi.justmove.local.database.tables.SurveyAlarmsTable;
 
 /**
  * Created by usi on 14/03/17.
@@ -28,6 +24,6 @@ public class SchedulerAlarmReceiver extends BroadcastReceiver {
         SurveyType survey = SurveyType.getSurvey(intent.getStringExtra("survey"));
 
         dailyScheduler.schedule(intent);
-        scheduler.schedule(survey);
+        scheduler.schedule(survey, false);
     }
 }
