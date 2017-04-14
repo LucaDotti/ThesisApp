@@ -10,6 +10,7 @@ import java.util.List;
 
 import usi.justmove.local.database.tables.AccelerometerTable;
 import usi.justmove.local.database.tables.BlueToothTable;
+import usi.justmove.local.database.tables.DailyIntervalsTable;
 import usi.justmove.local.database.tables.PAMTable;
 import usi.justmove.local.database.tables.PHQ8Table;
 import usi.justmove.local.database.tables.PSSTable;
@@ -23,6 +24,7 @@ import usi.justmove.local.database.tables.SWLSTable;
 import usi.justmove.local.database.tables.SimpleMoodTable;
 import usi.justmove.local.database.tables.SurveyAlarmSurveyTable;
 import usi.justmove.local.database.tables.SurveyAlarmsTable;
+import usi.justmove.local.database.tables.SurveyConfigTable;
 import usi.justmove.local.database.tables.SurveyTable;
 import usi.justmove.local.database.tables.UploaderUtilityTable;
 import usi.justmove.local.database.tables.UsedAppTable;
@@ -36,7 +38,7 @@ import usi.justmove.local.database.tables.WiFiTable;
 public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
     //db information
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "JustMove";
+    private static final String DATABASE_NAME = "Memotion";
 
     private SQLiteDatabase db;
 
@@ -68,10 +70,13 @@ public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
         db.execSQL(SurveyTable.getCreateQuery());
         db.execSQL(SurveyAlarmsTable.getCreateQuery());
         db.execSQL(SurveyAlarmSurveyTable.getCreateQuery());
+        db.execSQL(SurveyConfigTable.getCreateQuery());
+        db.execSQL(DailyIntervalsTable.getCreateQuery());
 
         //insert init data to uploader_utility table
         insertRecords(db, UploaderUtilityTable.TABLE_UPLOADER_UTILITY, UploaderUtilityTable.getRecords());
-//        insertRecords(db, SimpleMoodTable.TABLE_SIMPLE_MOOD, SimpleMoodTable.getRecords());
+        insertRecords(db, SurveyConfigTable.TABLE_SURVEY_CONFIG, SurveyConfigTable.getRecords());
+        insertRecords(db, DailyIntervalsTable.TABLE_DAILY_INTERVALS_TABLE, DailyIntervalsTable.getRecords());
 
         Log.d("DATABASE HELPER", "Db created");
     }
@@ -85,6 +90,7 @@ public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
      */
     private void insertRecords(SQLiteDatabase db, String tableName, List<ContentValues> records) {
         for(ContentValues record: records) {
+            Log.d("DBHelper", "Inserting into table " + tableName + " record " + record.toString());
             db.insert(tableName, null, record);
         }
     }

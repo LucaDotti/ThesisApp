@@ -8,6 +8,7 @@ import usi.justmove.local.database.tableHandlers.SHSSurvey;
 import usi.justmove.local.database.tableHandlers.SWLSSurvey;
 import usi.justmove.local.database.tableHandlers.Survey;
 import usi.justmove.local.database.tableHandlers.SurveyAlarms;
+import usi.justmove.local.database.tableHandlers.SurveyConfig;
 import usi.justmove.local.database.tableHandlers.TableHandler;
 import usi.justmove.local.database.tableHandlers.User;
 import usi.justmove.local.database.tables.AccelerometerTable;
@@ -25,6 +26,7 @@ import usi.justmove.local.database.tables.SWLSTable;
 import usi.justmove.local.database.tables.SimpleMoodTable;
 import usi.justmove.local.database.tables.SurveyAlarmSurveyTable;
 import usi.justmove.local.database.tables.SurveyAlarmsTable;
+import usi.justmove.local.database.tables.SurveyConfigTable;
 import usi.justmove.local.database.tables.SurveyTable;
 import usi.justmove.local.database.tables.UsedAppTable;
 import usi.justmove.local.database.tables.UserTable;
@@ -55,7 +57,8 @@ public enum LocalTables {
     TABLE_SURVEY(SurveyTable.class),
     TABLE_SURVEY_ALARMS(SurveyAlarmsTable.class),
     TABLE_USER(UserTable.class),
-    TABLE_SURVEY_ALARMS_SURVEY(SurveyAlarmSurveyTable.class);
+    TABLE_SURVEY_ALARMS_SURVEY(SurveyAlarmSurveyTable.class),
+    TABLE_SURVEY_CONFIG(SurveyTable.class);
 
 
     LocalTables(Class a) {
@@ -81,6 +84,8 @@ public enum LocalTables {
                 return new SurveyAlarms(true);
             case TABLE_USER:
                 return new User(true);
+            case TABLE_SURVEY_CONFIG:
+                return new SurveyConfig(true);
             default:
                 throw new IllegalArgumentException("Table not found!");
         }
@@ -108,6 +113,8 @@ public enum LocalTables {
                 return UserTable.TABLE_USER;
             case TABLE_SURVEY_ALARMS_SURVEY:
                 return SurveyAlarmSurveyTable.TABLE_SURVEY_ALARMS_SURVEY_TABLE;
+            case TABLE_SURVEY_CONFIG:
+                return SurveyConfigTable.TABLE_SURVEY_CONFIG;
             default:
                 throw new IllegalArgumentException("Table not found!");
         }

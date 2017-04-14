@@ -25,6 +25,10 @@ public enum Period {
     }
 
     public static Period getPeriod(String name) {
+        if(name == null) {
+            return null;
+        }
+
         for(Period period: Period.values()) {
             if(name.equals(period.name)) {
                 return period;
@@ -32,6 +36,10 @@ public enum Period {
         }
 
         throw new IllegalArgumentException("Period not found");
+    }
+
+    public String getPeriodName() {
+        return name;
     }
 
 

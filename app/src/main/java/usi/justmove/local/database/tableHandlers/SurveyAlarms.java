@@ -7,9 +7,6 @@ import usi.justmove.gathering.surveys.config.SurveyType;
 import usi.justmove.local.database.LocalDbUtility;
 import usi.justmove.local.database.LocalTables;
 
-import static com.sun.mail.imap.SortTerm.FROM;
-import static usi.justmove.R.array.surveys;
-
 /**
  * Created by usi on 30/03/17.
  */

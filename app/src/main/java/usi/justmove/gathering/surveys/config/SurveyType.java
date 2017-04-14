@@ -7,22 +7,24 @@ import usi.justmove.local.database.LocalTables;
  */
 
 public enum SurveyType {
-    PAM("pam", false),
-    PWB("pwb", false),
-    SWLS("swls", false),
-    SHS("shs", false),
-    PHQ8("phq8", false),
-    PSS("pss", false),
-    GROUPED_SSPP("grouped_sspp", true, SurveyType.SWLS, SurveyType.SHS, SurveyType.PHQ8, SurveyType.PSS);
+    PAM("pam", false, 1),
+    PWB("pwb", false, 2),
+    SWLS("swls", false, 4),
+    SHS("shs", false, 5),
+    PHQ8("phq8", false, 6),
+    PSS("pss", false, 7),
+    GROUPED_SSPP("grouped_sspp", true, 3, SurveyType.SWLS, SurveyType.SHS, SurveyType.PHQ8, SurveyType.PSS);
 
     private String surveyName;
     private SurveyType[] surveys;
     private boolean grouped;
+    private int id;
 
-    SurveyType(String surveyName, boolean grouped, SurveyType... surveys) {
+    SurveyType(String surveyName, boolean grouped, int id, SurveyType... surveys) {
         this.surveyName = surveyName;
         this.surveys = surveys;
         this.grouped = grouped;
+        this.id = id;
     }
 
     public static SurveyType getSurvey(String surveyName) {
@@ -99,5 +101,9 @@ public enum SurveyType {
 
     public boolean isGrouped() {
         return grouped;
+    }
+
+    public int getId() {
+        return id;
     }
 }

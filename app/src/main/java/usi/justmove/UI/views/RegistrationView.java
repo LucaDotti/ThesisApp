@@ -124,6 +124,7 @@ public class RegistrationView extends LinearLayout {
         record.put(UserTable.KEY_USER_EMAIL, "");
         record.put(UserTable.KEY_USER_CREATION_TS, time);
         record.put(UserTable.KEY_USER_UPDATE_TS, time);
+        record.put(UserTable.KEY_USER_END_STUDY, getContext().getString(R.string.end_study_date));
         localController.insertRecord(UserTable.TABLE_USER, record);
     }
 

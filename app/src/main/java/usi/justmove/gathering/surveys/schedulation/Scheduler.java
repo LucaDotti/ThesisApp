@@ -11,14 +11,10 @@ import java.util.HashMap;
 
 import usi.justmove.MyApplication;
 import usi.justmove.R;
-import usi.justmove.gathering.surveys.config.FrequencyUnit;
 import usi.justmove.gathering.surveys.config.SurveyType;
-import usi.justmove.gathering.surveys.config.SurveyConfig;
-import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
 import usi.justmove.gathering.surveys.handle.SchedulerAlarmReceiver;
 import usi.justmove.gathering.surveys.config.Days;
 import usi.justmove.local.database.LocalTables;
-import usi.justmove.local.database.tableHandlers.Survey;
 import usi.justmove.local.database.tableHandlers.SurveyAlarmSurvey;
 import usi.justmove.local.database.tableHandlers.SurveyAlarms;
 import usi.justmove.local.database.tableHandlers.TableHandler;
@@ -32,25 +28,18 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.Random;
 
-import static android.R.attr.format;
-import static usi.justmove.gathering.surveys.config.FrequencyUnit.DAILY;
-import static usi.justmove.gathering.surveys.config.FrequencyUnit.FIXED_DATES;
-import static usi.justmove.gathering.surveys.config.FrequencyUnit.ONCE;
-import static usi.justmove.gathering.surveys.config.FrequencyUnit.WEEKLY;
 
+import usi.justmove.local.database.tableHandlers.SurveyConfig;
 /**
  * Created by usi on 12/03/17.
  */
 
 public class Scheduler {
     private static Scheduler instance;
-    public static final String SURVEY_SCHEDULED_ACTION = "survey_scheduled";
-    public static final String WAKEUP_SURVEY_SCHEDULER_ACTION = "wake_up_survey_scheduler";
     private int[] scheduleTime;
     private AlarmManager alarmMgr;
     private Context context;
     private SurveyConfig currConfig;
-    private boolean checked;
     private TableHandler[] currentAlarms;
 
     private Map<SurveyType, Boolean> surveys;
@@ -102,7 +91,7 @@ public class Scheduler {
 
         attributes.put("current", current);
         attributes.put("ts", ts);
-        attributes.put("type", currConfig.survey.getSurveyName());
+        attributes.put("type", currConfig.surveyType.getSurveyName());
 
         alarm.setAttributes(attributes);
         alarm.save();
@@ -112,7 +101,7 @@ public class Scheduler {
 
     private void processInit() {
         if(currentAlarms.length == 0) {
-            Log.d("Scheduler", "Init state: no " + currConfig.survey.getSurveyName() + " alarms found.");
+            Log.d("Scheduler", "Init state: no " + currConfig.surveyType.getSurveyName() + " alarms found.");
             processSchedule();
         } else {
             checkAlarms();
@@ -120,21 +109,21 @@ public class Scheduler {
     }
 
     private void checkAlarms() {
-        Log.d("Scheduler", "Checking existing " + currConfig.survey.getSurveyName() + " alarms.");
+        Log.d("Scheduler", "Checking existing " + currConfig.surveyType.getSurveyName() + " alarms.");
         SurveyAlarms alarm;
         for(TableHandler t: currentAlarms) {
             alarm = (SurveyAlarms) t;
-            Log.d("Scheduler", "\t Checking " + currConfig.survey.getSurveyName() + " " + alarm.toString());
+            Log.d("Scheduler", "\t Checking " + currConfig.surveyType.getSurveyName() + " " + alarm.toString());
 
             if(!checkAlarmExists((int) alarm.id)) {
-                Log.d("Scheduler", "\t" + currConfig.survey.getSurveyName() + " alarm does not exists " + alarm.toString());
+                Log.d("Scheduler", "\t" + currConfig.surveyType.getSurveyName() + " alarm does not exists " + alarm.toString());
                 createAlarm((int) alarm.id, alarm.ts);
             }
         }
     }
 
     private void processSchedule() {
-        Log.d("Scheduler", "Scheduling alarm " + currConfig.survey.getSurveyName());
+        Log.d("Scheduler", "Scheduling alarm " + currConfig.surveyType.getSurveyName());
 
         if(currentAlarms.length == 0) {
             processInitSchedule();
@@ -182,7 +171,7 @@ public class Scheduler {
     }
 
     public void schedule(SurveyType survey, boolean init) {
-        currConfig = SurveyConfigFactory.getConfig(survey, context);
+        currConfig = SurveyConfig.getConfig(survey);
         currentAlarms = SurveyAlarms.findAll("*", SurveyAlarmsTable.KEY_SURVEY_ALARM_SURVEY_TYPE + " = \"" + survey.getSurveyName() + "\" ORDER BY " + SurveyAlarmsTable.KEY_SURVEY_ALARM_ID + " ASC");
 
         if(init) {
@@ -221,14 +210,14 @@ public class Scheduler {
 
                 return c.getTimeInMillis();
             case FIXED_DATES:
-                int surveyCount = User.getTermSurveyCount();
+                int surveyCount = currConfig.issuedSurveyCount;
 
                 if(next) {
                     surveyCount++;
                 }
 
-                if(surveyCount <= currConfig.dayCount) {
-                    String startDate = currConfig.startStudy;
+                if(surveyCount <= currConfig.surveysCount) {
+                    String startDate = User.getCreationDate();
                     Calendar start = Calendar.getInstance();
                     String[] split = startDate.split("-");
 
@@ -239,7 +228,7 @@ public class Scheduler {
                     start.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
 
 
-                    String endDate = currConfig.endStudy;
+                    String endDate = User.getEndStudyDate();
                     Calendar end = Calendar.getInstance();
                     split = endDate.split("-");
 
@@ -249,7 +238,7 @@ public class Scheduler {
                     end.set(Calendar.DAY_OF_MONTH, Integer.parseInt(split[0]));
                     end.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
 
-                    long interval = (end.getTimeInMillis() - start.getTimeInMillis())/(currConfig.dayCount-1);
+                    long interval = (end.getTimeInMillis() - start.getTimeInMillis())/(currConfig.surveysCount-1);
                     int daysInterval = (int) (interval/(24 * 60 * 60 * 1000));
 
                     start.add(Calendar.DAY_OF_MONTH, surveyCount * daysInterval);
@@ -269,7 +258,7 @@ public class Scheduler {
 
     private void createImmediateAlarm(int id) {
         Intent intent = new Intent(context, SchedulerAlarmReceiver.class);
-        intent.putExtra("survey", currConfig.survey.getSurveyName());
+        intent.putExtra("survey", currConfig.surveyType.getSurveyName());
         intent.putExtra("immediate", true);
         intent.putExtra("survey_id", id);
         intent.putExtra("alarm_id", id);
@@ -282,12 +271,12 @@ public class Scheduler {
             e.printStackTrace();
         }
 
-        Log.d("Scheduler", "\t Scheduled immediate " + currConfig.survey.getSurveyName());
+        Log.d("Scheduler", "\t Scheduled immediate " + currConfig.surveyType.getSurveyName());
     }
 
     private void createAlarm(int id, long scheduleTime) {
         Intent intent = new Intent(context, SchedulerAlarmReceiver.class);
-        intent.putExtra("survey", currConfig.survey.getSurveyName());
+        intent.putExtra("survey", currConfig.surveyType.getSurveyName());
         intent.putExtra("alarm_id", id);
 
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -295,12 +284,12 @@ public class Scheduler {
         alarmMgr.setExact(AlarmManager.RTC_WAKEUP, scheduleTime, alarmIntent);
 
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyy  HH:mm:ss");
-        Log.d("Scheduler", "\t Scheduled " + currConfig.survey.getSurveyName() + " scheduler at " + format.format(scheduleTime) + ", with alarm id " + id);
+        Log.d("Scheduler", "\t Scheduled " + currConfig.surveyType.getSurveyName() + " scheduler at " + format.format(scheduleTime) + ", with alarm id " + id);
     }
 
     private boolean checkAlarmExists(int id) {
         Intent intent = new Intent(context, SchedulerAlarmReceiver.class);
-        intent.putExtra("survey", currConfig.survey.getSurveyName());
+        intent.putExtra("survey", currConfig.surveyType.getSurveyName());
         intent.putExtra("alarm_id", id);
 
         PendingIntent pIntent = PendingIntent.getBroadcast(context, id,
@@ -319,6 +308,10 @@ public class Scheduler {
         Log.d("Scheduler", "Deleting " + alarm.type.getSurveyName() + " " + alarm.toString());
         //remove alarm
         alarm.delete();
+
+        SurveyConfig config = SurveyConfig.getConfig(alarm.type);
+        config.issuedSurveyCount++;
+        config.save();
 
         //remove surveyAlarm_survey record
         SurveyAlarmSurvey[] records = SurveyAlarmSurvey.findAllByAttribute(SurveyAlarmSurveyTable.KEY_SURVEY_ALARMS_SURVEY_SURVEY_ALARMS_ID, Integer.toString(id));

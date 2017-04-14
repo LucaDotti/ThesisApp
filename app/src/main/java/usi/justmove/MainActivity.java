@@ -44,6 +44,7 @@ import usi.justmove.local.database.controllers.SQLiteController;
 import usi.justmove.gathering.GatheringSystem;
 import usi.justmove.gathering.base.SensorType;
 import usi.justmove.local.database.tableHandlers.Survey;
+import usi.justmove.local.database.tableHandlers.SurveyConfig;
 import usi.justmove.local.database.tables.UserTable;
 import usi.justmove.remote.database.upload.DataUploadService;
 
@@ -60,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
     private final int PERMISSION_REQUEST_STATUS = 0;
 
-    private BroadcastReceiver surveyEventReveicer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +81,6 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         tabLayout.getTabAt(1).setCustomView(R.layout.surveys_tab_layout);
 
-//        LocalSQLiteDBHelper dbHelper = new LocalSQLiteDBHelper(this);
-//        dbHelper.getWritableDatabase();
         showSurveyNotification();
 
 
@@ -112,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        startService(new Intent(this, SurveysService.class));
         if(!checkPermissions()) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CHANGE_WIFI_STATE,
@@ -144,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         gSys.addSensor(SensorType.USED_APPS);
         gSys.start();
 
-//        Scheduler.getInstance().initSchedulers();
         startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
     }
@@ -157,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
             if(checkUserRegistered()) {
                 init();
             }
-
         }
     }
 
@@ -188,8 +183,6 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         return super.onCreateOptionsMenu(menu);
     }
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -206,64 +199,24 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
             default:
         }
 
-
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-//        stopServices();
-    }
-
-//    private void stopServices() {
-//        gSys.
-//        stopService(new Intent(this, DataUploadService.class));
-//    }
-
-
-    @Override
     protected void onStart() {
         super.onStart();
-        Log.d("Activity", "Start");
-//        running = true;
-//        stopService(new Intent(this, SurveysService.class));
-//        startService(new Intent(this, SurveysService.class));
-//        if(checkUserRegistered()) {
-//            Scheduler.getInstance().initSchedulers();
-//        }
-        SharedPreferences sp = getSharedPreferences("OURINFO", MODE_PRIVATE);
-        Editor ed = sp.edit();
-        ed.putBoolean("active", true);
-        ed.commit();
         EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-//        running = false;
-        SharedPreferences sp = getSharedPreferences("OURINFO", MODE_PRIVATE);
-        Editor ed = sp.edit();
-        ed.putBoolean("active", false);
-        ed.commit();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        running = true;
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SurveyEvent event) {
         Survey s = (Survey) Survey.findByPk(event.getRecordId());
-
-
 
         if(event.isScheduled()) {
             String surveyFragmentTag = makeFragmentName(viewPager.getId(), 1);
@@ -271,10 +224,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
             fragment.resetSurvey(s.surveyType);
         }
 
-//        tabLayout.getTabAt(1).setCustomView(R.layout.surveys_tab_layout);
         showSurveyNotification();
-//        tabLayout.setViewPa
-//        tabFragmentAdapter.notifyDataSetChanged();
     }
 
     private void showSurveyNotification() {
@@ -309,8 +259,6 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
                 default:
             }
         }
-
-//        notificationView.invalidate();
     }
 
     @Override
@@ -322,12 +270,14 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
     public void onRegistrationSurveyChoice(boolean now) {
         init();
         if(now) {
-//            tabLayout.getTabAt(1).setCustomView(R.layout.surveys_tab_layout);
             viewPager.setCurrentItem(1);
+        } else {
+            SurveyConfig config = SurveyConfig.getConfig(SurveyType.GROUPED_SSPP);
+            config.immediate = false;
+            config.save();
         }
 
         showSurveyNotification();
-//        tabFragmentAdapter.notifyDataSetChanged();
     }
 
     private static String makeFragmentName(int viewPagerId, int index) {

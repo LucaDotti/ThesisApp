@@ -28,7 +28,6 @@ import usi.justmove.local.database.tables.PSSTable;
 import usi.justmove.local.database.tables.SHSTable;
 import usi.justmove.local.database.tables.SWLSTable;
 
-import static usi.justmove.R.array.surveys;
 
 /**
  * Created by usi on 21/03/17.
@@ -100,7 +99,6 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
         currentSurvey = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
 
         if(currentSurvey != null) {
-
             shsView = (SHSSurveyView) questionsLayout.findViewById(R.id.termSurvey_SHS);
             shsView.setVisibility(GONE);
             shsView.setCallback(this);
@@ -189,6 +187,7 @@ public class TermSurveyView extends LinearLayout implements SHSSurveyView.OnShsS
 
     private void processSurveyCompleted() {
         Survey s = Survey.getAvailableSurvey(SurveyType.GROUPED_SSPP);
+
         showSurveys(s);
         if(checkCompleted(s)) {
             expandableLayout.setTitleImage(R.id.surveysNotificationImage, 0);

@@ -371,7 +371,7 @@ public class PAMSurveyView extends LinearLayout {
 
 
     private void determineSurveyPeriod(Survey survey) {
-        DateTime scheduleTime = new DateTime(survey.scheduledAt * 1000);
+        DateTime scheduleTime = new DateTime(survey.scheduledAt);
         DateTime afternoon = new DateTime().withTime(13, 0, 0, 0);
         if(scheduleTime.isBefore(afternoon)) {
             currentPeriod = PAM_MORNING;

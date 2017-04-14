@@ -1,22 +1,10 @@
 package usi.justmove.local.database.tableHandlers;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
-import android.util.Log;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
-
-import java.net.ContentHandlerFactory;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import usi.justmove.MyApplication;
-import usi.justmove.gathering.surveys.config.SurveyConfig;
-import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
 import usi.justmove.gathering.surveys.config.SurveyType;
 import usi.justmove.local.database.LocalDbUtility;
 import usi.justmove.local.database.LocalTables;
@@ -413,7 +401,7 @@ public class Survey extends TableHandler {
                 + " WHERE " +
                 columnCompleted + " = " + 0 + " AND " +
                 columnExpired + " = " + 0 + " AND " +
-                columnNotified + " > " + 0 + " AND ";
+                columnNotified + " > " + 0;
 
         Cursor c = localController.rawQuery(query, null);
 //        Cursor c = localController.rawQuery("SELECT * FROM " + tableName, null);
@@ -442,57 +430,10 @@ public class Survey extends TableHandler {
     }
 
     public static Survey getAvailableSurvey(SurveyType survey) {
-//        String columnSchedule = LocalDbUtility.getTableColumns(table)[2];
         String columnCompleted = LocalDbUtility.getTableColumns(table)[3];
         String columnNotified = LocalDbUtility.getTableColumns(table)[4];
         String columnType = LocalDbUtility.getTableColumns(table)[7];
         String columnExpired = LocalDbUtility.getTableColumns(table)[5];
-
-//        Calendar startDateTime;
-//        Calendar endDateTime;
-//        if(survey != GROUPED_SSPP) {
-//            startDateTime = Calendar.getInstance();
-//            startDateTime.set(Calendar.HOUR_OF_DAY, 0);
-//            startDateTime.set(Calendar.MINUTE, 0);
-//            startDateTime.set(Calendar.SECOND, 1);
-//
-//            endDateTime = Calendar.getInstance();
-//            endDateTime.set(Calendar.HOUR_OF_DAY, 23);
-//            endDateTime.set(Calendar.MINUTE, 59);
-//            endDateTime.set(Calendar.SECOND, 59);
-//        } else {
-//            SurveyConfig c = SurveyConfigFactory.getConfig(survey, MyApplication.getContext());
-//            if(c.startStudy != null) {
-//                String[] split = c.startStudy.split("-");
-//                startDateTime = Calendar.getInstance();
-//                startDateTime.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
-//                startDateTime.set(Calendar.DAY_OF_MONTH, Integer.parseInt(split[0]));
-//                startDateTime.set(Calendar.HOUR_OF_DAY, 0);
-//                startDateTime.set(Calendar.MINUTE, 0);
-//                startDateTime.set(Calendar.SECOND, 1);
-//
-//                split = c.endStudy.split("-");
-//                endDateTime = Calendar.getInstance();
-//                endDateTime.set(Calendar.MONTH, Integer.parseInt(split[1])-1);
-//                endDateTime.set(Calendar.DAY_OF_MONTH, Integer.parseInt(split[0]));
-//                endDateTime.set(Calendar.HOUR_OF_DAY, 23);
-//                endDateTime.set(Calendar.MINUTE, 59);
-//                endDateTime.set(Calendar.SECOND, 59);
-//            } else {
-//                startDateTime = Calendar.getInstance();
-//                startDateTime.set(Calendar.HOUR_OF_DAY, 0);
-//                startDateTime.set(Calendar.MINUTE, 0);
-//                startDateTime.set(Calendar.SECOND, 1);
-//
-//                endDateTime = Calendar.getInstance();
-//                endDateTime.set(Calendar.HOUR_OF_DAY, 23);
-//                endDateTime.set(Calendar.MINUTE, 59);
-//                endDateTime.set(Calendar.SECOND, 59);
-//            }
-//        }
-//
-//        long startMillis = startDateTime.getTimeInMillis();
-//        long endMillis = endDateTime.getTimeInMillis();
 
         String query = columnCompleted + " = " + 0 + " AND " +
                 columnExpired + " = " + 0 + " AND " +

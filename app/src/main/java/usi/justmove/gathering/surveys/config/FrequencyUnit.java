@@ -30,4 +30,8 @@ public enum FrequencyUnit {
 
         throw new IllegalArgumentException("FrequencyUnit not found");
     }
+
+    public String getFrequencyName() {
+        return name;
+    }
 }

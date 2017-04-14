@@ -18,6 +18,8 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import java.util.Map.Entry;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+
 
 /**
  * Created by usi on 19/01/17.
@@ -183,7 +185,7 @@ public class Uploader {
            table == LocalTables.TABLE_PSS || table == LocalTables.TABLE_PHQ8 ||
            table == LocalTables.TABLE_SHS || table == LocalTables.TABLE_PAM ||
            table == LocalTables.TABLE_SURVEY_ALARMS || table == LocalTables.TABLE_USER ||
-           table == LocalTables.TABLE_SURVEY_ALARMS_SURVEY) {
+           table == LocalTables.TABLE_SURVEY_ALARMS_SURVEY || table == LocalTables.TABLE_SURVEY_CONFIG) {
             return;
         }
 

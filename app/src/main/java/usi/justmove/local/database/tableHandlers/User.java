@@ -11,6 +11,8 @@ import org.joda.time.format.DateTimeFormatter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import usi.justmove.MyApplication;
+import usi.justmove.R;
 import usi.justmove.local.database.LocalTables;
 
 /**
@@ -79,13 +81,14 @@ public class User extends TableHandler {
         return null;
     }
 
-    public static int getTermSurveyCount() {
-        Cursor c = localController.rawQuery("SELECT * FROM " + table.getTableName(), null);
-        if(c.getCount() != 0) {
-            c.moveToFirst();
-            return c.getInt(10);
+    public static String getEndStudyDate() {
+        Cursor user = localController.rawQuery("SELECT * FROM " + table.getTableName(), null);
+
+        if(user.getCount() > 0) {
+            user.moveToFirst();
+            return user.getString(10);
         }
 
-        return -1;
+        return null;
     }
 }

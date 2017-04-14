@@ -15,17 +15,11 @@ import org.greenrobot.eventbus.EventBus;
 import usi.justmove.MainActivity;
 import usi.justmove.MyApplication;
 import usi.justmove.R;
-import usi.justmove.gathering.surveys.config.SurveyConfig;
-import usi.justmove.gathering.surveys.config.SurveyConfigFactory;
+import usi.justmove.local.database.tableHandlers.SurveyConfig;
 import usi.justmove.gathering.surveys.schedulation.Scheduler;
 import usi.justmove.local.database.tableHandlers.Survey;
 import usi.justmove.local.database.tableHandlers.SurveyAlarmSurvey;
 import usi.justmove.local.database.tableHandlers.SurveyAlarms;
-import usi.justmove.local.database.tableHandlers.TableHandler;
-import usi.justmove.local.database.tables.SurveyAlarmSurveyTable;
-import usi.justmove.local.database.tables.SurveyTable;
-
-import static android.R.attr.y;
 import static usi.justmove.gathering.surveys.handle.SurveyEventReceiver.SURVEY_COMPLETED_INTENT;
 
 /**
@@ -56,7 +50,7 @@ public class SurveyNotifier {
                     notifyCancelAlarm();
                     EventBus.getDefault().post(new SurveyEvent(surveyId, false));
                 } else {
-                    SurveyConfig config = SurveyConfigFactory.getConfig(currSurvey.surveyType, context);
+                    SurveyConfig config = SurveyConfig.getConfig(currSurvey.surveyType);
 
                     if(currSurvey.completed) {
                         Log.d("Notifier", "Already completed " + currSurvey.toString());
@@ -122,7 +116,7 @@ public class SurveyNotifier {
             timeUnit = " hours";
             int hours = Integer.parseInt(splitTime[0]);
             if(hours > 24) {
-                missingTime = "" + hours;
+                missingTime = "" + hours/24;
 
                 if(hours > 1) {
                     timeUnit = " days";
@@ -136,7 +130,7 @@ public class SurveyNotifier {
         } else {
             timeUnit = " seconds";
         }
-        remoteViews.setTextViewText(R.id.notificationContent, "New daily " + config.survey.getSurveyName() + " survey available");
+        remoteViews.setTextViewText(R.id.notificationContent, "New daily " + config.surveyType.getSurveyName() + " survey available");
         remoteViews.setTextViewText(R.id.notificationMissingTime, "Time left \t" + missingTime + timeUnit);
 
         notificationID = (int) survey.id;
@@ -155,7 +149,7 @@ public class SurveyNotifier {
                         .setSmallIcon(android.R.drawable.stat_sys_warning)
 //                        .setCustomBigContentView(remoteViews)
                         .setContentTitle("MEmotion")
-                        .setContentText("New " + config.survey.getSurveyName() + " survey available!")
+                        .setContentText("New " + config.surveyType.getSurveyName() + " survey available!")
                         .setSubText("Time left \t" + missingTime + timeUnit);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -176,7 +170,7 @@ public class SurveyNotifier {
 
     private String getMissingTime(Survey survey, SurveyConfig config) {
         int notificationCount = survey.notified-1;
-        long elapseTimeBetweenPersistentNotifications = (config.maxElapseTimeForCompletion/config.notificationsCount);
+        long elapseTimeBetweenPersistentNotifications = (config.maxCompletionTime/config.notificationsCount);
         long missingTime = (config.notificationsCount - notificationCount)*elapseTimeBetweenPersistentNotifications;
         String split[] = formatMillis(missingTime).split("\\.");
         return split[0];

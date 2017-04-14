@@ -130,12 +130,13 @@ public class SWLSSurveyView extends LinearLayout{
                     expandableLayout.setNoContentMsg("No SWLS survey available");
                     expandableLayout.showNoContentMsg();
                     expandableLayout.collapse();
-                    callback.onSwlsSurveyCompletedCallback();
+
 
                     if(!currentSurvey.grouped) {
                         notifySurveyCompleted();
                     }
 
+                    callback.onSwlsSurveyCompletedCallback();
                     Toast.makeText(getContext(), "SWLS survey completed", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -161,15 +162,23 @@ public class SWLSSurveyView extends LinearLayout{
         attributes.put(SWLSTable.KEY_SWLS_Q4, q4Seekbar.getProgress());
         attributes.put(SWLSTable.KEY_SWLS_Q5, q5Seekbar.getProgress());
 
-        Survey survey = (Survey) Survey.findByPk(currentSurvey.id);
-        survey.getSurveys().get(SurveyType.SWLS).setAttributes(attributes);
+        currentSurvey.getSurveys().get(SurveyType.SWLS).setAttributes(attributes);
 
-        if(!survey.grouped) {
-            survey.completed = true;
-            survey.ts = System.currentTimeMillis();
+        if(!currentSurvey.grouped) {
+            currentSurvey.completed = true;
+            currentSurvey.ts = System.currentTimeMillis();
         }
 
-        survey.save();
+        currentSurvey.save();
+//        Survey survey = (Survey) Survey.findByPk(currentSurvey.id);
+//
+//
+//        if(!survey.grouped) {
+//            survey.completed = true;
+//            survey.ts = System.currentTimeMillis();
+//        }
+//
+//        survey.save();
     }
 
     public interface OnSwlsSurveyCompletedCallback {
