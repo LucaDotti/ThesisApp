@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="usi.justmove">
+    package="usi.memotion">
 
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -15,17 +15,18 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
 
 
     <application
-        android:name=".MyApplication"
+        android:name="usi.memotion.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
         android:supportsRtl="true">
 
         <activity
-            android:name=".MainActivity"
+            android:name="usi.memotion.MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,47 +35,51 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".gathering.surveys.handle.NotificationBroadcastReceiver">
+        <receiver android:name=".surveys.handle.NotificationBroadcastReceiver">
 
         </receiver>
 
-        <receiver android:name=".gathering.surveys.handle.SchedulerAlarmReceiver"/>
-        <receiver android:name=".gathering.surveys.handle.SurveyEventReceiver"/>
+        <receiver android:name=".surveys.handle.SchedulerAlarmReceiver"/>
+        <receiver android:name=".surveys.handle.SurveyEventReceiver"/>
 
         <service
-            android:name=".gathering.gatheringServices.WifiGatheringService"
+            android:name="usi.memotion.gathering.gatheringServices.WifiGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.gatheringServices.LocationGatheringService"
+            android:name="usi.memotion.gathering.gatheringServices.LocationGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.gatheringServices.BluethootGatheringService"
+            android:name="usi.memotion.gathering.gatheringServices.BluethootGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.gatheringServices.LockGatheringService"
+            android:name="usi.memotion.gathering.gatheringServices.LockGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.gatheringServices.AccelerometerGatheringService"
+            android:name="usi.memotion.gathering.gatheringServices.AccelerometerGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.gatheringServices.PhoneCallGatheringService"
+            android:name="usi.memotion.gathering.gatheringServices.PhoneCallGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.gatheringServices.SMSGatheringService"
+            android:name="usi.memotion.gathering.gatheringServices.SMSGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".remote.database.upload.DataUploadService"
+            android:name="usi.memotion.gathering.gatheringServices.UsedAppGatheringService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".gathering.surveys.SurveysService"
+            android:name="usi.memotion.remote.database.upload.DataUploadService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".surveys.SurveysService"
             android:enabled="true"
             android:exported="true" />
     </application>

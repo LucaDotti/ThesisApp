@@ -5,7 +5,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="usi.justmove.MainActivity">
+    tools:context="usi.memotion.MainActivity">
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,11 +29,11 @@
             app:tabMode="fixed"
             app:tabGravity="fill"
             android:id="@+id/tabLayout"></android.support.design.widget.TabLayout>
-        <usi.justmove.UI.fragments.SwipeChoiceViewPager
+        <usi.memotion.UI.fragments.SwipeChoiceViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/tabLayout"
             android:id="@+id/viewPager"
-            android:layout_centerHorizontal="true"></usi.justmove.UI.fragments.SwipeChoiceViewPager>
+            android:layout_centerHorizontal="true"></usi.memotion.UI.fragments.SwipeChoiceViewPager>
     </android.support.design.widget.AppBarLayout>
 </RelativeLayout>

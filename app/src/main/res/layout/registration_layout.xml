@@ -16,7 +16,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp">
-                <usi.justmove.UI.ExpandableLayout
+                <usi.memotion.UI.views.ExpandableLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/consentExpandableLayout"/>
@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp">
-                <usi.justmove.UI.ExpandableLayout
+                <usi.memotion.UI.views.ExpandableLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/formExpandableLayout"/>

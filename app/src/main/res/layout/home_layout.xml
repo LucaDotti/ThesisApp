@@ -12,14 +12,17 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="30dp"
+            android:paddingTop="10dp"
             android:text="Welcome to MEMOTION"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            android:paddingBottom="20dp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Your mood history"
             android:textSize="20dp"
+            android:paddingBottom="5dp"
             android:textColor="@android:color/white"/>
         <LinearLayout
             android:layout_width="match_parent"

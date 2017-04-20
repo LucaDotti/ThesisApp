@@ -1,33 +1,59 @@
 <resources>
     <string name="app_name">Memotion</string>
     <string name="dbName">Memotion</string>
-    <string name="consent_form">
 
-        <Data><![CDATA[<b>Purpose of the research study</b>]]> </Data>:  The purpose of this study is assess the user’s well-being over time and the factors that may influence it, using smartphones. &lt;br /&gt; &lt;br /&gt;
-        <Data><![CDATA[<b>What will you do in the study</b>]]> </Data>:  The smartphone will unobtrusively gather some sensor’s data (e.g: GPS, Wifi, Accelerometer, Bluetooth, Number of App used,..). You will be asked to fill-in short questionnaires twice per day. Your answers and the data gathered from the smartphone will allow us to get information about your subjective perception of your well-being and to understand which are the main factors that may contribute to your happiness. You can refrain from answering any question you might prefer not to answer (e.g., because it makes you uncomfortable) and you can stop the survey at any time. &lt;br /&gt; &lt;br /&gt;
-        <Data><![CDATA[<b>Time required</b>]]> </Data>: The study will require few minutes of your daily time.&lt;br /&gt; &lt;br /&gt;
-        <Data><![CDATA[<b>Confidentiality</b>]]> </Data>: The information and data collected  in this study will be stored safely and handled confidentially. Your data will be anonymized through the assignment of an alphanumerical code and your name will never be mentioned in connection to the data or in any report. Any attempt to deduce your identity from the data is explicitly forbidden by our data analysis policy.&lt;br /&gt; &lt;br /&gt;
-        <Data><![CDATA[<b>Voluntary participation</b>]]> </Data>: Your participation in the study is completely voluntary. You have the right to withdraw from the study at any time without penalty and to require your data to be entirely and permanently deleted.&lt;br /&gt; &lt;br /&gt;
-        <Data><![CDATA[<b>Contact person if you  have questions about the study</b>]]> </Data>: Luca Dotti, luca.dotti@usi.ch. / Elena Di Lascio: elena.di.lascio@usi.ch &lt;br /&gt; &lt;br /&gt; &lt;br /&gt;
-        <Data><![CDATA[ <b>I confirmed that I carefully read and understand the information reported above and that I agree to participate in the research study</b>.]]> </Data>
+    <string name="staff_email">usilab107@gmail.com</string>
+    <string name="staff_email_pass"></string>
 
+    <string name="registration_survey_question">Could you please answer some questions?</string>
+
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CONSENT FORM ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <string name="consent_form_sec_1_title">Purpose of the research study:</string>
+    <string name="consent_form_sec_1">The purpose of this study is assess the user’s well-being over time and the factors that may influence it, using smartphones.</string>
+    <string name="consent_form_sec_2_title">What will you do in the study:</string>
+    <string name="consent_form_sec_2">The smartphone will unobtrusively gather some sensor’s data (e.g: GPS, Wifi, Accelerometer, Bluetooth, Number of App used,..). You will be asked to fill-in short questionnaires twice per day. Your answers and the data gathered from the smartphone will allow us to get information about your subjective perception of your well-being and to understand which are the main factors that may contribute to your happiness. You can refrain from answering any question you might prefer not to answer (e.g., because it makes you uncomfortable) and you can stop the survey at any time.</string>
+    <string name="consent_form_sec_3_title">Time required:</string>
+    <string name="consent_form_sec_3">The study will require few minutes of your daily time.</string>
+    <string name="consent_form_sec_4_title">Confidentiality</string>
+    <string name="consent_form_sec_4">The information and data collected  in this study will be stored safely and handled confidentially. Your data will be anonymized through the assignment of an alphanumerical code and your name will never be mentioned in connection to the data or in any report. Any attempt to deduce your identity from the data is explicitly forbidden by our data analysis policy.</string>
+    <string name="consent_form_sec_5_title">Voluntary participation</string>
+    <string name="consent_form_sec_5">Your participation in the study is completely voluntary. You have the right to withdraw from the study at any time without penalty and to require your data to be entirely and permanently deleted.</string>
+    <string name="consent_form_confirm">I confirmed that I carefully read and understand the information reported above and that I agree to participate in the research study</string>
+
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ABOUT THIS STUDY ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <string name="about_this_study_sec_1_title">What is the study about?</string>
+    <string name="about_this_study_sec_1">
+        In the last century depression and mental health disorders among students and academics have been noted as a significantly increasing problem. Addressing this problem has become a key concern for several Universities.
+        Recently a quite new branch of psychology, called positive psychology, rather than threating mental illness, has focused its attention more on personal growth and happiness. What is new with positive psychology is trying to make intervention to increase well-being since it has as side effect the decreasing of suffering. Happiness, also known as subjective wellbeing, has been defined as a combination of satisfaction of one\'s life with positive and negative emotional reactions.
+        Positive psychology indicates that happiness can be affected and improved in different ways. Several daily external factors can contribute to the individual\'s overall well-being, such as physical activities, workload, mobility, social interaction, sleep quality,.. In order to improve our quality of life and increase our resilience to adversity, it\'s really important to keep track of their influence in our daily life. Traditionally well-being has been explored using questionnaires and interviews, this approach however presents several drawbacks, it\’s time consuming and difficult to manage in large scale. Nowadays people of different ages carry their smartphone all the time and interact with it several times per day. This makes smartphone an emerging and attractive option for collecting tones of daily data from users and environmental context, that can be analysed to get information of human\'s attitude, interests and health.
     </string>
-    <string name="study_description">
-        <Data><![CDATA[<b>What is the study about?</b>]]> </Data> &lt;br /&gt; &lt;br /&gt;
-        In the last century depression and mental health disorders among students and academics have been noted as a significantly increasing problem. Addressing this problem has become a key concern for several Universities.&lt;br /&gt;
-        Recently a quite new branch of psychology, called positive psychology, rather than threating mental illness, has focused its attention more on personal growth and happiness. What is new with positive psychology is trying to make intervention to increase well-being since it has as side effect the decreasing of suffering. Happiness, also known as subjective wellbeing, has been defined as a combination of satisfaction of one\'s life with positive and negative emotional reactions. &lt;br /&gt;
-        Positive psychology indicates that happiness can be affected and improved in different ways. Several daily external factors can contribute to the individual\'s overall well-being, such as physical activities, workload, mobility, social interaction, sleep quality,.. In order to improve our quality of life and increase our resilience to adversity, it\'s really important to keep track of their influence in our daily life. Traditionally well-being has been explored using questionnaires and interviews, this approach however presents several drawbacks, it\’s time consuming and difficult to manage in large scale. Nowadays people of different ages carry their smartphone all the time and interact with it several times per day. This makes smartphone an emerging and attractive option for collecting tones of daily data from users and environmental context, that can be analysed to get information of human\'s attitude, interests and health.&lt;br /&gt; &lt;br /&gt;
-        <Data><![CDATA[<b>Goal of the study</b>]]> </Data> &lt;br /&gt; &lt;br /&gt;
-        This study belongs to a Master\’s thesis project. The main goal of the project is to investigate, using  smartphones, which are the main factors  that affect the well-being  and to which extent they contribute to  the participants\' happiness changes over time. Researchers have been shown that depression contribute to a reduction of mobility. Based on that we have decided to focus our attention mainly on the correlation between location information and well-being changes.&lt;br /&gt;
-        During the data collection some feedbacks will be provided to the users which can become more aware of their well-being changes.&lt;br /&gt; &lt;br /&gt;
-        Contact person if you  have questions about the study: Luca Dotti, luca.dotti@usi.ch /Elena Di Lascio, elena.di.lascio@usi.ch
+    <string name="about_this_study_sec_2_title">Goal of the study</string>
+    <string name="about_this_study_sec_2">
+        This study belongs to a Master\’s thesis project. The main goal of the project is to investigate, using  smartphones, which are the main factors  that affect the well-being  and to which extent they contribute to  the participants\' happiness changes over time. Researchers have been shown that depression contribute to a reduction of mobility. Based on that we have decided to focus our attention mainly on the correlation between location information and well-being changes.
+    During the data collection some feedbacks will be provided to the users which can become more aware of their well-being changes.
     </string>
+    <string name="about_this_study_sec_3_title">Contacts</string>
+    <string name="about_this_study_sec_3">Contact person if you  have questions about the study:</string>
+    <string name="about_this_study_sec_3_email_1">Luca Dotti, luca.dotti@usi.ch</string>
+    <string name="about_this_study_sec_3_email_2">Elena Di Lascio, elena.di.lascio@usi.ch</string>
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROFILE +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <string name="leave_study_alert">
         ATTENTION! If you check this checkbox you are confirming that you want to leave the study. This action implies that you no longer participate to our study and all your data will be removed from your phone and our remote storage.
         If you really want to leave the study, please, contact our staff members before confirming.
     </string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment </string>
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ PAM +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <string name="pam_image_explanation">Please choose an image</string>
+    <string name="pam_q1_morning">1. Which is your level of stress?</string>
+    <string name="pam_q2_morning">2. How long have you slept tonight?</string>
+    <string name="pam_q3_morning">3. Where are you?</string>
+    <string name="pam_q4_morning">4. How did you commute today?</string>
+    <string name="pam_q1_afternoon">1. How much time have you spent doing sport today?</string>
+    <string name="pam_q2_afternoon">2. How much time have you spent in the University?</string>
+    <string name="pam_q2_afternoon_2">2. How much time have you spent at your job?</string>
+    <string name="pam_q3_afternoon">3. How many people have you interacted with?</string>
+    <string name="pam_q4_afternoon">4. Where are you?</string>
 
     <string-array name="locations">
         <item>University</item>
@@ -103,10 +129,7 @@
         <item>10 hours</item>
     </string-array>
 
-    <string name="staff_email"></string>
-    <string name="staff_email_pass"></string>
-    <string name="leave_study_target_email">usilab107@gmail.com</string>
-
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ PWB +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <string name="pwb_explanation">Please answer the following questions by marking them with a number from 1 (strongly disagree) to 7 (strongly agree).</string>
     <string name="pwb_q1">1. I lead a purposeful and meaningful life</string>
     <string name="pwb_q2">2. My social relationships are supportive and rewarding</string>
@@ -117,17 +140,7 @@
     <string name="pwb_q7">7. I am optimistic about my future</string>
     <string name="pwb_q8">8. People respect me</string>
 
-    <string name="pam_image_explanation">Please choose an image</string>
-    <string name="pam_q1_morning">1. Which is your level of stress?</string>
-    <string name="pam_q2_morning">2. How long have you slept tonight?</string>
-    <string name="pam_q3_morning">3. Where are you?</string>
-    <string name="pam_q4_morning">4. How did you commute today?</string>
-    <string name="pam_q1_afternoon">1. How much time have you spent doing sport today?</string>
-    <string name="pam_q2_afternoon">2. How much time have you spent in the University?</string>
-    <string name="pam_q2_afternoon_2">2. How much time have you spent at your job?</string>
-    <string name="pam_q3_afternoon">3. How many people have you interacted with?</string>
-    <string name="pam_q4_afternoon">4. Where are you?</string>
-
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ PSS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <string name="pss_explanation">Please answer the following questions by marking from 1 (never) to 5 (very often)</string>
     <string name="pss_q1">In the last month, how often have you been upset because of something that happened unexpectedly?</string>
     <string name="pss_q2">In the last month, how often have you felt that you were unable to control the important things in your life?</string>
@@ -140,6 +153,7 @@
     <string name="pss_q9">In the last month, how often have you been angered because of things that were outside of your control?</string>
     <string name="pss_q10">In the last month, how often have you felt difficulties were pilling up so high that you could not overcome them?</string>
 
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ PHQ8 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <string name="phq8_explanation">Please answer the following questions by marking them from 1 (not at all) to 4 (nearly every day)</string>
     <string name="phq8_q">Over the last two weeks, how often have you been bothered by any of the following problems? Mark every question with a number from </string>
     <string name="phq8_q1">Little interest or pleasure in doing things</string>
@@ -151,18 +165,18 @@
     <string name="phq8_q7">Trouble concentrating on things, such as reading the newspaper or watching television</string>
     <string name="phq8_q8">Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving aroung a lot more than usual</string>
 
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ SHS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <string name="shs_explanation">For each of the following statements and/or questions, please specify the point on the rating bar that you feel is most appropriate in describing you.</string>
     <string name="shs_q1">1. In general, I consider myself:</string>
     <string name="shs_q2">2. Compared to most of my peers, I consider myself:</string>
     <string name="shs_q3">3. Some people are generally very happy. They enjoy life regardless of what is going on, getting the most out of everything. To what extent does this characterization describe you?</string>
     <string name="shs_q4">4. Some people are generally not very happy. Although they are not depressed, they never seem as happy as they might be. To what extent does this characterization describe you?</string>
 
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ SWLS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <string name="swls_explation">Please answer the following questions by marking them with a number from 1 (strongly disagree) to 7 (strongly agree).</string>
     <string name="swls_q1">1. In most ways my life is close to my ideal.</string>
     <string name="swls_q2">2. The conditions of my life are excellent.</string>
     <string name="swls_q3">3. I am satisfied with my life.</string>
     <string name="swls_q4">4. So far I have gotten the important things I want in life.</string>
     <string name="swls_q5">5. If I could live my life over, I would change almost nothing</string>
-
-    <string name="registration_survey_question">Could you please answer some questions?</string>
 </resources>
