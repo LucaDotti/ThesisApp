@@ -48,6 +48,7 @@ public class WPMStateMachine extends ActiveStateMachine {
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_POWER_CONNECTED);
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
 
         context.registerReceiver(broadcastReceiver, filter);
     }

@@ -4,7 +4,7 @@
     <!-- ++++++++++++++++++++++++++++++++++++++++ PAM ++++++++++++++++++++++++++++++++++++++++ -->
     <string name="PAM_daily_count">2</string>
     <string-array name="PAM_daily_times">
-        <item>08:00,13:00</item>
+        <item>08:00,12:30</item>
         <item>13:00,22:00</item>
     </string-array>
     <string name="PAM_min_elapse_time_between_surveys">7200000</string>

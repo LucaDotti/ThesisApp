@@ -21,6 +21,7 @@ public class SwitchDriveController implements RemoteStorageController {
     private String password;
     private CountDownLatch doneSignal;
     private int httpResponse;
+    private OnTransferCompleted callback;
 
     public SwitchDriveController(String serverAddress, String accessToken, String password) {
         this.serverAddress = serverAddress;
@@ -31,15 +32,15 @@ public class SwitchDriveController implements RemoteStorageController {
 
     @Override
     public int upload(String fileName, String data) {
-        doneSignal = new CountDownLatch(1);
+//        doneSignal = new CountDownLatch(1);
         new DataUploadTask(serverAddress, accessToken).execute(fileName, data);
         Log.d("AAAAAA", "CCCCCCC");
-        try {
-            doneSignal.await();
-        } catch (InterruptedException e) {
-//            e.printStackTrace();
-            httpResponse = -1;
-        }
+//        try {
+//            doneSignal.await();
+//        } catch (InterruptedException e) {
+////            e.printStackTrace();
+//            httpResponse = -1;
+//        }
         Log.d("AAAAAA", "DDDDDDDD");
         return httpResponse;
     }
@@ -47,6 +48,7 @@ public class SwitchDriveController implements RemoteStorageController {
     private class DataUploadTask extends AsyncTask<String, Void, Integer> {
         private String serverAddress;
         private String accessToken;
+        private String fileName;
 
         public DataUploadTask(String serverAddress, String accessToken) {
             this.serverAddress = serverAddress;
@@ -65,7 +67,7 @@ public class SwitchDriveController implements RemoteStorageController {
                     data[i] = par;
                     i++;
                 }
-
+                fileName = data[0];
                 URL url = new URL(serverAddress + data[0]);
 
                 Authenticator.setDefault(new Authenticator() {
@@ -85,17 +87,23 @@ public class SwitchDriveController implements RemoteStorageController {
                 e.printStackTrace();
                 httpStatus = -1;
             }
-            Log.d("AAAAAA", "BBBBBB");
             return httpStatus;
         }
 
         @Override
         protected void onPostExecute(Integer result) {
             httpResponse = result;
-            Log.d("AAAAAAA", "EEEEEEEE");
-            doneSignal.countDown();
-
+            callback.onTransferCompleted(fileName, result);
+//            doneSignal.countDown();
         }
+    }
+
+    public interface OnTransferCompleted {
+        void onTransferCompleted(String fileName, int status);
+    }
+
+    public void setCallback(OnTransferCompleted callback) {
+        this.callback = callback;
     }
 }
 

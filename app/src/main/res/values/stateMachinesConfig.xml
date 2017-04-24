@@ -9,7 +9,7 @@
     <string name="dayEnd">23:00:00</string>
 
     <!--WIFI-POWER-MEMORY BASED-->
-    <string name="uploaderMaxDbSize">10000000</string>
-    <string name="uploaderUploadThreshold">300000</string>
+    <string name="uploaderMaxDbSize">100000</string>
+    <string name="uploaderUploadThreshold">100000</string>
     <string name="uploaderMinBatteryLevel">30</string>
 </resources>

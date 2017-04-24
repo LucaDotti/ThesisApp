@@ -127,11 +127,15 @@ public class SurveyAlarmSurvey extends TableHandler {
         Cursor c = localController.rawQuery("SELECT * FROM " + table.getTableName()
                 + " WHERE " + SurveyAlarmSurveyTable.KEY_SURVEY_ALARMS_SURVEY_SURVEY_ID + " = " + surveyId, null);
 
-        c.moveToFirst();
+        if(c.getCount() > 0) {
+            c.moveToFirst();
 
-        SurveyAlarms a = (SurveyAlarms) SurveyAlarms.findByPk(c.getInt(2));
-        c.close();
-        return a;
+            SurveyAlarms a = (SurveyAlarms) SurveyAlarms.findByPk(c.getInt(2));
+            c.close();
+            return a;
+        } else {
+            return null;
+        }
     }
 
     public static SurveyAlarmSurvey[] findAllByAttribute(String attribute, String value) {

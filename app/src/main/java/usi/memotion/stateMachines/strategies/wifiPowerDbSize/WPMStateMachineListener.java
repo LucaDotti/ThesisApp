@@ -44,6 +44,7 @@ public class WPMStateMachineListener implements Observer, StateMachineListener {
             currentState = newState;
             processStateChanged();
         }
+        currentState = WPMSMState.WAITING;
     }
 
     public void processUploadingState() {

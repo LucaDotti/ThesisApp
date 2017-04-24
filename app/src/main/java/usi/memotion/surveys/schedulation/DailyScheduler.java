@@ -74,9 +74,11 @@ public class DailyScheduler {
             Log.d("Daily scheduler", "Notification alarms found for alarm " + currAlarmId);
             long[] notificationTimes;
             for(Survey s: currSurveys) {
-                Log.d("Daily scheduler", "\tChecking alarm for " + s.toString());
-                notificationTimes = getNotificationAlarmTimes(s, isImmediate);
-                checkNotificationAlarms(s, notificationTimes);
+                if(s != null) {
+                    Log.d("Daily scheduler", "\tChecking alarm for " + s.toString());
+                    notificationTimes = getNotificationAlarmTimes(s, isImmediate);
+                    checkNotificationAlarms(s, notificationTimes);
+                }
             }
         }
 

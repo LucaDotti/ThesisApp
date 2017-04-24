@@ -32,6 +32,7 @@ public class Survey extends TableHandler {
     public boolean expired;
     public boolean grouped;
     public SurveyType surveyType;
+    public boolean uploaded;
 
     private Map<SurveyType, TableHandler> surveys;
 
@@ -267,6 +268,9 @@ public class Survey extends TableHandler {
             case SurveyTable.KEY_SURVEY_TYPE:
                 surveyType = SurveyType.getSurvey(attribute.getAsString(SurveyTable.KEY_SURVEY_TYPE));
                 break;
+            case SurveyTable.KEY_SURVEY_UPLOADED:
+                uploaded = attribute.getAsBoolean(SurveyTable.KEY_SURVEY_UPLOADED);
+                break;
         }
     }
 
@@ -327,6 +331,7 @@ public class Survey extends TableHandler {
         attributes.put(columns[5], cursor.getInt(5));
         attributes.put(columns[6], cursor.getInt(6));
         attributes.put(columns[7], cursor.getString(7));
+        attributes.put(columns[8], cursor.getInt(8));
 
         return attributes;
     }
@@ -348,6 +353,10 @@ public class Survey extends TableHandler {
         expired = attributes.getAsBoolean(columns[5]);
         grouped = attributes.getAsBoolean(columns[6]);
         surveyType = SurveyType.getSurvey(attributes.getAsString(columns[7]));
+
+        if(attributes.containsKey(columns[8])) {
+            uploaded = attributes.getAsBoolean(columns[8]);
+        }
     }
 
     @Override
@@ -364,6 +373,7 @@ public class Survey extends TableHandler {
         attributes.put(columns[5], expired);
         attributes.put(columns[6], grouped);
         attributes.put(columns[7], surveyType.getSurveyName());
+        attributes.put(columns[8], uploaded);
 
         return attributes;
     }

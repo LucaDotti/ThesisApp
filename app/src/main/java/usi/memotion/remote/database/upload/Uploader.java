@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
+import usi.memotion.local.database.tableHandlers.SurveyAlarmSurvey;
+import usi.memotion.local.database.tableHandlers.SurveyAlarms;
+import usi.memotion.remote.database.controllers.SwitchDriveController;
 import usi.memotion.surveys.config.SurveyType;
 import usi.memotion.local.database.controllers.LocalStorageController;
 import usi.memotion.local.database.tableHandlers.Survey;
@@ -22,15 +25,17 @@ import java.util.Map.Entry;
  * Created by usi on 19/01/17.
  */
 
-public class Uploader {
+public class Uploader implements SwitchDriveController.OnTransferCompleted {
     private RemoteStorageController remoteController;
     private LocalStorageController localController;
     private LocalTables tableToClean;
     private long uploadThreshold;
     private String userId;
+    private HashMap<String, TableInfo> map;
 
     public Uploader(String userId, RemoteStorageController remoteController, LocalStorageController localController, long uploadThreshold) {
         this.remoteController = remoteController;
+        ((SwitchDriveController) remoteController).setCallback(this);
         this.localController = localController;
         this.uploadThreshold  = uploadThreshold;
         //the start table to clean
@@ -40,6 +45,7 @@ public class Uploader {
 
         Cursor c = localController.rawQuery("SELECT * FROM uploader_utility", null);
         c.moveToFirst();
+        map = new HashMap<>();
 //        Log.d("DATA UPLOAD INIT", c.getString(1) + " " + c.getString(2) + " " + c.getInt(3) + " " + c.getString(4));
 
     }
@@ -106,7 +112,7 @@ public class Uploader {
 
             for(Map.Entry<SurveyType, TableHandler> entry: childs.entrySet()) {
                 childColumns = entry.getValue().getColumns();
-                for(int i = 2; i < childColumns.length; i++) {
+                for(int i = 3; i < childColumns.length; i++) {
                     record += entry.getValue().getAttributes().getAsString(childColumns[i]) + ", ";
                 }
             }
@@ -117,12 +123,6 @@ public class Uploader {
         csv += record;
 
         return csv.substring(0, csv.length()-1);
-    }
-
-    private void removeSurveyRecords(List<Survey> surveys) {
-        for(Survey s: surveys) {
-            s.delete();
-        }
     }
 
     private String buildSurveyFileName(SurveyType survey) {
@@ -137,6 +137,8 @@ public class Uploader {
         String currCsv = "";
         Survey currS;
         List<Survey> gSurveys = new ArrayList<>();
+
+        SurveyAlarms alarm;
         for(TableHandler s: surveys) {
             currS = (Survey) s;
             if(currSurvey != currS.surveyType) {
@@ -144,19 +146,24 @@ public class Uploader {
 
                 currCsv = buildSurveyCSV(gSurveys);
 
-                Log.d("SCSV", currCsv);
-                int response = remoteController.upload(fileName, currCsv);
+//                alarm = SurveyAlarmSurvey.getAlarm(currS.id);
 
-                //if the file was put, delete records and update the arrays
-                if(response >= 200 && response <= 207) {
-//                    removeSurveyRecords(gSurveys);
-                    incrementFilePartId(SurveyType.getSurveyTable(currSurvey));
-                } else {
-                    Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
+                TableInfo info = new TableInfo();
+                info.isSurvey = true;
+                info.survey = currSurvey;
+                info.surveysId = new ArrayList<>();
+                for(Survey ss: gSurveys) {
+                    info.surveysId.add(ss.id);
                 }
+                map.put(fileName, info);
+                remoteController.upload(fileName, currCsv);
+
                 fileName = buildSurveyFileName(currSurvey);
-                currCsv = "";
             } else {
+//                alarm = SurveyAlarmSurvey.getAlarm(currS.id);
+//                if(alarm != null) {
+//
+//                }
                 gSurveys.add(currS);
             }
         }
@@ -164,16 +171,25 @@ public class Uploader {
         fileName = buildSurveyFileName(currSurvey);
         currCsv = buildSurveyCSV(gSurveys);
 
-        Log.d("SCSV", currCsv);
-        int response = remoteController.upload(fileName, currCsv);
+        TableInfo info = new TableInfo();
+        info.isSurvey = true;
+        info.survey = currSurvey;
+        info.surveysId = new ArrayList<>();
+        for(Survey ss: gSurveys) {
+            info.surveysId.add(ss.id);
+        }
+        map.put(fileName, info);
+        remoteController.upload(fileName, currCsv);
 
         //if the file was put, delete records and update the arrays
-        if(response >= 200 && response <= 207) {
-            removeSurveyRecords(gSurveys);
-            incrementFilePartId(LocalTables.TABLE_SURVEY);
-        } else {
-            Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
-        }
+//        if(response >= 200 && response <= 207) {
+//            removeSurveyRecords(gSurveys);
+//            incrementFilePartId(LocalTables.TABLE_SURVEY);
+//        } else {
+//            Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
+//        }
+
+        incrementFilePartId(LocalTables.TABLE_SURVEY);
     }
 
     private void processTable(LocalTables table) {
@@ -189,7 +205,7 @@ public class Uploader {
         Log.d("DATA UPLOAD SERVICE", "Processing table " + LocalDbUtility.getTableName(table));
 
         if(table == LocalTables.TABLE_SURVEY) {
-            TableHandler[] surveys = Survey.findAll("*", SurveyTable.KEY_SURVEY_EXPIRED + " = " + 1 + " OR " + SurveyTable.KEY_SURVEY_COMPLETED + " = " + 1 + " ORDER BY " + SurveyTable.KEY_SURVEY_TYPE + " ASC");
+            TableHandler[] surveys = Survey.findAll("*", "(" + SurveyTable.KEY_SURVEY_EXPIRED + " = " + 1 + " OR " + SurveyTable.KEY_SURVEY_COMPLETED + " = " + 1 + ") AND " + SurveyTable.KEY_SURVEY_UPLOADED + " = " + 0 + " ORDER BY " + SurveyTable.KEY_SURVEY_TYPE + " ASC");
             if(surveys == null) {
                 Log.d("DATA UPLOAD SERVICE", "No records to upload");
             } else {
@@ -201,7 +217,6 @@ public class Uploader {
 
             if(records.getCount() > 0) {
                 String fileName = buildFileName(table);
-                Log.d("AAAAAA", "204");
                 int startId;
                 int endId;
                 records.moveToFirst();
@@ -211,22 +226,16 @@ public class Uploader {
                 //the ending index
                 endId = records.getInt(0);
                 records.moveToFirst();
-                Log.d("AAAAAAA", "214");
-                //upload the data to the server
-                int response = remoteController.upload(fileName, toCSV(records, table));
-                Log.d("AAAAAA", "217");
-                //if the file was put, delete records and update the arrays
-                if(response >= 200 && response <= 207) {
-                    //delete from the db the records where id > startId and id <= endId
-                    if(table != LocalTables.TABLE_SIMPLE_MOOD) {
-                        removeRecords(table, startId, endId);
-                    }
+                TableInfo info = new TableInfo();
+                info.table = table;
+                info.startId = startId;
+                info.endId = endId;
+                map.put(fileName, info);
 
-                    incrementFilePartId(table);
-                    updateRecordId(table, endId);
-                } else {
-                    Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
-                }
+                remoteController.upload(fileName, toCSV(records, table));
+
+                //if the file was put, delete records and update the arrays
+
             } else {
                 Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
             }
@@ -413,23 +422,67 @@ public class Uploader {
 
         for(int i = 0; i < columns.length; i++) {
             csv += columns[i] + ",";
-            Log.d("AAAAAAA", "416");
         }
 
         csv = csv.substring(0, csv.length()-1);
         csv += "\n";
 
         do {
-            Log.d("AAAAAAA", "422");
             for(int i = 0; i < columns.length; i++) {
-                Log.d("AAAAAAA", "424");
                 csv += records.getString(i) + ",";
             }
             csv = csv.substring(0, csv.length()-1);
             csv += "\n";
         } while(records.moveToNext());
         csv = csv.substring(0, csv.length()-1);
-        Log.d("AAAAAAA", "429");
         return csv;
     }
+
+    @Override
+    public void onTransferCompleted(String fileName, int status) {
+        TableInfo info = map.get(fileName);
+        Log.d("UPLOADER", "Got transfer event for file " + fileName);
+        if(info != null && info.isSurvey) {
+            if(status >= 200 && status <= 207) {
+                markSurveys(info.surveysId);
+            } else {
+                Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(status));
+            }
+        } else {
+            if(status >= 200 && status <= 207) {
+                //delete from the db the records where id > startId and id <= endId
+                if(info.table != LocalTables.TABLE_SIMPLE_MOOD) {
+                    removeRecords(info.table, info.startId, info.endId);
+                }
+
+                incrementFilePartId(info.table);
+                updateRecordId(info.table, info.endId);
+            } else {
+                Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(status));
+            }
+        }
+
+
+        map.remove(fileName);
+    }
+
+    private class TableInfo {
+        public boolean isSurvey;
+        public SurveyType survey;
+        public LocalTables table;
+        public int startId;
+        public int endId;
+        public List<Long> surveysId;
+    }
+
+    private void markSurveys(List<Long> ids) {
+        Survey s;
+        for(Long id: ids) {
+            s = (Survey) Survey.findByPk(id);
+            s.uploaded = true;
+            s.save();
+        }
+    }
 }
+
+

@@ -44,6 +44,7 @@ public abstract class TableHandler {
         }
     }
 
+    //should not be abstract
     public abstract String[] getColumns();
 
     public abstract String getTableName();

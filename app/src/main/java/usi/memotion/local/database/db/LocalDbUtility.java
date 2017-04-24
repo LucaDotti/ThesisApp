@@ -27,9 +27,6 @@ import usi.memotion.local.database.tables.WiFiTable;
 public class LocalDbUtility {
     private final static int DATA_TABLES_COUNT = 10;
 
-    public static int getDataTablesCount() {
-        return DATA_TABLES_COUNT;
-    }
 
     public static String getTableName(LocalTables table) {
         switch (table) {

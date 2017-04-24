@@ -15,6 +15,7 @@ public class SurveyTable {
     public static final String KEY_SURVEY_EXPIRED = "expired";
     public static final String KEY_SURVEY_GROUPED = "grouped";
     public static final String KEY_SURVEY_TYPE = "type";
+    public static final String KEY_SURVEY_UPLOADED = "uploaded";
 
     public static String getCreateQuery() {
         return "CREATE TABLE " + TABLE_SURVEY +
@@ -26,7 +27,8 @@ public class SurveyTable {
                 KEY_SURVEY_NOTIFIED + " INTEGER, " +
                 KEY_SURVEY_EXPIRED + " INTEGER, " +
                 KEY_SURVEY_GROUPED + " INTEGER, " +
-                KEY_SURVEY_TYPE + " TEXT"
+                KEY_SURVEY_TYPE + " TEXT, " +
+                KEY_SURVEY_UPLOADED + " INTEGER"
                 + ")";
     }
 
@@ -39,7 +41,8 @@ public class SurveyTable {
                 KEY_SURVEY_NOTIFIED,
                 KEY_SURVEY_EXPIRED,
                 KEY_SURVEY_GROUPED,
-                KEY_SURVEY_TYPE
+                KEY_SURVEY_TYPE,
+                KEY_SURVEY_UPLOADED
         };
         return columns;
     }
