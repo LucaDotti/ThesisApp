@@ -4,10 +4,10 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
     defaultConfig {
-        applicationId "usi.justmove"
+        applicationId "usi.memotion"
         minSdkVersion 23
         targetSdkVersion 24
-        versionCode 3
+        versionCode 1
         versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

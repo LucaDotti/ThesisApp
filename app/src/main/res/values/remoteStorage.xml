@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="server_address">https://drive.switch.ch/public.php/webdav/</string>
-    <string name="token">G7z352dHTWYgewd</string>
-    <string name="password">1234</string>
+    <string name="token">xc5fOSm4xyUZID9</string>
+    <string name="password"></string>
 </resources>
