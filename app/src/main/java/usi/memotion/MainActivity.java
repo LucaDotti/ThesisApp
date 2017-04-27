@@ -2,6 +2,7 @@ package usi.memotion;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +25,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import usi.memotion.UI.fragments.TabFragmentAdapter;
 import usi.memotion.UI.fragments.HomeFragment;
+import usi.memotion.gathering.gatheringServices.AccelerometerGatheringService;
 import usi.memotion.surveys.config.SurveyType;
 import usi.memotion.surveys.handle.NotificationBroadcastReceiver;
 import usi.memotion.UI.fragments.SurveysFragment;
@@ -41,7 +47,7 @@ import usi.memotion.local.database.tableHandlers.SurveyConfig;
 import usi.memotion.local.database.tables.UserTable;
 import usi.memotion.remote.database.upload.DataUploadService;
 
-public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback, HomeFragment.OnRegistrationSurveyChoice {
+public class MainActivity extends AppCompatActivity implements SurveysFragment.OnSurveyCompletedCallback, HomeFragment.OnRegistrationSurveyChoice, ProfileDialogFragment.OnEnrollStatusUpdate {
     private GatheringSystem gSys;
     private TabLayout tabLayout;
     private SwipeChoiceViewPager viewPager;
@@ -114,25 +120,37 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         } else {
             boolean user = checkUserRegistered();
             if(user) {
-                init();
+                init(grantedPermissions());
             }
         }
     }
 
-    private void init() {
+    private void init(List<String> grantedPermissions) {
         gSys = new GatheringSystem(getApplicationContext());
-        gSys.addSensor(SensorType.LOCK);
-        gSys.addSensor(SensorType.WIFI);
-        gSys.addSensor(SensorType.LOCATION);
-        gSys.addSensor(SensorType.BLUETOOTH);
-        gSys.addSensor(SensorType.ACCELEROMETER);
-        gSys.addSensor(SensorType.PHONE_CALLS);
-        gSys.addSensor(SensorType.SMS);
-        gSys.addSensor(SensorType.USED_APPS);
+
+        for(SensorType type: SensorType.values()) {
+            if(permissionAreGranted(grantedPermissions, type.getPermissions())) {
+                gSys.addSensor(type);
+                Log.d("MainActivity", "All permissions granted for sensor " + type);
+            } else {
+                Log.d("MainActivity", "Not all permissions granted for sensor " + type);
+            }
+        }
+
         gSys.start();
 
-        startService(new Intent(this, DataUploadService.class));
+//        startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
+    }
+
+    private boolean permissionAreGranted(List<String> grantedPermissions, String[] requiredPermissions) {
+        for(String permission: requiredPermissions) {
+            if(!grantedPermissions.contains(permission)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -141,19 +159,46 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         if(requestCode == PERMISSION_REQUEST_STATUS) {
             if(checkUserRegistered()) {
-                init();
+                init(convertPermissionResultsToList(permissions, grantResults));
             }
         }
     }
 
+    private List<String> convertPermissionResultsToList(String[] permissions, int[] grantResults) {
+        List<String> grantedPermissions = new ArrayList<>();
+
+        for(int i = 0; i < permissions.length; i++) {
+            if(grantResults[i] >= 0) {
+                grantedPermissions.add(permissions[i]);
+            }
+        }
+
+        return grantedPermissions;
+    }
+    private List<String> grantedPermissions() {
+        List<String> granted = new ArrayList<String>();
+        try {
+            PackageInfo pi = getPackageManager().getPackageInfo("usi.memotion", PackageManager.GET_PERMISSIONS);
+            for (int i = 0; i < pi.requestedPermissions.length; i++) {
+                if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
+                    granted.add(pi.requestedPermissions[i]);
+                }
+            }
+        } catch (Exception e) {
+        }
+        return granted;
+    }
     private boolean checkPermissions() {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED;
+                ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean checkUserRegistered() {
@@ -258,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
     @Override
     public void onRegistrationSurveyChoice(boolean now) {
-        init();
+        init(grantedPermissions());
         if(now) {
             viewPager.setCurrentItem(1);
         } else {
@@ -272,6 +317,18 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
     private static String makeFragmentName(int viewPagerId, int index) {
         return "android:switcher:" + viewPagerId + ":" + index;
+    }
+
+    @Override
+    public void onEnrollStatusUpdate(boolean exit) {
+        tabFragmentAdapter.notifyDataSetChanged();
+        if(exit) {
+            gSys.stopServices();
+            stopService(new Intent(this, DataUploadService.class));
+            stopService(new Intent(this, SurveysService.class));
+        } else {
+            init(grantedPermissions());
+        }
     }
 }
 

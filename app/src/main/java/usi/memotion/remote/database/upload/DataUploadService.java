@@ -80,7 +80,7 @@ public class DataUploadService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        stateMachine.terminate();
+        scheduler.shutdown();
     }
 
     @Nullable

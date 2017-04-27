@@ -303,4 +303,26 @@ public class DailyScheduler {
         return timeInt;
     }
 
+    public void removeCurrentAlarms() {
+        Survey[] surveys = SurveyAlarmSurvey.getAllSurveys();
+        Intent intent = new Intent(context, SurveyEventReceiver.class);
+        intent.setAction(SurveyEventReceiver.SURVEY_NOTIFICATION_INTENT);
+        long[] notificationTimes;
+        for(Survey s: surveys) {
+            notificationTimes = getNotificationAlarmTimes(s, isImmediate);
+            intent.putExtra("survey_id", s.id);
+            for(long time: notificationTimes) {
+                cancelAlarm(time, intent);
+            }
+
+        }
+
+    }
+
+    private void cancelAlarm(long time, Intent i) {
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) time, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmMgr.cancel(alarmIntent);
+        alarmIntent.cancel();
+    }
+
 }

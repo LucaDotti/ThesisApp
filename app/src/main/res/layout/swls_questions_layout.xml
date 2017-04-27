@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="12dp"
+        android:textSize="20dp"
         android:paddingBottom="5dp"
         android:textColor="@android:color/white"
         android:text="@string/swls_explation"/>
@@ -24,7 +24,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:paddingTop="20dp"
         android:textColor="@android:color/white"
         android:paddingBottom="5dp"
@@ -42,7 +42,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="1"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,14 +58,14 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="7"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
     </LinearLayout>
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/swls_q2"
         android:paddingBottom="5dp"/>
@@ -81,7 +81,7 @@
             android:gravity="center"
             android:layout_gravity="center"
             android:textColor="@android:color/white"
-            android:textSize="10dp"
+            android:textSize="13dp"
             android:text="1"/>
         <SeekBar
             android:layout_width="match_parent"
@@ -97,14 +97,14 @@
             android:gravity="center"
             android:layout_gravity="center"
             android:textColor="@android:color/white"
-            android:textSize="10dp"
+            android:textSize="13dp"
             android:text="7"/>
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/swls_q3"
         android:paddingBottom="5dp"/>
@@ -121,7 +121,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="1"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -137,14 +137,14 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="7"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
     </LinearLayout>
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/swls_q4"
         android:paddingBottom="5dp"/>
@@ -161,7 +161,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="1"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -177,14 +177,14 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="7"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
     </LinearLayout>
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/swls_q5"
         android:paddingBottom="5dp"/>
@@ -202,7 +202,7 @@
             android:textColor="@android:color/white"
             android:text="1"
             android:paddingBottom="5dp"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -218,7 +218,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="7"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
     </LinearLayout>
 
     <Button

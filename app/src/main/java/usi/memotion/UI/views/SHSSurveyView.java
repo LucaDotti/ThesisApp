@@ -96,7 +96,7 @@ public class SHSSurveyView extends LinearLayout {
         expandableLayout.getBodyView().removeAllViews();
         expandableLayout.getTitleView().removeAllViews();
         expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "SHS");
+        expandableLayout.setTitleText(R.id.surveysTitle, "Subjective Happiness Scale");
 
         currentSurvey = getCurrentSurvey();
 

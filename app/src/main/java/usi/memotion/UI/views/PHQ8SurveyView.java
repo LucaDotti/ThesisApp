@@ -102,7 +102,7 @@ public class PHQ8SurveyView extends LinearLayout {
         expandableLayout.getBodyView().removeAllViews();
         expandableLayout.getTitleView().removeAllViews();
         expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "PHQ8");
+        expandableLayout.setTitleText(R.id.surveysTitle, "Personal Health Questionnaire Depression Scale");
 
         currentSurvey = getCurrentSurvey();
 

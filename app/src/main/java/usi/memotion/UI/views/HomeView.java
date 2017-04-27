@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -30,6 +31,7 @@ import usi.memotion.local.database.controllers.LocalStorageController;
 import usi.memotion.local.database.controllers.SQLiteController;
 import usi.memotion.local.database.db.LocalDbUtility;
 import usi.memotion.local.database.db.LocalTables;
+import usi.memotion.local.database.tableHandlers.User;
 import usi.memotion.local.database.tables.SimpleMoodTable;
 
 /**
@@ -40,6 +42,8 @@ public class HomeView extends LinearLayout{
     private LocalStorageController localController;
     private Context context;
 
+    private LinearLayout content;
+    private TextView unenrolledAlert;
     private View currentFace;
     private Button submitButton;
     private View simpleMoodForm;
@@ -57,6 +61,20 @@ public class HomeView extends LinearLayout{
     }
 
     private void init() {
+        content = (LinearLayout) findViewById(R.id.home_content);
+        unenrolledAlert = (TextView) findViewById(R.id.home_unenrolled_alert);
+
+        if(User.isEnrolled()) {
+            content.setVisibility(VISIBLE);
+            unenrolledAlert.setVisibility(INVISIBLE);
+            showHomeContent();
+        } else {
+            content.setVisibility(INVISIBLE);
+            unenrolledAlert.setVisibility(VISIBLE);
+        }
+    }
+
+    private void showHomeContent() {
         localController = SQLiteController.getInstance(context);
         simpleMoodForm = findViewById(R.id.simpleMoodForm);
 

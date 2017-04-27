@@ -145,7 +145,7 @@ public class SurveyNotifier {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(android.R.drawable.stat_sys_warning)
+                        .setSmallIcon(R.mipmap.app_icon)
 //                        .setCustomBigContentView(remoteViews)
                         .setContentTitle("MEmotion")
                         .setContentText("New " + config.surveyType.getSurveyName() + " survey available!")

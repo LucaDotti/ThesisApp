@@ -37,6 +37,7 @@ import usi.memotion.utils.FrequencyHelper;
 public class LocationGatheringService extends Service {
     private TBStateMachine stateMachine;
     private ScheduledExecutorService scheduler;
+    private LocationTBStateMachineListener listener;
 
     @Override
     public void onCreate() {
@@ -60,12 +61,19 @@ public class LocationGatheringService extends Service {
 
         stateMachine = new TBStateMachine(transitions, TBSMState.START, dayStart, dayEnd);
 
+        listener = new LocationTBStateMachineListener(getApplicationContext(), dayFreq, nightFreq, minDistance);
         //add the observer
-        stateMachine.addObserver(new LocationTBStateMachineListener(getApplicationContext(), dayFreq, nightFreq, minDistance));
+        stateMachine.addObserver(listener);
 
         //start the state machine
         scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(stateMachine, 0, stateMachineFreq, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void onDestroy() {
+        scheduler.shutdown();
+        listener.removeLocationUpdates();
     }
 
     @Override
@@ -114,19 +122,24 @@ class LocationTBStateMachineListener extends TBStateMachineListener {
 
     @Override
     protected void processNightState() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Log.d("LOCATION SERVICE", "NIGHT");
+            if(listener != null) {
+                mgr.removeUpdates(listener);
+            } else {
+                listener = new LocationEventListener(context);
+            }
 
+            Looper.prepare();
+            mgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FrequencyHelper.getElapseTimeMillis(nightFreq), minDistance, listener);
+            mgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
-        Log.d("LOCATION SERVICE", "NIGHT");
-        if(listener != null) {
+    }
+
+    public void removeLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mgr.removeUpdates(listener);
-        } else {
-            listener = new LocationEventListener(context);
         }
-
-        Looper.prepare();
-        mgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FrequencyHelper.getElapseTimeMillis(nightFreq), minDistance, listener);
-        mgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
 }
 
@@ -146,7 +159,7 @@ class LocationEventListener implements LocationListener {
         record.put(LocationTable.KEY_LOCATION_TIMESTAMP, Long.toString(System.currentTimeMillis()));
         record.put(LocationTable.KEY_LOCATION_LATITUDE, Double.toString(location.getLatitude()));
         record.put(LocationTable.KEY_LOCATION_LONGITUDE, Double.toString(location.getLongitude()));
-        record.put(LocationTable.KEY_LOCATION_PROVIDER, "GPS");
+        record.put(LocationTable.KEY_LOCATION_PROVIDER, location.getProvider());
         localStorageController.insertRecord(LocationTable.TABLE_LOCATION, record);
         Log.d("LOCATION SERVICE", "ADDED RECORD: ts:" + record.get(LocationTable.KEY_LOCATION_TIMESTAMP) + ", lat: " + record.get(LocationTable.KEY_LOCATION_LATITUDE) + ", long: " + record.get(LocationTable.KEY_LOCATION_LONGITUDE));
     }
@@ -165,4 +178,6 @@ class LocationEventListener implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
+
+
 }

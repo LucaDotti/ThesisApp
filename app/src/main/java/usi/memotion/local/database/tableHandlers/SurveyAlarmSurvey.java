@@ -134,8 +134,24 @@ public class SurveyAlarmSurvey extends TableHandler {
             c.close();
             return a;
         } else {
+            c.close();
             return null;
         }
+    }
+
+    public static Survey[] getAllSurveys() {
+        Cursor c =localController.rawQuery("SELECT * FROM  " + table.getTableName(), null);
+
+        Survey[] surveys = new Survey[c.getCount()];
+        if(c.getCount() > 0) {
+            int i = 0;
+            while(c.moveToNext()) {
+                surveys[i] = (Survey) Survey.findByPk(c.getInt(1));
+            }
+        }
+
+        c.close();
+        return surveys;
     }
 
     public static SurveyAlarmSurvey[] findAllByAttribute(String attribute, String value) {

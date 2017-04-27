@@ -40,6 +40,11 @@ public class PhoneCallGatheringService extends Service  {
     }
 
     @Override
+    public void onDestroy() {
+        getApplicationContext().unregisterReceiver(receiver);
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
     }

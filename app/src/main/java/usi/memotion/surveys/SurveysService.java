@@ -8,6 +8,7 @@ import android.util.Log;
 
 import usi.memotion.MainActivity;
 import usi.memotion.surveys.config.SurveyType;
+import usi.memotion.surveys.schedulation.DailyScheduler;
 import usi.memotion.surveys.schedulation.Scheduler;
 
 /**
@@ -20,10 +21,7 @@ public class SurveysService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("START", "SURVEY " + MainActivity.running);
-//        if(checkActivityIsRunning()) {
-//
-//        }
+
         scheduler = Scheduler.getInstance();
         scheduler.addSurvey(SurveyType.PAM);
         scheduler.addSurvey(SurveyType.PWB);
@@ -41,6 +39,8 @@ public class SurveysService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        scheduler.removeCurrentAlarms();
+        new DailyScheduler().removeCurrentAlarms();
     }
 
     @Override

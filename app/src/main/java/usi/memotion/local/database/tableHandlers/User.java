@@ -6,6 +6,7 @@ import android.database.Cursor;
 import java.text.SimpleDateFormat;
 
 import usi.memotion.local.database.db.LocalTables;
+import usi.memotion.local.database.tables.UserTable;
 
 /**
  * Created by usi on 31/03/17.
@@ -82,5 +83,22 @@ public class User extends TableHandler {
         }
 
         return null;
+    }
+
+    public static boolean isEnrolled() {
+        Cursor user = localController.rawQuery("SELECT * FROM " + table.getTableName(), null);
+
+        if(user.getCount() > 0) {
+            user.moveToFirst();
+            return user.getInt(2) == 0 ? false : true;
+        }
+
+        return false;
+    }
+
+    public static void saveAgreed(boolean agreed) {
+        ContentValues agr = new ContentValues();
+        agr.put(UserTable.KEY_USER_AGREED, agreed);
+        localController.update(table.getTableName(), agr, UserTable.KEY_USER_ID + " = " + 1);
     }
 }

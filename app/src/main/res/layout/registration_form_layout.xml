@@ -31,7 +31,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status: "
+            android:text="Current status: "
             android:textSize="20dp"
             android:layout_alignParentLeft="true"
             android:textColor="@android:color/white"
@@ -66,20 +66,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/genderMaleRadioButton"/>
-            <ImageView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_gender_male"
-                android:layout_gravity="center"/>
+                android:textSize="20dp"
+                android:text="Female"/>
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/genderFemaleRadioButton"/>
-            <ImageView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_gender_female"
-                android:layout_gravity="center"/>
+                android:textSize="20dp"
+                android:text="Male"/>
         </RadioGroup>
 
         <com.shawnlin.numberpicker.NumberPicker

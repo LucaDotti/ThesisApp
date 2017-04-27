@@ -78,6 +78,12 @@ public class WifiGatheringService extends Service {
     }
 
     @Override
+    public void onDestroy() {
+        scheduler.shutdown();
+        getApplicationContext().unregisterReceiver(receiver);
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
     }

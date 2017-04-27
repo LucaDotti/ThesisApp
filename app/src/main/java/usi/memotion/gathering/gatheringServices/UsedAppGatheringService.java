@@ -29,12 +29,13 @@ import android.util.Log;
 
 public class UsedAppGatheringService extends Service {
 
+    private Timer timer;
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d("USED APP SERVICE", "START");
         long freq = Long.parseLong(getApplicationContext().getString(R.string.usedAppsFreq));
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new UsedAppTask(getApplicationContext()), 0, freq);
     }
 
@@ -42,6 +43,11 @@ public class UsedAppGatheringService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        timer.cancel();
     }
 }
 

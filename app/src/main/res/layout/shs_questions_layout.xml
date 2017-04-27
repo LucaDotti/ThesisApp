@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="12dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/shs_explanation"
         android:paddingBottom="20dp"/>
@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/shs_q1"
         android:paddingBottom="5dp"/>
@@ -33,7 +33,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="not a very happy person"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,14 +49,14 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="a very happy person"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
     </LinearLayout>
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/shs_q2"
         android:paddingBottom="5dp"/>
@@ -73,7 +73,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="less happy"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,14 +89,14 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="more happy"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
     </LinearLayout>
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/shs_q3"
         android:paddingBottom="5dp"/>
@@ -113,7 +113,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="not at all"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -129,14 +129,14 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="a great deal"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
     </LinearLayout>
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="20dp"
         android:textColor="@android:color/white"
         android:text="@string/shs_q4"
         android:paddingBottom="5dp"/>
@@ -153,7 +153,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="not at all"
-            android:textSize="10dp"
+            android:textSize="13dp"
             />
         <SeekBar
             android:layout_width="match_parent"
@@ -170,7 +170,7 @@
             android:layout_gravity="center"
             android:textColor="@android:color/white"
             android:text="a great deal"
-            android:textSize="10dp"/>
+            android:textSize="13dp"/>
     </LinearLayout>
 
     <Button

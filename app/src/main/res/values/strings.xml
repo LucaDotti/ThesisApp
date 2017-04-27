@@ -42,9 +42,10 @@
         ATTENTION! If you check this checkbox you are confirming that you want to leave the study. This action implies that you no longer participate to our study and all your data will be removed from your phone and our remote storage.
         If you really want to leave the study, please, contact our staff members before confirming.
     </string>
+    <string name="unenrolled_user">"You are unenrolled from the study. If you want to enroll again, update your profile in the top right menu by disabling the "Leave study" option.</string>
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ PAM +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <string name="pam_image_explanation">Please choose an image</string>
+    <string name="pam_image_explanation">Please choose the picture that best represents your current mood</string>
     <string name="pam_q1_morning">1. Which is your level of stress?</string>
     <string name="pam_q2_morning">2. How long have you slept tonight?</string>
     <string name="pam_q3_morning">3. Where are you?</string>
@@ -145,7 +146,7 @@
     <string name="pss_q1">In the last month, how often have you been upset because of something that happened unexpectedly?</string>
     <string name="pss_q2">In the last month, how often have you felt that you were unable to control the important things in your life?</string>
     <string name="pss_q3">In the last month, how often have you felt nervous and "stressed"?</string>
-    <string name="pss_q4">In the last month, how often have you felt confident about your ability to handler your personal problems?</string>
+    <string name="pss_q4">In the last month, how often have you felt confident about your ability to handle your personal problems?</string>
     <string name="pss_q5">In the last month, how often have you felt that things were going your way?</string>
     <string name="pss_q6">In the last month, how often have you found that you could not cope with all the things that you had to do?</string>
     <string name="pss_q7">In the last month, how often have you been able to control irritations in your life?</string>
@@ -158,7 +159,7 @@
     <string name="phq8_q">Over the last two weeks, how often have you been bothered by any of the following problems? Mark every question with a number from </string>
     <string name="phq8_q1">Little interest or pleasure in doing things</string>
     <string name="phq8_q2">Feeding down, depressed, or hopeless</string>
-    <string name="phq8_q3">Troube falling or staying asleep, or sleeping too much</string>
+    <string name="phq8_q3">Trouble falling or staying asleep, or sleeping too much</string>
     <string name="phq8_q4">Feeling tired or having little energy</string>
     <string name="phq8_q5">Poor appetite or overeating</string>
     <string name="phq8_q6">Feeling bad about yourself, or that you are a failure, or have let yourself or your family down</string>

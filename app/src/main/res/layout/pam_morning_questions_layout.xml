@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/pam_q1_morning"
-            android:textSize="15dp"
+            android:textSize="20dp"
             android:textColor="@android:color/white"
             android:paddingBottom="5dp"/>
         <LinearLayout
@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/pam_q2_morning"
-            android:textSize="15dp"
+            android:textSize="20dp"
             android:paddingBottom="5dp"
             android:textColor="@android:color/white"/>
         <LinearLayout
@@ -167,7 +167,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15dp"
+            android:textSize="20dp"
             android:textColor="@android:color/white"
             android:text="@string/pam_q3_morning"
             android:paddingBottom="5dp"/>
@@ -323,7 +323,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/pam_q4_morning"
-            android:textSize="15dp"
+            android:textSize="20dp"
             android:paddingBottom="5dp"
             android:textColor="@android:color/white"/>
         <LinearLayout

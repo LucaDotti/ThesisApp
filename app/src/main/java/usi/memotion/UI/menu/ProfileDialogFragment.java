@@ -2,6 +2,7 @@ package usi.memotion.UI.menu;
 
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -24,8 +25,10 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import usi.memotion.Mail;
 import usi.memotion.R;
+import usi.memotion.UI.fragments.SurveysFragment;
 import usi.memotion.local.database.controllers.LocalStorageController;
 import usi.memotion.local.database.controllers.SQLiteController;
+import usi.memotion.local.database.tableHandlers.User;
 import usi.memotion.local.database.tables.UserTable;
 
 /**
@@ -33,6 +36,7 @@ import usi.memotion.local.database.tables.UserTable;
  */
 
 public class ProfileDialogFragment extends AppCompatDialogFragment {
+    private OnEnrollStatusUpdate callback;
     private static String[] academicStatusValues = {"BSc", "MSc", "PhD", "Prof", "Other"};
     private LocalStorageController localcontroller;
     private NumberPicker agePicker;
@@ -55,6 +59,7 @@ public class ProfileDialogFragment extends AppCompatDialogFragment {
         View root = inflater.inflate(R.layout.profile_layout, null);
         noProfileMsg = (TextView) root.findViewById(R.id.profile_noProfileMsg);
         profileForm = (LinearLayout) root.findViewById(R.id.profile_profileForm);
+        exitStudyCheckbox = (CheckBox) root.findViewById(R.id.profile_exitStudyCheckbox);
         initForm(root);
 
 //        exitStudyInfo = (ViewGroup) root.findViewById(R.id.profile_exitStudyInfo);
@@ -67,6 +72,8 @@ public class ProfileDialogFragment extends AppCompatDialogFragment {
                     showConfirmExitStudyDialog();
                 } else {
                     updateUser();
+                    User.saveAgreed(true);
+                    callback.onEnrollStatusUpdate(false);
                     dismiss();
                     Toast.makeText(getContext(), "Profile saved", Toast.LENGTH_SHORT).show();
                 }
@@ -99,13 +106,16 @@ public class ProfileDialogFragment extends AppCompatDialogFragment {
         builder.setMessage("Are you sure you want to exit the study?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        localcontroller.delete(UserTable.TABLE_USER, UserTable.KEY_USER_ID + " = " + 1);
+//                        localcontroller.delete(UserTable.TABLE_USER, UserTable.KEY_USER_ID + " = " + 1);
                         sendEmail();
                         dismissDialog();
+                        User.saveAgreed(false);
+                        callback.onEnrollStatusUpdate(true);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
                         exitStudyDialog.dismiss();
                     }
                 });
@@ -136,8 +146,14 @@ public class ProfileDialogFragment extends AppCompatDialogFragment {
             c.moveToFirst();
             agePicker = (NumberPicker) root.findViewById(R.id.age_picker);
             agePicker.setMinValue(18);
-            agePicker.setMaxValue(60);
+            agePicker.setMaxValue(99);
             agePicker.setValue(c.getInt(3));
+
+            if(c.getInt(2) == 0) {
+                exitStudyCheckbox.setChecked(true);
+            } else {
+                exitStudyCheckbox.setChecked(false);
+            }
 
             maleGenderRadioButton = (RadioButton) root.findViewById(R.id.genderMaleRadioButton);
             RadioButton femaleGenderRadioButton = (RadioButton) root.findViewById(R.id.genderFemaleRadioButton);
@@ -204,6 +220,21 @@ public class ProfileDialogFragment extends AppCompatDialogFragment {
         record.put(UserTable.KEY_USER_UPDATE_TS, System.currentTimeMillis());
         record.put(UserTable.KEY_USER_GENDER, currentSelectedRadioButton.getId() == R.id.genderFemaleRadioButton ? "female" : "male");
         localcontroller.update(UserTable.TABLE_USER, record, UserTable.KEY_USER_ID + " = " + 1);
+    }
+
+    public interface OnEnrollStatusUpdate {
+        void onEnrollStatusUpdate(boolean exit);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnEnrollStatusUpdate) {
+            callback = (OnEnrollStatusUpdate) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnExitStudy interface");
+        }
     }
 }
 

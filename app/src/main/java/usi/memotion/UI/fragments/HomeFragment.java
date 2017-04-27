@@ -59,9 +59,8 @@ public class HomeFragment extends Fragment implements RegistrationView.OnUserReg
             return false;
         }
 
-        c.moveToFirst();
-        boolean agreed = c.getInt(2) == 0 ? false : true;
-        return agreed;
+
+        return true;
     }
 
 

@@ -135,7 +135,7 @@ public class RegistrationView extends LinearLayout {
     private void initForm(View view) {
         NumberPicker agePicker = (NumberPicker) view.findViewById(R.id.age_picker);
         agePicker.setMinValue(18);
-        agePicker.setMaxValue(60);
+        agePicker.setMaxValue(99);
 
         RadioButton maleGenderRadioButton = (RadioButton) view.findViewById(R.id.genderMaleRadioButton);
         maleGenderRadioButton.setOnClickListener(new OnClickListener() {

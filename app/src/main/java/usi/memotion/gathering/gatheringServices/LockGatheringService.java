@@ -43,6 +43,11 @@ public class LockGatheringService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
     }
+
+    @Override
+    public void onDestroy() {
+        getApplicationContext().unregisterReceiver(receiver);
+    }
 }
 
 class ScreenEventsReceiver extends BroadcastReceiver {

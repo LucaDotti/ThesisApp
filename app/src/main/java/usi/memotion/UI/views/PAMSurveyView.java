@@ -226,7 +226,7 @@ public class PAMSurveyView extends LinearLayout {
         expandableLayout.getBodyView().removeAllViews();
         expandableLayout.getTitleView().removeAllViews();
         expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "PAM");
+        expandableLayout.setTitleText(R.id.surveysTitle, "Photographic Affect Meter");
 
         imagesContainer = (LinearLayout) questionsLayout.findViewById(R.id.pamSurveyImagesContainer);
         questions = (LinearLayout) questionsLayout.findViewById(R.id.pamSurveyQuestions);

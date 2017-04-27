@@ -47,6 +47,11 @@ public class SMSGatheringService extends Service  {
         getApplicationContext().getContentResolver().registerContentObserver(smsUri, true, outgoingSmSObserver);
     }
 
+    @Override
+    public void onDestroy() {
+        getApplicationContext().unregisterReceiver(receiver);
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

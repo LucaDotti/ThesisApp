@@ -99,7 +99,7 @@ public class SWLSSurveyView extends LinearLayout{
         expandableLayout.getBodyView().removeAllViews();
         expandableLayout.getTitleView().removeAllViews();
         expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "SWLS");
+        expandableLayout.setTitleText(R.id.surveysTitle, "Satisfaction With Life Scale");
 
         currentSurvey = getCurrentSurvey();
 

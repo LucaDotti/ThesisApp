@@ -326,6 +326,26 @@ public class Scheduler {
         nextAlarm.current = true;
         nextAlarm.save();
     }
+
+    public void removeCurrentAlarms() {
+        TableHandler[] alarms = SurveyAlarms.findAll("*", "");
+
+        SurveyAlarms s;
+        for(TableHandler t: alarms) {
+            s = (SurveyAlarms) t;
+            cancelAlarm(s.id, s.type);
+        }
+    }
+
+    private void cancelAlarm(long id, SurveyType survey) {
+        Intent intent = new Intent(context, SchedulerAlarmReceiver.class);
+        intent.putExtra("survey", survey.getSurveyName());
+        intent.putExtra("alarm_id", id);
+
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmMgr.cancel(alarmIntent);
+        alarmIntent.cancel();
+    }
 }
 
 

@@ -74,4 +74,15 @@ public class GatheringSystem {
             }
         }
     }
+
+    public void stopServices() {
+        context.stopService(new Intent(context, AccelerometerGatheringService.class));
+        context.stopService(new Intent(context, BluethootGatheringService.class));
+        context.stopService(new Intent(context, LocationGatheringService.class));
+        context.stopService(new Intent(context, LockGatheringService.class));
+        context.stopService(new Intent(context, SMSGatheringService.class));
+        context.stopService(new Intent(context, UsedAppGatheringService.class));
+        context.stopService(new Intent(context, WifiGatheringService.class));
+        context.stopService(new Intent(context, PhoneCallGatheringService.class));
+    }
 }

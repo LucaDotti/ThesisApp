@@ -103,7 +103,7 @@ public class PSSSurveyView extends LinearLayout {
         expandableLayout.getBodyView().removeAllViews();
         expandableLayout.getTitleView().removeAllViews();
         expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "PSS");
+        expandableLayout.setTitleText(R.id.surveysTitle, "Perceived Stress Scale");
 
         currentSurvey = getCurrentSurvey();
 

@@ -103,7 +103,7 @@ public class PWBSurveyView extends LinearLayout {
         expandableLayout.getTitleView().removeAllViews();
         expandableLayout.getBodyView().removeAllViews();
         expandableLayout.setTitleView(titleView);
-        expandableLayout.setTitleText(R.id.surveysTitle, "PWB");
+        expandableLayout.setTitleText(R.id.surveysTitle, "Psychological Well-Being");
 
         currentSurvey = getCurrentSurvey();
 
