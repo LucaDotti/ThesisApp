@@ -13,7 +13,7 @@
     <string name="PAM_count">1</string>
     <string name="PAM_frequency">daily</string>
     <string name="PAM_frequency_multiplier">1</string>
-    <string name="PAM_immediate">1</string>
+    <string name="PAM_immediate">0</string>
     <string name="PAM_grouped">0</string>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++ PWB ++++++++++++++++++++++++++++++++++++++++ -->
@@ -29,7 +29,7 @@
     <string name="PWB_frequency_multiplier">1</string>
     <string name="PWB_week_period">weekend</string>
     <string name="PWB_count">1</string>
-    <string name="PWB_immediate">1</string>
+    <string name="PWB_immediate">0</string>
     <string name="PWB_grouped">0</string>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++ Term ++++++++++++++++++++++++++++++++++++++++ -->

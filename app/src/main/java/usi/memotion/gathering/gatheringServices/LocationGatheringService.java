@@ -16,10 +16,14 @@ import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import usi.memotion.MyApplication;
 import usi.memotion.R;
 import usi.memotion.stateMachines.strategies.timeBased.TBStateMachineListener;
 import usi.memotion.local.database.controllers.LocalStorageController;
@@ -38,11 +42,12 @@ public class LocationGatheringService extends Service {
     private TBStateMachine stateMachine;
     private ScheduledExecutorService scheduler;
     private LocationTBStateMachineListener listener;
+    private Timer timer;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("LOCATION SERVICE", "INITIALIZED");
+        Log.d("Locationservice", "INITIALIZED");
         long stateMachineFreq = Long.parseLong(getApplicationContext().getString(R.string.stateMachineFreq));
         long dayFreq = Long.parseLong(getApplicationContext().getString(R.string.locationDayFreq));
         long nightFreq = Long.parseLong(getApplicationContext().getString(R.string.locationNightFreq));
@@ -61,7 +66,7 @@ public class LocationGatheringService extends Service {
 
         stateMachine = new TBStateMachine(transitions, TBSMState.START, dayStart, dayEnd);
 
-        listener = new LocationTBStateMachineListener(getApplicationContext(), dayFreq, nightFreq, minDistance);
+        listener = new LocationTBStateMachineListener(dayFreq, nightFreq);
         //add the observer
         stateMachine.addObserver(listener);
 
@@ -73,7 +78,7 @@ public class LocationGatheringService extends Service {
     @Override
     public void onDestroy() {
         scheduler.shutdown();
-        listener.removeLocationUpdates();
+        listener.stop();
     }
 
     @Override
@@ -87,97 +92,105 @@ public class LocationGatheringService extends Service {
     }
 }
 
-class LocationTBStateMachineListener extends TBStateMachineListener {
-    private Context context;
+class LocationTimeTask extends TimerTask {
     private LocationManager mgr;
-    private LocationListener listener;
-    private float minDistance;
-    private HandlerThread locationHandlerThread;
+    private LocalStorageController localStorageController;
+    private Context context;
 
-    public LocationTBStateMachineListener(Context context, long dayFreq, long nightFreq, float minDistance) {
-        super(dayFreq, nightFreq);
-        this.context = context;
-        this.minDistance = minDistance;
-
+    public LocationTimeTask() {
+        context = MyApplication.getContext();
+        localStorageController = SQLiteController.getInstance(context);
         mgr = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
     @Override
-    protected void processDayState() {
+    public void run() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.d("LOCATION SERVICE", "DAY");
-            if(listener != null) {
-                mgr.removeUpdates(listener);
+            Location location = mgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Log.d("Locationservice", "" + location);
+            if(location == null) {
+                location = mgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                Log.d("Locationservice", "" + location);
+                saveLocation(location);
             }
-
-            listener = new LocationEventListener(context);
-
-            locationHandlerThread = new HandlerThread("LocationHandlerThread");
-            locationHandlerThread.start();
-
-            mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, dayFreq, minDistance, listener, locationHandlerThread.getLooper());
         }
 
+    }
+
+    private void saveLocation(Location location) {
+        ContentValues record = new ContentValues();
+
+        record.put(LocationTable.KEY_LOCATION_TIMESTAMP, Long.toString(System.currentTimeMillis()));
+
+        if(location == null) {
+            record.put(LocationTable.KEY_LOCATION_LATITUDE, 0);
+            record.put(LocationTable.KEY_LOCATION_LONGITUDE, 0);
+            record.put(LocationTable.KEY_LOCATION_PROVIDER, "unknown");
+        } else {
+            record.put(LocationTable.KEY_LOCATION_LATITUDE, Double.toString(location.getLatitude()));
+            record.put(LocationTable.KEY_LOCATION_LONGITUDE, Double.toString(location.getLongitude()));
+            record.put(LocationTable.KEY_LOCATION_PROVIDER, location.getProvider());
+        }
+
+
+        localStorageController.insertRecord(LocationTable.TABLE_LOCATION, record);
+        Log.d("Locationservice", "ADDED RECORD: ts:" + record.get(LocationTable.KEY_LOCATION_TIMESTAMP) + ", lat: " + record.get(LocationTable.KEY_LOCATION_LATITUDE) + ", long: " + record.get(LocationTable.KEY_LOCATION_LONGITUDE));
+    }
+}
+
+
+class LocationTBStateMachineListener extends TBStateMachineListener {
+    private ScheduledExecutorService scheduler;
+    private TimerTask task;
+    private boolean isDay;
+    private boolean init;
+
+    public LocationTBStateMachineListener(long dayFreq, long nightFreq) {
+        super(dayFreq, nightFreq);
+        task = new LocationTimeTask();
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        init = true;
+    }
+
+    @Override
+    protected void processDayState() {
+        Log.d("Locationservice", "Day");
+
+        if(init) {
+            scheduler.scheduleAtFixedRate(task, 0, dayFreq, TimeUnit.MILLISECONDS);
+            init = false;
+        } else {
+            if(!isDay) {
+                scheduler.shutdown();
+                scheduler = Executors.newSingleThreadScheduledExecutor();
+                scheduler.scheduleAtFixedRate(task, 0, dayFreq, TimeUnit.MILLISECONDS);
+            }
+        }
+
+
+        isDay = true;
     }
 
     @Override
     protected void processNightState() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.d("LOCATION SERVICE", "NIGHT");
-            if(listener != null) {
-                mgr.removeUpdates(listener);
-            } else {
-                listener = new LocationEventListener(context);
+        Log.d("Locationservice", "Night");
+
+        if(init) {
+            scheduler.scheduleAtFixedRate(task, 0, nightFreq, TimeUnit.MILLISECONDS);
+            init = false;
+        } else {
+            if(isDay) {
+                scheduler.shutdown();
+                scheduler = Executors.newSingleThreadScheduledExecutor();
+                scheduler.scheduleAtFixedRate(task, 0, nightFreq, TimeUnit.MILLISECONDS);
             }
-
-            Looper.prepare();
-            mgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FrequencyHelper.getElapseTimeMillis(nightFreq), minDistance, listener);
-            mgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
+
+
+        isDay = false;
     }
 
-    public void removeLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mgr.removeUpdates(listener);
-        }
+    public void stop() {
+        scheduler.shutdown();
     }
-}
-
-class LocationEventListener implements LocationListener {
-    private Context context;
-    private LocalStorageController localStorageController;
-
-    public LocationEventListener(Context context) {
-        this.context = context;
-        localStorageController = SQLiteController.getInstance(context);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        ContentValues record = new ContentValues();
-
-        record.put(LocationTable.KEY_LOCATION_TIMESTAMP, Long.toString(System.currentTimeMillis()));
-        record.put(LocationTable.KEY_LOCATION_LATITUDE, Double.toString(location.getLatitude()));
-        record.put(LocationTable.KEY_LOCATION_LONGITUDE, Double.toString(location.getLongitude()));
-        record.put(LocationTable.KEY_LOCATION_PROVIDER, location.getProvider());
-        localStorageController.insertRecord(LocationTable.TABLE_LOCATION, record);
-        Log.d("LOCATION SERVICE", "ADDED RECORD: ts:" + record.get(LocationTable.KEY_LOCATION_TIMESTAMP) + ", lat: " + record.get(LocationTable.KEY_LOCATION_LATITUDE) + ", long: " + record.get(LocationTable.KEY_LOCATION_LONGITUDE));
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-
 }

@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
@@ -17,7 +18,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -53,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
     private SwipeChoiceViewPager viewPager;
     private FragmentPagerAdapter tabFragmentAdapter;
     private android.support.v7.widget.Toolbar toolbar;
+    private AppBarLayout main;
+    private ScrollView welcome;
+    private Button welcomeNext;
     public static boolean running;
 
     private final int PERMISSION_REQUEST_STATUS = 0;
@@ -62,6 +68,32 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        main = (AppBarLayout) findViewById(R.id.main_tab);
+        welcome = (ScrollView) findViewById(R.id.welcome);
+        welcomeNext = (Button) findViewById(R.id.welcome_next);
+
+        welcomeNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.setVisibility(View.VISIBLE);
+                welcome.setVisibility(View.INVISIBLE);
+                init();
+            }
+        });
+
+        if(checkPermissions()) {
+            main.setVisibility(View.VISIBLE);
+            welcome.setVisibility(View.INVISIBLE);
+            init();
+        } else {
+            main.setVisibility(View.INVISIBLE);
+            welcome.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    private void init() {
         JodaTimeAndroid.init(this);
 
         Intent i = getIntent();
@@ -120,12 +152,12 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
         } else {
             boolean user = checkUserRegistered();
             if(user) {
-                init(grantedPermissions());
+                initServices(grantedPermissions());
             }
         }
     }
 
-    private void init(List<String> grantedPermissions) {
+    private void initServices(List<String> grantedPermissions) {
         gSys = new GatheringSystem(getApplicationContext());
 
         for(SensorType type: SensorType.values()) {
@@ -139,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         gSys.start();
 
-//        startService(new Intent(this, DataUploadService.class));
+        startService(new Intent(this, DataUploadService.class));
         startService(new Intent(this, SurveysService.class));
     }
 
@@ -159,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
         if(requestCode == PERMISSION_REQUEST_STATUS) {
             if(checkUserRegistered()) {
-                init(convertPermissionResultsToList(permissions, grantResults));
+                initServices(convertPermissionResultsToList(permissions, grantResults));
             }
         }
     }
@@ -303,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
 
     @Override
     public void onRegistrationSurveyChoice(boolean now) {
-        init(grantedPermissions());
+        initServices(grantedPermissions());
         if(now) {
             viewPager.setCurrentItem(1);
         } else {
@@ -327,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements SurveysFragment.O
             stopService(new Intent(this, DataUploadService.class));
             stopService(new Intent(this, SurveysService.class));
         } else {
-            init(grantedPermissions());
+            initServices(grantedPermissions());
         }
     }
 }
