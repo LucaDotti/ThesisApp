@@ -37,13 +37,11 @@ import usi.memotion.local.database.tables.WiFiTable;
  */
 
 public enum LocalTables {
-    TABLE_ACCELEROMETER(AccelerometerTable.class),
     TABLE_BLUETOOTH(BlueToothTable.class),
     TABLE_LOCATION(LocationTable.class),
     TABLE_CALL_LOG(PhoneCallLogTable.class),
     TABLE_PHONELOCK(PhoneLockTable.class),
     TABLE_SMS(SMSTable.class),
-    TABLE_USED_APP(UsedAppTable.class),
     TABLE_WIFI(WiFiTable.class),
     TABLE_PAM(PAMTable.class),
     TABLE_PWB(PWBTable.class),
@@ -56,7 +54,9 @@ public enum LocalTables {
     TABLE_SURVEY_ALARMS(SurveyAlarmsTable.class),
     TABLE_USER(UserTable.class),
     TABLE_SURVEY_ALARMS_SURVEY(SurveyAlarmSurveyTable.class),
-    TABLE_SURVEY_CONFIG(SurveyTable.class);
+    TABLE_SURVEY_CONFIG(SurveyTable.class),
+    TABLE_ACCELEROMETER(AccelerometerTable.class),
+    TABLE_USED_APP(UsedAppTable.class);
 
 
     LocalTables(Class a) {

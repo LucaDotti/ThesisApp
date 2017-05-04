@@ -1,13 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'memotionProductionKey'
+            keyPassword 'MeMotionUsiLab1853'
+            storeFile file('/Users/usi/.android/debug.keystore')
+            storePassword 'android'
+        }
+    }
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId "usi.memotion"
         minSdkVersion 23
         targetSdkVersion 24
-        versionCode 1
+        versionCode 6
         versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -18,9 +26,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+            debuggable false
+        }
+        debug {
         }
     }
-
     packagingOptions {
         pickFirst 'META-INF/LICENSE.txt'
     }

@@ -37,7 +37,7 @@ import usi.memotion.local.database.tables.WiFiTable;
 
 public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
     //db information
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "Memotion";
 
     private SQLiteDatabase db;
@@ -97,6 +97,9 @@ public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d("DBHelper", "Upgrading db. Truncating accelerometer and used apps");
+        db.execSQL("delete from "+ AccelerometerTable.TABLE_ACCELEROMETER);
+        db.execSQL("delete from "+ UsedAppTable.TABLE_USED_APP);
         return;
     }
 }

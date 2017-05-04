@@ -34,14 +34,12 @@ public class SwitchDriveController implements RemoteStorageController {
     public int upload(String fileName, String data) {
 //        doneSignal = new CountDownLatch(1);
         new DataUploadTask(serverAddress, accessToken).execute(fileName, data);
-        Log.d("AAAAAA", "CCCCCCC");
 //        try {
 //            doneSignal.await();
 //        } catch (InterruptedException e) {
 ////            e.printStackTrace();
 //            httpResponse = -1;
 //        }
-        Log.d("AAAAAA", "DDDDDDDD");
         return httpResponse;
     }
 

@@ -40,7 +40,7 @@ public class SurveysService extends Service {
     public void onDestroy() {
         super.onDestroy();
         scheduler.removeCurrentAlarms();
-        new DailyScheduler().removeCurrentAlarms();
+//        new DailyScheduler().removeCurrentAlarms();
     }
 
     @Override

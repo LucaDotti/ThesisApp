@@ -48,7 +48,7 @@
             android:gravity="center"
             android:id="@+id/age_picker"
             app:np_textColor="@android:color/white"
-            app:np_textSize="20dp"
+            app:np_textSize="15dp"
             app:np_dividerColor="@android:color/white"
             app:np_orientation="horizontal"
             app:np_wrapSelectorWheel="false"
@@ -69,7 +69,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="15dp"
                 android:text="Female"/>
             <RadioButton
                 android:layout_width="wrap_content"
@@ -78,7 +78,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="15dp"
                 android:text="Male"/>
         </RadioGroup>
 
@@ -88,7 +88,7 @@
             android:gravity="center"
             android:id="@+id/status_picker"
             app:np_textColor="@android:color/white"
-            app:np_textSize="20dp"
+            app:np_textSize="15dp"
             app:np_dividerColor="@android:color/white"
             app:np_orientation="horizontal"
             app:np_wrapSelectorWheel="true"

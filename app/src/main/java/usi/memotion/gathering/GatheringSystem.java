@@ -41,10 +41,10 @@ public class GatheringSystem {
                     Log.d("GATHERING SYSTEM", "Started accelerometer service");
                     context.startService(new Intent(context, AccelerometerGatheringService.class));
                     break;
-                case BLUETOOTH:
-                    Log.d("GATHERING SYSTEM", "Started bluetooth service");
-                    context.startService(new Intent(context, BluethootGatheringService.class));
-                    break;
+//                case BLUETOOTH:
+//                    Log.d("GATHERING SYSTEM", "Started bluetooth service");
+//                    context.startService(new Intent(context, BluethootGatheringService.class));
+//                    break;
                 case LOCATION:
                     Log.d("GATHERING SYSTEM", "Started location service");
                     context.startService(new Intent(context, LocationGatheringService.class));

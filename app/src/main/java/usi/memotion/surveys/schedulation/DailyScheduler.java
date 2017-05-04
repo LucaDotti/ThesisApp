@@ -309,6 +309,7 @@ public class DailyScheduler {
         intent.setAction(SurveyEventReceiver.SURVEY_NOTIFICATION_INTENT);
         long[] notificationTimes;
         for(Survey s: surveys) {
+            currConfig = SurveyConfig.getConfig(s.surveyType);
             notificationTimes = getNotificationAlarmTimes(s, isImmediate);
             intent.putExtra("survey_id", s.id);
             for(long time: notificationTimes) {

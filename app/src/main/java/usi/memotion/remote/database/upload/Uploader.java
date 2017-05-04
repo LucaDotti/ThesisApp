@@ -73,11 +73,15 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
             LocalTables currTable;
 
             //clean all tables
-            while(i < nbTableToClean) {
-                currTable = LocalTables.values()[(tableToClean.ordinal()+i) % LocalTables.values().length];
-                processTable(currTable);
-                i++;
+            LocalTables[] a  =LocalTables.values();
+            for(LocalTables t: LocalTables.values()) {
+                processTable(t);
             }
+//            while(i < nbTableToClean) {
+//                currTable = LocalTables.values()[i];
+//                processTable(currTable);
+//                i++;
+//            }
         }
     }
 
@@ -198,7 +202,7 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
            table == LocalTables.TABLE_PSS || table == LocalTables.TABLE_PHQ8 ||
            table == LocalTables.TABLE_SHS || table == LocalTables.TABLE_PAM ||
            table == LocalTables.TABLE_SURVEY_ALARMS || table == LocalTables.TABLE_USER ||
-           table == LocalTables.TABLE_SURVEY_ALARMS_SURVEY || table == LocalTables.TABLE_SURVEY_CONFIG) {
+           table == LocalTables.TABLE_SURVEY_ALARMS_SURVEY || table == LocalTables.TABLE_SURVEY_CONFIG || table == LocalTables.TABLE_USED_APP) {
             return;
         }
 
@@ -213,6 +217,11 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
             }
         } else {
             String query = getQuery(table);
+
+            if(table == LocalTables.TABLE_ACCELEROMETER) {
+                query += " LIMIT " + 4000;
+            }
+
             Cursor records = localController.rawQuery(query, null);
 
             if(records.getCount() > 0) {
@@ -234,14 +243,14 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
 
                 remoteController.upload(fileName, toCSV(records, table));
 
-                //if the file was put, delete records and update the arrays
-
             } else {
                 Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
             }
+            records.close();
         }
 
     }
+
 
 //    private void uploadTable(String fileName, String fileContent) {
 //        int response = remoteController.upload(fileName, fileContent);

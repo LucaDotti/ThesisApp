@@ -354,12 +354,15 @@ public class PAMSurveyView extends LinearLayout {
 //        expandableLayout.showNoContentMsg();
 //    }
 
-
-
     private void determineSurveyPeriod(Survey survey) {
-        DateTime scheduleTime = new DateTime(survey.scheduledAt);
-        DateTime afternoon = new DateTime().withTime(13, 0, 0, 0);
-        if(scheduleTime.isBefore(afternoon)) {
+        Calendar scheduleTime = Calendar.getInstance();
+        scheduleTime.setTimeInMillis(survey.scheduledAt);
+        Calendar afternoon = Calendar.getInstance();
+        afternoon.set(Calendar.HOUR_OF_DAY, 13);
+        afternoon.set(Calendar.MINUTE, 0);
+        afternoon.set(Calendar.SECOND, 0);
+
+        if(scheduleTime.getTimeInMillis() <  afternoon.getTimeInMillis()) {
             currentPeriod = PAM_MORNING;
         } else {
             currentPeriod = PAM_AFTERNOON;
