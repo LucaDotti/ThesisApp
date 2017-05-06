@@ -1,6 +1,10 @@
 package usi.memotion.local.database.tables;
 
 
+import android.content.ContentValues;
+
+import java.util.List;
+
 /**
  * Created by usi on 10/03/17.
  */

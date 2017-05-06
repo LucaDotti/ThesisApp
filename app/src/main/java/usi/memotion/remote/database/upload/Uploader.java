@@ -161,7 +161,7 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
                     info.surveysId.add(ss.id);
                 }
                 map.put(fileName, info);
-                //remoteController.upload(fileName, currCsv);
+                remoteController.upload(fileName, currCsv);
 
                 fileName = buildSurveyFileName(currSurvey);
                 gSurveys = new ArrayList<>();
@@ -182,15 +182,7 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
             info.surveysId.add(ss.id);
         }
         map.put(fileName, info);
-        //remoteController.upload(fileName, currCsv);
-
-        //if the file was put, delete records and update the arrays
-//        if(response >= 200 && response <= 207) {
-//            removeSurveyRecords(gSurveys);
-//            incrementFilePartId(LocalTables.TABLE_SURVEY);
-//        } else {
-//            Log.d("DATA UPLOAD SERVICE", "Something went wrong, Owncould's response: " + Integer.toString(response));
-//        }
+        remoteController.upload(fileName, currCsv);
 
         incrementFilePartId(LocalTables.TABLE_SURVEY);
     }
@@ -240,7 +232,7 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
                 info.endId = endId;
                 map.put(fileName, info);
 
-                //remoteController.upload(fileName, toCSV(records, table));
+                remoteController.upload(fileName, toCSV(records, table));
 
             } else {
                 Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
