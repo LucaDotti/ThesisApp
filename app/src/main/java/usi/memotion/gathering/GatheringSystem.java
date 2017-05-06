@@ -57,10 +57,10 @@ public class GatheringSystem {
                     Log.d("GATHERING SYSTEM", "Started sms service");
                     context.startService(new Intent(context, SMSGatheringService.class));
                     break;
-                case USED_APPS:
-                    Log.d("GATHERING SYSTEM", "Started used apps service");
-                    context.startService(new Intent(context, UsedAppGatheringService.class));
-                    break;
+//                case USED_APPS:
+//                    Log.d("GATHERING SYSTEM", "Started used apps service");
+//                    context.startService(new Intent(context, UsedAppGatheringService.class));
+//                    break;
                 case WIFI:
                     Log.d("GATHERING SYSTEM", "Started wifi service");
                     context.startService(new Intent(context, WifiGatheringService.class));

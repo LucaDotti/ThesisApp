@@ -54,6 +54,7 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
      * Upload
      */
     public void upload() {
+
         //upload only when the uploadThreshold is reached
         Log.d("UPLOADER SIZE", "" + localController.getDbSize());
         if(localController.getDbSize() > uploadThreshold) {
@@ -149,7 +150,7 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
                 currSurvey = currS.surveyType;
 
                 currCsv = buildSurveyCSV(gSurveys);
-
+                Log.d("AAA", currCsv);
 //                alarm = SurveyAlarmSurvey.getAlarm(currS.id);
 
                 TableInfo info = new TableInfo();
@@ -160,21 +161,19 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
                     info.surveysId.add(ss.id);
                 }
                 map.put(fileName, info);
-                remoteController.upload(fileName, currCsv);
+                //remoteController.upload(fileName, currCsv);
 
                 fileName = buildSurveyFileName(currSurvey);
-            } else {
-//                alarm = SurveyAlarmSurvey.getAlarm(currS.id);
-//                if(alarm != null) {
-//
-//                }
-                gSurveys.add(currS);
+                gSurveys = new ArrayList<>();
             }
+
+            gSurveys.add(currS);
+
         }
 
         fileName = buildSurveyFileName(currSurvey);
         currCsv = buildSurveyCSV(gSurveys);
-
+        Log.d("AAA", currCsv);
         TableInfo info = new TableInfo();
         info.isSurvey = true;
         info.survey = currSurvey;
@@ -183,7 +182,7 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
             info.surveysId.add(ss.id);
         }
         map.put(fileName, info);
-        remoteController.upload(fileName, currCsv);
+        //remoteController.upload(fileName, currCsv);
 
         //if the file was put, delete records and update the arrays
 //        if(response >= 200 && response <= 207) {
@@ -241,7 +240,7 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
                 info.endId = endId;
                 map.put(fileName, info);
 
-                remoteController.upload(fileName, toCSV(records, table));
+                //remoteController.upload(fileName, toCSV(records, table));
 
             } else {
                 Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );

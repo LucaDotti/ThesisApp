@@ -37,7 +37,7 @@ import usi.memotion.local.database.tables.WiFiTable;
 
 public class LocalSQLiteDBHelper extends SQLiteOpenHelper {
     //db information
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "Memotion";
 
     private SQLiteDatabase db;

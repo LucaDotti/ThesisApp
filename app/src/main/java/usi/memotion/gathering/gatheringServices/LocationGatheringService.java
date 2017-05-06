@@ -112,6 +112,8 @@ class LocationTimeTask extends TimerTask {
                 location = mgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 Log.d("Locationservice", "" + location);
                 saveLocation(location);
+            } else {
+                saveLocation(location);
             }
         }
 
