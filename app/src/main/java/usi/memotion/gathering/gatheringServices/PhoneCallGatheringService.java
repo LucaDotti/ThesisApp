@@ -96,15 +96,15 @@ class PhoneCallEventsReceiver extends BroadcastReceiver {
                     if(prevState == TelephonyManager.CALL_STATE_RINGING) {
                         //miss
                         DateTime now = new DateTime();
-                        insertRecord("missed", new Interval(currentCallStartTs, now).toDurationMillis(), phoneNumber, currentCallerNumber);
+                        insertRecord("missed", new Interval(currentCallStartTs, now).toDurationMillis());
                     } else if(currentCallIncoming) {
                         //incoming ended
                         DateTime now = new DateTime();
-                        insertRecord("incoming", new Interval(currentCallStartTs, now).toDurationMillis(), phoneNumber, currentCallerNumber);
+                        insertRecord("incoming", new Interval(currentCallStartTs, now).toDurationMillis());
                     } else {
                         //outgoing ended
                         DateTime now = new DateTime();
-                        insertRecord("outgoing", new Interval(currentCallStartTs, now).toDurationMillis(), currentCallerNumber, phoneNumber);
+                        insertRecord("outgoing", new Interval(currentCallStartTs, now).toDurationMillis());
                     }
                     prevState = TelephonyManager.CALL_STATE_RINGING;
                     break;
@@ -119,17 +119,15 @@ class PhoneCallEventsReceiver extends BroadcastReceiver {
         }
     }
 
-    private void insertRecord(String direction, long duration, String receiverNumber, String callerNumber) {
+    private void insertRecord(String direction, long duration) {
         ContentValues record = new ContentValues();
 
         record.put(PhoneCallLogTable.KEY_CALL_LOG_TS, Long.toString(System.currentTimeMillis()));
         record.put(PhoneCallLogTable.KEY_CALL_LOG_DIRECTION, direction);
         record.put(PhoneCallLogTable.KEY_CALL_LOG_DURATION, Long.toString(duration));
-        record.put(PhoneCallLogTable.KEY_CALL_LOG_RECEIVER_NUMBER, receiverNumber);
-        record.put(PhoneCallLogTable.KEY_CALL_LOG_SENDER_NUMBER, callerNumber);
 
         localStorageController.insertRecord(PhoneCallLogTable.TABLE_CALL_LOG, record);
-        Log.d("CALLS SERVICE", "Added record: ts: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_TS) + ", direction: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_DIRECTION) + ", duration: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_DURATION) + ", receiver: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_RECEIVER_NUMBER) + ", sender: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_SENDER_NUMBER));
+        Log.d("CALLS SERVICE", "Added record: ts: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_TS) + ", direction: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_DIRECTION) + ", duration: " + record.get(PhoneCallLogTable.KEY_CALL_LOG_DURATION));
     }
 
     private int getState(String state) {

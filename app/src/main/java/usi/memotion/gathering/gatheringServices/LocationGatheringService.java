@@ -34,6 +34,8 @@ import usi.memotion.stateMachines.strategies.timeBased.TBSMSymbol;
 import usi.memotion.stateMachines.strategies.timeBased.TBStateMachine;
 import usi.memotion.utils.FrequencyHelper;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+
 /**
  * Created by Luca Dotti on 03/01/17.
  */
@@ -101,6 +103,7 @@ class LocationTimeTask extends TimerTask {
         context = MyApplication.getContext();
         localStorageController = SQLiteController.getInstance(context);
         mgr = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        
     }
 
     @Override

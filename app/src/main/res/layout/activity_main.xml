@@ -133,7 +133,7 @@
                     android:textColor="@android:color/white"
                     android:textSize="15dp"
                     android:paddingBottom="10dp"
-                    android:text="The SMS information extracted consists only of the timestamp, the sender's and receiver's numbers. The content of the messages is NOT extracted."/>
+                    android:text="The SMS information extracted consists only of the timestamp and whether the sms was sent or received. The content of the messages, the sender's and receiver's numbers are NOT extracted."/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -149,7 +149,7 @@
                     android:textColor="@android:color/white"
                     android:textSize="15dp"
                     android:paddingBottom="10dp"
-                    android:text="The phone calls information extracted consists only of the timestamp, the caller's and callee's numbers and whether the call was missed or catched. The conversations are NOT extracted."/>
+                    android:text="The phone calls information extracted consists only of the timestamp and whether the call was missed or catched. The conversations, caller's and callee's numbers are NOT extracted."/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

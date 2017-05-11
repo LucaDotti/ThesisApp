@@ -86,22 +86,20 @@ class IncomingSMSEventsReceiver extends BroadcastReceiver {
                 for (int i = 0; i < pdus.length; i++) {
                     String format = bundle.getString("format");
                     SmsMessage msg = SmsMessage.createFromPdu((byte[])pdus[i], format);
-                    insertRecord("incoming", phoneNumber, msg.getOriginatingAddress());
+                    insertRecord("incoming");
                 }
             }
         }
     }
 
-    private void insertRecord(String direction, String receiverNumber, String senderNumber) {
+    private void insertRecord(String direction) {
         ContentValues record = new ContentValues();
 
         record.put(SMSTable.KEY_SMS_TS, Long.toString(System.currentTimeMillis()));
         record.put(SMSTable.KEY_SMS_DIRECTION, direction);
-        record.put(SMSTable.KEY_SMS_RECEIVER_NUMBER, receiverNumber);
-        record.put(SMSTable.KEY_SMS_SENDER_NUMBER, senderNumber);
 
         localStorageController.insertRecord(SMSTable.TABLE_SMS, record);
-        Log.d("CALLS SERVICE", "Added record: ts: " + record.get(SMSTable.KEY_SMS_TS) + ", direction: " + record.get(SMSTable.KEY_SMS_DIRECTION) + ", receiver: " + record.get(SMSTable.KEY_SMS_RECEIVER_NUMBER) + ", sender: " + record.get(SMSTable.KEY_SMS_SENDER_NUMBER));
+        Log.d("CALLS SERVICE", "Added record: ts: " + record.get(SMSTable.KEY_SMS_TS) + ", direction: " + record.get(SMSTable.KEY_SMS_DIRECTION));
     }
 }
 
@@ -138,7 +136,7 @@ class OutgoingSmsObserver extends ContentObserver {
         int type = smsSent.getInt(smsSent.getColumnIndex("type"));
 
         if(protocol == null && type == Telephony.TextBasedSmsColumns.MESSAGE_TYPE_SENT) {
-            insertRecord("outgoing", smsSent.getString(smsSent.getColumnIndex("address")), phoneNumber);
+            insertRecord("outgoing");
         }
 //        while(smsSent.moveToNext()) {
 //            String protocol = smsSent.getString(smsSent.getColumnIndex("protocol"));
@@ -150,15 +148,13 @@ class OutgoingSmsObserver extends ContentObserver {
 //        }
     }
 
-    private void insertRecord(String direction, String receiverNumber, String senderNumber) {
+    private void insertRecord(String direction) {
         ContentValues record = new ContentValues();
 
         record.put(SMSTable.KEY_SMS_TS, Long.toString(System.currentTimeMillis()));
         record.put(SMSTable.KEY_SMS_DIRECTION, direction);
-        record.put(SMSTable.KEY_SMS_RECEIVER_NUMBER, receiverNumber);
-        record.put(SMSTable.KEY_SMS_SENDER_NUMBER, senderNumber);
 
         localStorageController.insertRecord(SMSTable.TABLE_SMS, record);
-        Log.d("CALLS SERVICE", "Added record: ts: " + record.get(SMSTable.KEY_SMS_TS) + ", direction: " + record.get(SMSTable.KEY_SMS_DIRECTION) + ", receiver: " + record.get(SMSTable.KEY_SMS_RECEIVER_NUMBER) + ", sender: " + record.get(SMSTable.KEY_SMS_SENDER_NUMBER));
+        Log.d("CALLS SERVICE", "Added record: ts: " + record.get(SMSTable.KEY_SMS_TS) + ", direction: " + record.get(SMSTable.KEY_SMS_DIRECTION));
     }
 }
