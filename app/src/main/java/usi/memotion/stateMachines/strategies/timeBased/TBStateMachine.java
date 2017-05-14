@@ -3,6 +3,8 @@ package usi.memotion.stateMachines.strategies.timeBased;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
+import java.util.Calendar;
+
 import usi.memotion.stateMachines.base.ActiveStateMachine;
 
 /**
@@ -10,37 +12,33 @@ import usi.memotion.stateMachines.base.ActiveStateMachine;
  */
 
 public class TBStateMachine extends ActiveStateMachine {
-    private LocalTime dayStartTime;
-    private LocalTime nightStartTime;
+    private Calendar dayStartTime;
+    private Calendar nightStartTime;
+    private String nightTimeS;
 
     public TBStateMachine(TBSMState[][] transitions, TBSMState startState, String dayStartTime, String nightStartTime) {
         super(transitions, startState);
-
-        String[] splitted = dayStartTime.split(":");
-        this.dayStartTime = new LocalTime()
-                .withHourOfDay(Integer.parseInt(splitted[0]))
-                .withMinuteOfHour(Integer.parseInt(splitted[1]))
-                .withSecondOfMinute(Integer.parseInt(splitted[2]));
-
-        splitted = nightStartTime.split(":");
-        this.nightStartTime = new LocalTime()
-                .withHourOfDay(Integer.parseInt(splitted[0]))
-                .withMinuteOfHour(Integer.parseInt(splitted[1]))
-                .withSecondOfMinute(Integer.parseInt(splitted[2]));
+        this.nightTimeS = nightStartTime;
+        String[] splitted = nightStartTime.split(":");
+        this.nightStartTime = Calendar.getInstance();
+        this.nightStartTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitted[0]));
+        this.nightStartTime.set(Calendar.MINUTE, Integer.parseInt(splitted[1]));
+        this.nightStartTime.set(Calendar.SECOND, Integer.parseInt(splitted[2]));
     }
 
-    private DateTime getNightStartDateTime() {
-        DateTime sNight = new DateTime()
-                .withHourOfDay(nightStartTime.getHourOfDay())
-                .withMinuteOfHour(nightStartTime.getMinuteOfHour())
-                .withSecondOfMinute(nightStartTime.getSecondOfMinute());
+    private Calendar getNightStartDateTime() {
+        String[] splitted = nightTimeS.split(":");
+        Calendar sNight = Calendar.getInstance();
+        sNight.set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitted[0]));
+        sNight.set(Calendar.MINUTE, Integer.parseInt(splitted[1]));
+        sNight.set(Calendar.SECOND, Integer.parseInt(splitted[2]));
         return sNight;
     }
 
     @Override
     public TBSMSymbol getSymbol() {
-        DateTime now = new DateTime();
-        if(now.isBefore(getNightStartDateTime())) {
+        Calendar now = Calendar.getInstance();
+        if(now.getTimeInMillis() < getNightStartDateTime().getTimeInMillis()) {
             return TBSMSymbol.IS_DAY;
         } else {
             return TBSMSymbol.IS_NIGHT;

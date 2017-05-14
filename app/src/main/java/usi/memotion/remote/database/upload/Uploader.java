@@ -207,37 +207,40 @@ public class Uploader implements SwitchDriveController.OnTransferCompleted {
                 processSurveys(surveys);
             }
         } else {
-            String query = getQuery(table);
+            if(table == LocalTables.TABLE_LOCATION) {
+                String query = getQuery(table);
 
-            if(table == LocalTables.TABLE_ACCELEROMETER) {
-                query += " LIMIT " + 4000;
+                if(table == LocalTables.TABLE_ACCELEROMETER) {
+                    query += " LIMIT " + 4000;
+                }
+
+                Cursor records = localController.rawQuery(query, null);
+
+                if(records.getCount() > 0) {
+                    String fileName = buildFileName(table);
+                    int startId;
+                    int endId;
+                    records.moveToFirst();
+                    //the starting index
+                    startId = records.getInt(0);
+                    records.moveToLast();
+                    //the ending index
+                    endId = records.getInt(0);
+                    records.moveToFirst();
+                    TableInfo info = new TableInfo();
+                    info.table = table;
+                    info.startId = startId;
+                    info.endId = endId;
+                    map.put(fileName, info);
+
+                    remoteController.upload(fileName, toCSV(records, table));
+
+                } else {
+                    Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
+                }
+                records.close();
             }
 
-            Cursor records = localController.rawQuery(query, null);
-
-            if(records.getCount() > 0) {
-                String fileName = buildFileName(table);
-                int startId;
-                int endId;
-                records.moveToFirst();
-                //the starting index
-                startId = records.getInt(0);
-                records.moveToLast();
-                //the ending index
-                endId = records.getInt(0);
-                records.moveToFirst();
-                TableInfo info = new TableInfo();
-                info.table = table;
-                info.startId = startId;
-                info.endId = endId;
-                map.put(fileName, info);
-
-                remoteController.upload(fileName, toCSV(records, table));
-
-            } else {
-                Log.d("DATA UPLOAD SERVICE", "Table is empty, nothing to upload" );
-            }
-            records.close();
         }
 
     }

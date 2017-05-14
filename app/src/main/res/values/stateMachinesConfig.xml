@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--frequency of state machine-->
-    <string name="stateMachineFreq">3600000</string>
+    <string name="stateMachineFreq">1800000</string>
     <string name="uploaderStateMachineFreq">3600000</string>
 
     <!--TIME BASED-->
